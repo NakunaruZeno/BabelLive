@@ -1,0 +1,713 @@
+{
+   "actionTitle": {
+      "message": "فتح ViiTor Translate"
+   },
+   "advancedModel": {
+      "message": "النموذج المتقدم"
+   },
+   "advancedModelShort": {
+      "message": "متقدم"
+   },
+   "advancedModelVipDesc": {
+      "message": "النموذج المتقدم ميزة متاحة للأعضاء فقط. قم بالترقية لاستخدام نموذج النسخ المحسّن."
+   },
+   "advancedModelVipLater": {
+      "message": "ربما لاحقًا"
+   },
+   "advancedModelVipOk": {
+      "message": "الترقية الآن"
+   },
+   "advancedModelVipTitle": {
+      "message": "فتح النموذج المتقدم"
+   },
+   "aiSummary": {
+      "message": "ملخص الذكاء الاصطناعي"
+   },
+   "aiSummaryCollecting": {
+      "message": "جارٍ التحقق…"
+   },
+   "aiSummaryCurrentSession": {
+      "message": "الجلسة الحالية"
+   },
+   "aiSummaryEmpty": {
+      "message": "لا يوجد ملخص بعد."
+   },
+   "aiSummaryErrorEmpty": {
+      "message": "لا يوجد نص لتلخيصه."
+   },
+   "aiSummaryErrorFailed": {
+      "message": "تعذر إنشاء الملخص."
+   },
+   "aiSummaryErrorFiltered": {
+      "message": "تعذر تلخيص هذا المحتوى."
+   },
+   "aiSummaryGenerate": {
+      "message": "ملخص الذكاء"
+   },
+   "aiSummaryGenerating": {
+      "message": "جارٍ إنشاء الملخص…"
+   },
+   "aiSummaryLeaveHint": {
+      "message": "يعمل في الخلفية — يمكنك الإغلاق والعودة لاحقًا."
+   },
+   "aiSummaryLineCount": {
+      "message": "{count} سطر"
+   },
+   "aiSummaryNoHistory": {
+      "message": "لا توجد تسجيلات لتلخيصها."
+   },
+   "aiSummaryNoHistoryHint": {
+      "message": "ابدأ الترجمة المباشرة وستظهر الجلسة هنا."
+   },
+   "aiSummaryPending": {
+      "message": "جارٍ الإنشاء…"
+   },
+   "aiSummaryReady": {
+      "message": "جاهز للتلخيص"
+   },
+   "aiSummaryReadyHint": {
+      "message": "اختر قالبًا بالأعلى ثم أنشئ الملخص."
+   },
+   "aiSummaryRegenerate": {
+      "message": "إعادة الإنشاء"
+   },
+   "aiSummaryRetry": {
+      "message": "إعادة المحاولة"
+   },
+   "aiSummaryStaleTemplate": {
+      "message": "استخدم هذا الملخص قالبًا مختلفًا."
+   },
+   "aiSummaryTemplate": {
+      "message": "قالب الملخص"
+   },
+   "aiSummaryView": {
+      "message": "عرض الملخص"
+   },
+   "aiSummaryVipDesc": {
+      "message": "ملخص الذكاء الاصطناعي ميزة للأعضاء فقط. قم بالترقية لتحويل تسجيلاتك إلى محاضر منظمة."
+   },
+   "aiSummaryVipLater": {
+      "message": "ربما لاحقًا"
+   },
+   "aiSummaryVipOk": {
+      "message": "الترقية الآن"
+   },
+   "aiSummaryVipTitle": {
+      "message": "فتح ملخص الذكاء الاصطناعي"
+   },
+   "appDescription": {
+      "message": "يمكن لإضافة الترجمة الحية ViiTor تقديم خدمات تدوين النقل والترجمة الحية للصوتية في البث المباشر للفيديو أوالصوت مجانا، والفيديوهات أو الاجتماعات عبر الإنترنت. كما تشمل  وظيفتها السطرجة ثنائية اللغة العديد من المنصات، مثل يوتيوب، بيليبيلي، وتويتش، مما تقدم لك دعماً قوياً في السيناريوهات متعددة اللغات."
+   },
+   "appName": {
+      "message": "الترجمة ViiTor- ترجمة بالذكاء الاصطناعي والسطرجة ثنائية اللغة الفوريةي"
+   },
+   "audioVideoTranscription": {
+      "message": "نسخ الصوت والفيديو"
+   },
+   "autoDetect": {
+      "message": "اكتشاف تلقائي"
+   },
+   "autoHideHeader": {
+      "message": "إخفاء شريط القائمة تلقائياً"
+   },
+   "backgroundOpacity": {
+      "message": "شفافية الخلفية"
+   },
+   "bilingualSubtitles": {
+      "message": "ترجمة ثنائية اللغة"
+   },
+   "browserTooOld": {
+      "message": "إصدار المتصفح قديم جدًا. يُرجى تحديث المتصفح والمحاولة مرة أخرى."
+   },
+   "cancel": {
+      "message": "إلغاء"
+   },
+   "colorBlack": {
+      "message": "أسود"
+   },
+   "colorBlue": {
+      "message": "أزرق"
+   },
+   "colorCustom": {
+      "message": "مخصص"
+   },
+   "colorCyan": {
+      "message": "سماوي"
+   },
+   "colorGreen": {
+      "message": "أخضر"
+   },
+   "colorOrange": {
+      "message": "برتقالي"
+   },
+   "colorPurple": {
+      "message": "بنفسجي"
+   },
+   "colorRed": {
+      "message": "أحمر"
+   },
+   "colorWhite": {
+      "message": "أبيض"
+   },
+   "colorYellow": {
+      "message": "أصفر"
+   },
+   "commentDailyLimitReached": {
+      "message": "تم استخدام 1,800 ترجمة مجانية اليوم. قم بالترقية إلى VIP للحصول على ترجمة غير محدودة."
+   },
+   "commentEmptyPaused": {
+      "message": "تم الإيقاف مؤقتًا. تابع لمواصلة ترجمة التعليقات الجديدة."
+   },
+   "commentEmptyStatic": {
+      "message": "مرِّر التعليقات لترجمة ما يظهر أمامك"
+   },
+   "commentEmptyWaiting": {
+      "message": "يتم الإصغاء إلى التعليقات، في انتظار رسائل جديدة…"
+   },
+   "commentShowBilingual": {
+      "message": "ثنائي اللغة"
+   },
+   "commentShowOriginal": {
+      "message": "النص الأصلي"
+   },
+   "commentShowTranslationOnly": {
+      "message": "الترجمة فقط"
+   },
+   "commentSiteBilibili": {
+      "message": "دانماكو البث والفيديو في Bilibili"
+   },
+   "commentSiteDouyin": {
+      "message": "تعليقات البث ودانماكو الفيديو في Douyin"
+   },
+   "commentSiteTiktok": {
+      "message": "دردشة بث تيك توك المباشر وتعليقات الفيديو"
+   },
+   "commentSiteTwitcasting": {
+      "message": "دردشة TwitCasting المباشرة"
+   },
+   "commentSiteTwitch": {
+      "message": "دردشة تويتش المباشرة"
+   },
+   "commentSiteWeverse": {
+      "message": "دردشة Weverse المباشرة"
+   },
+   "commentSiteYoutube": {
+      "message": "دردشة يوتيوب المباشرة وتعليقات الفيديو"
+   },
+   "commentTranslate": {
+      "message": "ترجمة الدردشة المباشرة"
+   },
+   "commentTranslateHintGot": {
+      "message": "حسنًا"
+   },
+   "commentTranslateHintSitesTitle": {
+      "message": "المواقع المدعومة"
+   },
+   "commentTranslateHintTitle": {
+      "message": "ترجمة التعليقات"
+   },
+   "commentTranslateHintVip": {
+      "message": "المستخدمون غير الأعضاء: 1800 ترجمة مجانية يوميًا بسرعة الترجمة الأساسية\nمستخدمو VIP: ترجمات غير محدودة بسرعة تصل إلى 4 أضعاف سرعة غير الأعضاء"
+   },
+   "commentTranslateVipLater": {
+      "message": "لاحقًا"
+   },
+   "commentTranslateVipOk": {
+      "message": "اشترك الآن"
+   },
+   "contactSupport": {
+      "message": "تواصل معنا"
+   },
+   "copied": {
+      "message": "تم النسخ"
+   },
+   "copy": {
+      "message": "نسخ"
+   },
+   "copyEmpty": {
+      "message": "لا توجد ترجمات لنسخها"
+   },
+   "copySubtitles": {
+      "message": "نسخ الترجمة"
+   },
+   "customColorVipDesc": {
+      "message": "ألوان الترجمة المخصصة ميزة مخصصة للأعضاء فقط. قم بالترقية لإنشاء نمط ترجمة أكثر تخصيصًا."
+   },
+   "customColorVipLater": {
+      "message": "لاحقًا"
+   },
+   "customColorVipOk": {
+      "message": "الترقية الآن"
+   },
+   "customColorVipTitle": {
+      "message": "افتح الألوان المخصصة"
+   },
+   "defaultModel": {
+      "message": "النموذج الافتراضي"
+   },
+   "defaultModelShort": {
+      "message": "افتراضي"
+   },
+   "dockCollapse": {
+      "message": "طي القائمة"
+   },
+   "dockExpand": {
+      "message": "توسيع القائمة"
+   },
+   "dockResize": {
+      "message": "تغيير عرض القائمة"
+   },
+   "dockResizeHint": {
+      "message": "اسحب لتغيير الحجم، وانقر نقرًا مزدوجًا لإعادة التعيين"
+   },
+   "documentTranslate": {
+      "message": "ترجمة المستندات"
+   },
+   "favoriteSentences": {
+      "message": "الجمل المحفوظة"
+   },
+   "featureComingSoon": {
+      "message": "قريباً"
+   },
+   "featureComingSoonTag": {
+      "message": "قريباً"
+   },
+   "feedback": {
+      "message": "تعليقات"
+   },
+   "feedbackOptionLanguageMissing": {
+      "message": "اللغة غير مدعومة"
+   },
+   "feedbackOptionNetworkError": {
+      "message": "خطأ في الشبكة"
+   },
+   "feedbackOptionOther": {
+      "message": "أخرى"
+   },
+   "feedbackOptionRecognitionInaccuracy": {
+      "message": "مشاكل مزامنة الترجمة"
+   },
+   "feedbackOptionSubtitleFast": {
+      "message": "الترجمة سريعة جداً للقراءة"
+   },
+   "feedbackOptionSubtitleMissing": {
+      "message": "التعرف غير دقيق"
+   },
+   "feedbackOptionTranslationInaccuracy": {
+      "message": "ترجمة غير دقيقة"
+   },
+   "feedbackOptionTranslationNoResult": {
+      "message": "لا توجد نتيجة ترجمة"
+   },
+   "feedbackOtherPlaceholder": {
+      "message": "يرجى إدخال المشكلة المحددة..."
+   },
+   "feedbackReturnBtn": {
+      "message": "العودة"
+   },
+   "feedbackSelectPlaceholder": {
+      "message": "يرجى الاختيار..."
+   },
+   "feedbackSubmitBtn": {
+      "message": "إرسال"
+   },
+   "feedbackSuccessMessage": {
+      "message": "تم إرسال الملاحظات بنجاح! شكراً لاقتراحك"
+   },
+   "fontColor": {
+      "message": "لون الخط"
+   },
+   "fontSize": {
+      "message": "حجم الخط"
+   },
+   "fontSizeLarge": {
+      "message": "ك"
+   },
+   "fontSizeMedium": {
+      "message": "م"
+   },
+   "fontSizeSmall": {
+      "message": "ص"
+   },
+   "fontStroke": {
+      "message": "حدود الخط"
+   },
+   "glossary": {
+      "message": "المسرد"
+   },
+   "glossaryDefault": {
+      "message": "افتراضي"
+   },
+   "glossaryEmpty": {
+      "message": "لا توجد مسارد"
+   },
+   "glossaryVipDesc": {
+      "message": "المسرد ميزة حصرية للأعضاء. قم بالترقية لإرفاق مسارد مخصصة بجلساتك."
+   },
+   "glossaryVipLater": {
+      "message": "ربما لاحقًا"
+   },
+   "glossaryVipOk": {
+      "message": "الترقية الآن"
+   },
+   "glossaryVipTitle": {
+      "message": "فتح المسرد"
+   },
+   "highlightTranslation": {
+      "message": "تمييز الترجمة"
+   },
+   "history": {
+      "message": "السجل"
+   },
+   "historyClear": {
+      "message": "مسح"
+   },
+   "historyClearConfirm": {
+      "message": "هل تريد مسح جميع سجلات التاريخ؟"
+   },
+   "historyDelete": {
+      "message": "حذف"
+   },
+   "historyEmpty": {
+      "message": "لا يوجد سجل بعد"
+   },
+   "historyExport": {
+      "message": "تنزيل"
+   },
+   "historyLimitHint": {
+      "message": "يتم الاحتفاظ محليًا بآخر 20 سجلًا فقط."
+   },
+   "historyUntitled": {
+      "message": "صفحة بلا عنوان"
+   },
+   "langLoadError": {
+      "message": "فشل تحميل قائمة اللغات، يرجى المحاولة مرة أخرى"
+   },
+   "langLoadFailed": {
+      "message": "فشل تحميل قائمة اللغات، "
+   },
+   "langLoading": {
+      "message": "جار التحميل..."
+   },
+   "lightMode": {
+      "message": "الوضع الفاتح"
+   },
+   "lightModeVipDesc": {
+      "message": "الوضع الفاتح ميزة مخصصة للأعضاء فقط. قم بالترقية لاستخدام المزيد من خيارات المظهر ومزايا الخدمة المستقرة."
+   },
+   "lightModeVipLater": {
+      "message": "لاحقًا"
+   },
+   "lightModeVipOk": {
+      "message": "الترقية الآن"
+   },
+   "lightModeVipTitle": {
+      "message": "افتح الوضع الفاتح"
+   },
+   "login": {
+      "message": "تسجيل الدخول"
+   },
+   "loginRequiredBanner": {
+      "message": "يرجى تسجيل الدخول للمتابعة"
+   },
+   "logout": {
+      "message": "تسجيل الخروج"
+   },
+   "menuLayout": {
+      "message": "نمط القائمة"
+   },
+   "menuLayoutDock": {
+      "message": "جانبي"
+   },
+   "menuLayoutDockHint": {
+      "message": "يرتبط بجانب الصفحة ويقلّصها فلا يحجب المحتوى."
+   },
+   "menuLayoutFloat": {
+      "message": "عائم"
+   },
+   "menuLayoutFloatHint": {
+      "message": "يطفو فوق الصفحة ويمكن سحبه إلى أي مكان."
+   },
+   "modelQuality": {
+      "message": "جودة النموذج"
+   },
+   "modelSelection": {
+      "message": "اختيار النموذج"
+   },
+   "more": {
+      "message": "المزيد"
+   },
+   "moreTools": {
+      "message": "أدوات أخرى"
+   },
+   "networkErrorRetry": {
+      "message": "خطأ في الشبكة. يرجى المحاولة مرة أخرى لاحقًا."
+   },
+   "ok": {
+      "message": "موافق"
+   },
+   "openMenu": {
+      "message": "فتح القائمة"
+   },
+   "openSubtitleBox": {
+      "message": "مربع الترجمة"
+   },
+   "peakLimitVipDesc": {
+      "message": "الخدمة تشهد حاليًا ازدحامًا مرتفعًا. قم بالترقية لفتح خوادم مخصصة للأعضاء."
+   },
+   "peakLimitVipLater": {
+      "message": "لاحقًا"
+   },
+   "peakLimitVipOk": {
+      "message": "الترقية الآن"
+   },
+   "peakLimitVipTitle": {
+      "message": "تقييد الوصول وقت الذروة"
+   },
+   "pinToTopbar": {
+      "message": "تثبيت في الشريط العلوي"
+   },
+   "pipClose": {
+      "message": "إغلاق صورة داخل صورة"
+   },
+   "pipOpen": {
+      "message": "ترجمات صورة داخل صورة"
+   },
+   "pipPlaceholder": {
+      "message": "تظهر الترجمات مثبتة في الأعلى داخل نافذة صورة داخل صورة، ويمكنك التبديل إلى علامات تبويب أو تطبيقات أخرى ومتابعة المشاهدة"
+   },
+   "ratingSuccess": {
+      "message": "تم التقييم بنجاح!"
+   },
+   "ratingTitle": {
+      "message": "هل أنت راضٍ عن هذه الترجمة؟"
+   },
+   "realtimeSubtitle": {
+      "message": "ترجمة فورية"
+   },
+   "recordCaptureFailed": {
+      "message": "تعذر التقاط صوت الصفحة، يرجى التحديث والمحاولة مرة أخرى"
+   },
+   "recordPause": {
+      "message": "إيقاف مؤقت"
+   },
+   "recordStart": {
+      "message": "بدء"
+   },
+   "recordStartFailed": {
+      "message": "تعذر البدء. يرجى المحاولة مرة أخرى لاحقًا."
+   },
+   "resizeWindow": {
+      "message": "تغيير حجم النافذة"
+   },
+   "retry": {
+      "message": "يرجى المحاولة مرة أخرى"
+   },
+   "savedAdd": {
+      "message": "حفظ"
+   },
+   "savedClearConfirm": {
+      "message": "مسح كل الجمل المحفوظة؟"
+   },
+   "savedEmpty": {
+      "message": "لا توجد جمل محفوظة بعد"
+   },
+   "savedNoMatch": {
+      "message": "لا توجد جمل مطابقة"
+   },
+   "savedRemove": {
+      "message": "إزالة من المحفوظات"
+   },
+   "savedSearch": {
+      "message": "البحث في الجمل المحفوظة"
+   },
+   "savedToastAdded": {
+      "message": "تم حفظ الجملة"
+   },
+   "savedToastRemoved": {
+      "message": "تمت الإزالة من المحفوظات"
+   },
+   "scrollToBottom": {
+      "message": "التمرير إلى الأسفل"
+   },
+   "sessionClearConfirm": {
+      "message": "مسح سجل هذه الجلسة؟ لا يمكن التراجع عن هذا الإجراء."
+   },
+   "sessionEmpty": {
+      "message": "لا توجد ترجمات مصاحبة في هذه الجلسة حتى الآن"
+   },
+   "sessionGenerating": {
+      "message": "جارٍ إنشاء الترجمات المصاحبة…"
+   },
+   "sessionJumpLatest": {
+      "message": "الأحدث"
+   },
+   "sessionNotes": {
+      "message": "ملاحظات الجلسة"
+   },
+   "sessionRecordCount": {
+      "message": "السجلات"
+   },
+   "sessionSearch": {
+      "message": "البحث في النص الأصلي أو الترجمة"
+   },
+   "sessionTimeline": {
+      "message": "المخطط الزمني"
+   },
+   "settings": {
+      "message": "الإعدادات"
+   },
+   "share": {
+      "message": "مشاركة"
+   },
+   "startupSurface": {
+      "message": "العرض عند البدء"
+   },
+   "startupSurfaceAuto": {
+      "message": "تلقائي"
+   },
+   "startupSurfaceAutoHint": {
+      "message": "يظهر مربع الترجمة دائمًا، وتظهر القائمة في المواقع المدعومة."
+   },
+   "startupSurfaceBoth": {
+      "message": "عرض الاثنين"
+   },
+   "startupSurfaceBothHint": {
+      "message": "يظهر الاثنان معًا."
+   },
+   "startupSurfaceMenu": {
+      "message": "القائمة فقط"
+   },
+   "startupSurfaceMenuHint": {
+      "message": "عند البدء تظهر القائمة فقط. اضغط على «الترجمة المباشرة» للبدء."
+   },
+   "startupSurfaceSubtitle": {
+      "message": "مربع الترجمة فقط"
+   },
+   "startupSurfaceSubtitleHint": {
+      "message": "عند البدء يظهر مربع الترجمة فقط، ويمكن فتح القائمة منه في أي وقت."
+   },
+   "statusListening": {
+      "message": "الاستماع إلى صوت الصفحة"
+   },
+   "statusReady": {
+      "message": "جاهز"
+   },
+   "strokeBlack": {
+      "message": "أسود"
+   },
+   "strokeNone": {
+      "message": "لا شيء"
+   },
+   "strokeWhite": {
+      "message": "أبيض"
+   },
+   "stylePreview": {
+      "message": "الترجمة الحية ViiTor"
+   },
+   "subtitleSpeed": {
+      "message": "سرعة تحديث الترجمة"
+   },
+   "subtitleSpeedFast": {
+      "message": "سريع"
+   },
+   "subtitleSpeedFastHint": {
+      "message": "تحديث سريع يوازن بين الاستجابة الفورية وسهولة القراءة."
+   },
+   "subtitleSpeedFinalOnly": {
+      "message": "الأبطأ"
+   },
+   "subtitleSpeedFinalOnlyHint": {
+      "message": "يعرض نتائج التعرف المستقرة فقط، لكن بتأخير عرض أعلى."
+   },
+   "subtitleSpeedRealtime": {
+      "message": "فوري"
+   },
+   "subtitleSpeedRealtimeHint": {
+      "message": "يتم التحديث فور وصول النتائج. أقل تأخير، لكن النص يتغير كثيرًا."
+   },
+   "subtitleSpeedSlow": {
+      "message": "قياسي"
+   },
+   "subtitleSpeedSlowHint": {
+      "message": "يقلل معدل التحديث قليلًا لتجربة قراءة أكثر ثباتًا."
+   },
+   "subtitleSpeedSlowest": {
+      "message": "بطيء نسبيًا"
+   },
+   "subtitleSpeedSlowestHint": {
+      "message": "معدل تحديث أقل، يقلل تغير النص المتكرر ويسهّل القراءة."
+   },
+   "subtitleSpeedStandard": {
+      "message": "سريع نسبيًا"
+   },
+   "subtitleSpeedStandardHint": {
+      "message": "معدل تحديث متوسط مع تغييرات أقل نسبيًا في النص."
+   },
+   "subtitleStyle": {
+      "message": "نمط الترجمة"
+   },
+   "swapLanguages": {
+      "message": "تبديل اللغات"
+   },
+   "tabSilentDetected": {
+      "message": "لم يتم اكتشاف صوت الصفحة، يرجى التأكد من تشغيل الفيديو وعدم كتمه"
+   },
+   "tools": {
+      "message": "الميزات"
+   },
+   "transportAuto": {
+      "message": "تلقائي"
+   },
+   "transportDirect": {
+      "message": "مباشر"
+   },
+   "transportMode": {
+      "message": "النقل"
+   },
+   "transportWebrtc": {
+      "message": "WebRTC"
+   },
+   "tutorial": {
+      "message": "البرنامج التعليمي"
+   },
+   "uidLabel": {
+      "message": "UID: "
+   },
+   "unpinFromTopbar": {
+      "message": "إلغاء التثبيت من الشريط"
+   },
+   "upgradeVip": {
+      "message": "ترقية VIP"
+   },
+   "usageExhaustedCancel": {
+      "message": "إلغاء"
+   },
+   "usageExhaustedDesc": {
+      "message": "يمكنك المتابعة مجانًا غدًا، أو الترقية الآن للاستخدام فورًا دون حد زمني."
+   },
+   "usageExhaustedOk": {
+      "message": "الترقية الآن"
+   },
+   "usageExhaustedTitle": {
+      "message": "انتهى وقت الاستخدام المجاني لليوم"
+   },
+   "usageReminderDesc": {
+      "message": "لقد استخدمت الخدمة بشكل متواصل لأكثر من 30 دقيقة. قم بالترقية للاستمتاع بخدمة مستقرة دون حد زمني."
+   },
+   "usageReminderLater": {
+      "message": "لاحقًا"
+   },
+   "usageReminderOk": {
+      "message": "الترقية الآن"
+   },
+   "usageReminderTitle": {
+      "message": "افتح المزيد من مزايا العضوية"
+   },
+   "vipExpireAt": {
+      "message": "ينتهي: "
+   },
+   "vipStatus": {
+      "message": "حالة VIP"
+   }
+}

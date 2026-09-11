@@ -1,0 +1,713 @@
+{
+   "actionTitle": {
+      "message": "Apri ViiTor Translate"
+   },
+   "advancedModel": {
+      "message": "Modello avanzato"
+   },
+   "advancedModelShort": {
+      "message": "Avanzato"
+   },
+   "advancedModelVipDesc": {
+      "message": "Il modello avanzato è una funzione riservata ai membri. Esegui l'upgrade per utilizzare il modello di trascrizione avanzato."
+   },
+   "advancedModelVipLater": {
+      "message": "Forse più tardi"
+   },
+   "advancedModelVipOk": {
+      "message": "Esegui l'upgrade ora"
+   },
+   "advancedModelVipTitle": {
+      "message": "Sblocca modello avanzato"
+   },
+   "aiSummary": {
+      "message": "Riepilogo IA"
+   },
+   "aiSummaryCollecting": {
+      "message": "Verifica…"
+   },
+   "aiSummaryCurrentSession": {
+      "message": "Sessione corrente"
+   },
+   "aiSummaryEmpty": {
+      "message": "Nessun riepilogo."
+   },
+   "aiSummaryErrorEmpty": {
+      "message": "Questa registrazione non ha testo da riepilogare."
+   },
+   "aiSummaryErrorFailed": {
+      "message": "Impossibile generare il riepilogo."
+   },
+   "aiSummaryErrorFiltered": {
+      "message": "Impossibile riepilogare questo contenuto."
+   },
+   "aiSummaryGenerate": {
+      "message": "Riepilogo IA"
+   },
+   "aiSummaryGenerating": {
+      "message": "Generazione riepilogo..."
+   },
+   "aiSummaryLeaveHint": {
+      "message": "Continua in background: puoi chiudere e tornare più tardi."
+   },
+   "aiSummaryLineCount": {
+      "message": "{count} righe"
+   },
+   "aiSummaryNoHistory": {
+      "message": "Nessuna registrazione da riepilogare."
+   },
+   "aiSummaryNoHistoryHint": {
+      "message": "Avvia i sottotitoli dal vivo e la sessione comparirà qui."
+   },
+   "aiSummaryPending": {
+      "message": "Generazione…"
+   },
+   "aiSummaryReady": {
+      "message": "Pronto per il riepilogo"
+   },
+   "aiSummaryReadyHint": {
+      "message": "Scegli un modello sopra, poi genera."
+   },
+   "aiSummaryRegenerate": {
+      "message": "Rigenera"
+   },
+   "aiSummaryRetry": {
+      "message": "Riprova"
+   },
+   "aiSummaryStaleTemplate": {
+      "message": "Questo riepilogo usava un altro modello."
+   },
+   "aiSummaryTemplate": {
+      "message": "Modello di riepilogo"
+   },
+   "aiSummaryView": {
+      "message": "Vedi riepilogo"
+   },
+   "aiSummaryVipDesc": {
+      "message": "Il riepilogo IA è riservato ai membri. Esegui l’upgrade per trasformare le registrazioni in verbali strutturati."
+   },
+   "aiSummaryVipLater": {
+      "message": "Forse più tardi"
+   },
+   "aiSummaryVipOk": {
+      "message": "Aggiorna ora"
+   },
+   "aiSummaryVipTitle": {
+      "message": "Sblocca il riepilogo IA"
+   },
+   "appDescription": {
+      "message": "Il plugin di traduzione in tempo reale ViiTor può fornire servizi di trascrizione e traduzione audio in tempo reale per trasmissioni audio-video dal vivo, video online e riunioni online. La sua traduzione di sottotitoli bilingue copre anche numerose piattaforme come YouTube, Bilibili, Twitch, offrendoti un supporto solido in scenari multilingue."
+   },
+   "appName": {
+      "message": "ViiTor Traduci - Traduzione e sottotitoli bilingue in tempo reale"
+   },
+   "audioVideoTranscription": {
+      "message": "Trascrizione audio e video"
+   },
+   "autoDetect": {
+      "message": "Rilevamento automatico"
+   },
+   "autoHideHeader": {
+      "message": "Nascondi automaticamente la barra dei menu"
+   },
+   "backgroundOpacity": {
+      "message": "Opacità sfondo"
+   },
+   "bilingualSubtitles": {
+      "message": "Sottotitoli bilingue"
+   },
+   "browserTooOld": {
+      "message": "La versione del browser è troppo obsoleta. Aggiorna il browser e riprova."
+   },
+   "cancel": {
+      "message": "Annulla"
+   },
+   "colorBlack": {
+      "message": "Nero"
+   },
+   "colorBlue": {
+      "message": "Blu"
+   },
+   "colorCustom": {
+      "message": "Personalizzato"
+   },
+   "colorCyan": {
+      "message": "Ciano"
+   },
+   "colorGreen": {
+      "message": "Verde"
+   },
+   "colorOrange": {
+      "message": "Arancione"
+   },
+   "colorPurple": {
+      "message": "Viola"
+   },
+   "colorRed": {
+      "message": "Rosso"
+   },
+   "colorWhite": {
+      "message": "Bianco"
+   },
+   "colorYellow": {
+      "message": "Giallo"
+   },
+   "commentDailyLimitReached": {
+      "message": "Le 1.800 traduzioni gratuite di oggi sono state utilizzate. Passa a VIP per traduzioni illimitate."
+   },
+   "commentEmptyPaused": {
+      "message": "In pausa. Riprendi per continuare a tradurre i nuovi commenti."
+   },
+   "commentEmptyStatic": {
+      "message": "Scorri i commenti per tradurre quelli visibili"
+   },
+   "commentEmptyWaiting": {
+      "message": "In ascolto dei commenti, in attesa di nuovi messaggi…"
+   },
+   "commentShowBilingual": {
+      "message": "Bilingue"
+   },
+   "commentShowOriginal": {
+      "message": "Originale"
+   },
+   "commentShowTranslationOnly": {
+      "message": "Solo traduzione"
+   },
+   "commentSiteBilibili": {
+      "message": "Danmaku di live e video Bilibili"
+   },
+   "commentSiteDouyin": {
+      "message": "Commenti live e danmaku di Douyin"
+   },
+   "commentSiteTiktok": {
+      "message": "Chat live e commenti video di TikTok"
+   },
+   "commentSiteTwitcasting": {
+      "message": "Chat live di TwitCasting"
+   },
+   "commentSiteTwitch": {
+      "message": "Chat live di Twitch"
+   },
+   "commentSiteWeverse": {
+      "message": "Chat live di Weverse"
+   },
+   "commentSiteYoutube": {
+      "message": "Chat live e commenti ai video di YouTube"
+   },
+   "commentTranslate": {
+      "message": "Traduzione della chat live"
+   },
+   "commentTranslateHintGot": {
+      "message": "Ho capito"
+   },
+   "commentTranslateHintSitesTitle": {
+      "message": "Siti supportati"
+   },
+   "commentTranslateHintTitle": {
+      "message": "Traduzione dei commenti"
+   },
+   "commentTranslateHintVip": {
+      "message": "Utenti non membri: 1.800 traduzioni gratuite al giorno alla velocità di base\nUtenti VIP: traduzioni illimitate, 4 volte più veloci rispetto ai non membri"
+   },
+   "commentTranslateVipLater": {
+      "message": "Più tardi"
+   },
+   "commentTranslateVipOk": {
+      "message": "Attiva ora"
+   },
+   "contactSupport": {
+      "message": "Contattaci"
+   },
+   "copied": {
+      "message": "Copiato"
+   },
+   "copy": {
+      "message": "Copia"
+   },
+   "copyEmpty": {
+      "message": "Nessun sottotitolo da copiare"
+   },
+   "copySubtitles": {
+      "message": "Copia sottotitoli"
+   },
+   "customColorVipDesc": {
+      "message": "I colori personalizzati dei sottotitoli sono riservati ai membri. Aggiorna per creare uno stile più personale."
+   },
+   "customColorVipLater": {
+      "message": "Più tardi"
+   },
+   "customColorVipOk": {
+      "message": "Aggiorna ora"
+   },
+   "customColorVipTitle": {
+      "message": "Sblocca colori personalizzati"
+   },
+   "defaultModel": {
+      "message": "Modello predefinito"
+   },
+   "defaultModelShort": {
+      "message": "Predef."
+   },
+   "dockCollapse": {
+      "message": "Riduci menu"
+   },
+   "dockExpand": {
+      "message": "Espandi menu"
+   },
+   "dockResize": {
+      "message": "Ridimensiona il menu"
+   },
+   "dockResizeHint": {
+      "message": "Trascina per ridimensionare, doppio clic per ripristinare"
+   },
+   "documentTranslate": {
+      "message": "Traduzione documenti"
+   },
+   "favoriteSentences": {
+      "message": "Frasi salvate"
+   },
+   "featureComingSoon": {
+      "message": "Disponibile a breve"
+   },
+   "featureComingSoonTag": {
+      "message": "A breve"
+   },
+   "feedback": {
+      "message": "Feedback"
+   },
+   "feedbackOptionLanguageMissing": {
+      "message": "Lingua non supportata"
+   },
+   "feedbackOptionNetworkError": {
+      "message": "Errore di rete"
+   },
+   "feedbackOptionOther": {
+      "message": "Altro"
+   },
+   "feedbackOptionRecognitionInaccuracy": {
+      "message": "Problemi di sincronizzazione sottotitoli"
+   },
+   "feedbackOptionSubtitleFast": {
+      "message": "Sottotitoli troppo veloci da leggere"
+   },
+   "feedbackOptionSubtitleMissing": {
+      "message": "Riconoscimento impreciso"
+   },
+   "feedbackOptionTranslationInaccuracy": {
+      "message": "Traduzione imprecisa"
+   },
+   "feedbackOptionTranslationNoResult": {
+      "message": "Nessun risultato di traduzione"
+   },
+   "feedbackOtherPlaceholder": {
+      "message": "Inserisci il problema specifico..."
+   },
+   "feedbackReturnBtn": {
+      "message": "Indietro"
+   },
+   "feedbackSelectPlaceholder": {
+      "message": "Seleziona..."
+   },
+   "feedbackSubmitBtn": {
+      "message": "Invia"
+   },
+   "feedbackSuccessMessage": {
+      "message": "Feedback inviato con successo! Grazie per il tuo suggerimento"
+   },
+   "fontColor": {
+      "message": "Colore testo"
+   },
+   "fontSize": {
+      "message": "Dimensione testo"
+   },
+   "fontSizeLarge": {
+      "message": "G"
+   },
+   "fontSizeMedium": {
+      "message": "M"
+   },
+   "fontSizeSmall": {
+      "message": "P"
+   },
+   "fontStroke": {
+      "message": "Contorno testo"
+   },
+   "glossary": {
+      "message": "Glossario"
+   },
+   "glossaryDefault": {
+      "message": "Predefinito"
+   },
+   "glossaryEmpty": {
+      "message": "Nessun glossario"
+   },
+   "glossaryVipDesc": {
+      "message": "Il glossario è una funzione riservata ai membri. Esegui l'upgrade per allegare glossari personalizzati alle tue sessioni."
+   },
+   "glossaryVipLater": {
+      "message": "Forse più tardi"
+   },
+   "glossaryVipOk": {
+      "message": "Aggiorna ora"
+   },
+   "glossaryVipTitle": {
+      "message": "Sblocca glossario"
+   },
+   "highlightTranslation": {
+      "message": "Evidenzia traduzione"
+   },
+   "history": {
+      "message": "Cronologia"
+   },
+   "historyClear": {
+      "message": "Cancella"
+   },
+   "historyClearConfirm": {
+      "message": "Cancellare tutta la cronologia?"
+   },
+   "historyDelete": {
+      "message": "Elimina"
+   },
+   "historyEmpty": {
+      "message": "Nessuna cronologia"
+   },
+   "historyExport": {
+      "message": "Scarica"
+   },
+   "historyLimitHint": {
+      "message": "Vengono conservati localmente solo gli ultimi 20 record."
+   },
+   "historyUntitled": {
+      "message": "Pagina senza titolo"
+   },
+   "langLoadError": {
+      "message": "Impossibile caricare l elenco lingue, riprova"
+   },
+   "langLoadFailed": {
+      "message": "Impossibile caricare l elenco lingue, "
+   },
+   "langLoading": {
+      "message": "Caricamento..."
+   },
+   "lightMode": {
+      "message": "Modalità chiara"
+   },
+   "lightModeVipDesc": {
+      "message": "La modalità chiara è una funzione riservata ai membri. Aggiorna per usare più opzioni grafiche e vantaggi di servizio stabile."
+   },
+   "lightModeVipLater": {
+      "message": "Più tardi"
+   },
+   "lightModeVipOk": {
+      "message": "Aggiorna ora"
+   },
+   "lightModeVipTitle": {
+      "message": "Sblocca modalità chiara"
+   },
+   "login": {
+      "message": "Accedi"
+   },
+   "loginRequiredBanner": {
+      "message": "Accedi per continuare"
+   },
+   "logout": {
+      "message": "Esci"
+   },
+   "menuLayout": {
+      "message": "Stile menu"
+   },
+   "menuLayoutDock": {
+      "message": "Laterale"
+   },
+   "menuLayoutDockHint": {
+      "message": "Si aggancia accanto alla pagina e la riduce senza coprire nulla."
+   },
+   "menuLayoutFloat": {
+      "message": "Mobile"
+   },
+   "menuLayoutFloatHint": {
+      "message": "Fluttua sopra la pagina e si può trascinare ovunque."
+   },
+   "modelQuality": {
+      "message": "Qualità modello"
+   },
+   "modelSelection": {
+      "message": "Selezione modello"
+   },
+   "more": {
+      "message": "Altro"
+   },
+   "moreTools": {
+      "message": "Altri strumenti"
+   },
+   "networkErrorRetry": {
+      "message": "Errore di rete. Riprova più tardi."
+   },
+   "ok": {
+      "message": "OK"
+   },
+   "openMenu": {
+      "message": "Apri menu"
+   },
+   "openSubtitleBox": {
+      "message": "Riquadro sottotitoli"
+   },
+   "peakLimitVipDesc": {
+      "message": "Il servizio è attualmente in un periodo di traffico elevato. Aggiorna per sbloccare server dedicati ai membri."
+   },
+   "peakLimitVipLater": {
+      "message": "Più tardi"
+   },
+   "peakLimitVipOk": {
+      "message": "Aggiorna ora"
+   },
+   "peakLimitVipTitle": {
+      "message": "Limite di accesso nelle ore di punta"
+   },
+   "pinToTopbar": {
+      "message": "Aggiungi alla barra"
+   },
+   "pipClose": {
+      "message": "Chiudi Picture-in-Picture"
+   },
+   "pipOpen": {
+      "message": "Sottotitoli Picture-in-Picture"
+   },
+   "pipPlaceholder": {
+      "message": "I sottotitoli sono mostrati in primo piano nella finestra Picture-in-Picture; passa ad altre schede o app per continuare a guardarli"
+   },
+   "ratingSuccess": {
+      "message": "Valutazione riuscita!"
+   },
+   "ratingTitle": {
+      "message": "Sei soddisfatto di questa traduzione?"
+   },
+   "realtimeSubtitle": {
+      "message": "Sottotitoli in diretta"
+   },
+   "recordCaptureFailed": {
+      "message": "Impossibile acquisire l audio della pagina. Aggiorna e riprova."
+   },
+   "recordPause": {
+      "message": "Pausa"
+   },
+   "recordStart": {
+      "message": "Avvia"
+   },
+   "recordStartFailed": {
+      "message": "Avvio non riuscito. Riprova più tardi."
+   },
+   "resizeWindow": {
+      "message": "Ridimensiona finestra"
+   },
+   "retry": {
+      "message": "riprova"
+   },
+   "savedAdd": {
+      "message": "Salva"
+   },
+   "savedClearConfirm": {
+      "message": "Cancellare tutte le frasi salvate?"
+   },
+   "savedEmpty": {
+      "message": "Nessuna frase salvata"
+   },
+   "savedNoMatch": {
+      "message": "Nessuna frase corrispondente"
+   },
+   "savedRemove": {
+      "message": "Rimuovi dai salvati"
+   },
+   "savedSearch": {
+      "message": "Cerca frasi salvate"
+   },
+   "savedToastAdded": {
+      "message": "Frase salvata"
+   },
+   "savedToastRemoved": {
+      "message": "Rimossa dai salvati"
+   },
+   "scrollToBottom": {
+      "message": "Scorri in basso"
+   },
+   "sessionClearConfirm": {
+      "message": "Cancellare il registro di questa sessione? Questa azione non può essere annullata."
+   },
+   "sessionEmpty": {
+      "message": "Ancora nessun sottotitolo in questa sessione"
+   },
+   "sessionGenerating": {
+      "message": "Generazione sottotitoli…"
+   },
+   "sessionJumpLatest": {
+      "message": "Più recente"
+   },
+   "sessionNotes": {
+      "message": "Note della sessione"
+   },
+   "sessionRecordCount": {
+      "message": "Registrazioni"
+   },
+   "sessionSearch": {
+      "message": "Cerca originale o traduzione"
+   },
+   "sessionTimeline": {
+      "message": "Cronologia"
+   },
+   "settings": {
+      "message": "Impostazioni"
+   },
+   "share": {
+      "message": "Condividi"
+   },
+   "startupSurface": {
+      "message": "Mostra all’avvio"
+   },
+   "startupSurfaceAuto": {
+      "message": "Automatico"
+   },
+   "startupSurfaceAutoHint": {
+      "message": "Il riquadro dei sottotitoli è sempre visibile; il menu compare sui siti supportati."
+   },
+   "startupSurfaceBoth": {
+      "message": "Mostra entrambi"
+   },
+   "startupSurfaceBothHint": {
+      "message": "Vengono mostrati entrambi."
+   },
+   "startupSurfaceMenu": {
+      "message": "Solo menu"
+   },
+   "startupSurfaceMenuHint": {
+      "message": "All’avvio solo il menu. Tocca «Sottotitoli in diretta» per iniziare."
+   },
+   "startupSurfaceSubtitle": {
+      "message": "Solo riquadro sottotitoli"
+   },
+   "startupSurfaceSubtitleHint": {
+      "message": "All’avvio solo il riquadro dei sottotitoli. Il menu si apre da lì in qualsiasi momento."
+   },
+   "statusListening": {
+      "message": "Ascolto audio pagina"
+   },
+   "statusReady": {
+      "message": "Pronto"
+   },
+   "strokeBlack": {
+      "message": "Nero"
+   },
+   "strokeNone": {
+      "message": "Nessuno"
+   },
+   "strokeWhite": {
+      "message": "Bianco"
+   },
+   "stylePreview": {
+      "message": "ViiTor Traduci"
+   },
+   "subtitleSpeed": {
+      "message": "Velocità di aggiornamento dei sottotitoli"
+   },
+   "subtitleSpeedFast": {
+      "message": "Veloce"
+   },
+   "subtitleSpeedFastHint": {
+      "message": "Si aggiorna rapidamente, bilanciando reattività e leggibilità."
+   },
+   "subtitleSpeedFinalOnly": {
+      "message": "Il più lento"
+   },
+   "subtitleSpeedFinalOnlyHint": {
+      "message": "Mostra solo risultati di riconoscimento stabili, ma con latenza di visualizzazione maggiore."
+   },
+   "subtitleSpeedRealtime": {
+      "message": "Tempo reale"
+   },
+   "subtitleSpeedRealtimeHint": {
+      "message": "Si aggiorna appena arrivano i risultati. Latenza minima, ma il testo cambia spesso."
+   },
+   "subtitleSpeedSlow": {
+      "message": "Standard"
+   },
+   "subtitleSpeedSlowHint": {
+      "message": "Riduce leggermente la frequenza per una lettura più stabile."
+   },
+   "subtitleSpeedSlowest": {
+      "message": "Abbastanza lento"
+   },
+   "subtitleSpeedSlowestHint": {
+      "message": "Frequenza di aggiornamento ridotta, meno cambiamenti di testo, lettura più agevole."
+   },
+   "subtitleSpeedStandard": {
+      "message": "Abbastanza veloce"
+   },
+   "subtitleSpeedStandardHint": {
+      "message": "Frequenza di aggiornamento moderata, con relativamente meno cambiamenti di testo."
+   },
+   "subtitleStyle": {
+      "message": "Stile sottotitoli"
+   },
+   "swapLanguages": {
+      "message": "Inverti lingue"
+   },
+   "tabSilentDetected": {
+      "message": "Nessun audio rilevato nella pagina. Verifica che il video sia in riproduzione e non in muto"
+   },
+   "tools": {
+      "message": "Funzioni"
+   },
+   "transportAuto": {
+      "message": "Automatico"
+   },
+   "transportDirect": {
+      "message": "Diretto"
+   },
+   "transportMode": {
+      "message": "Trasporto"
+   },
+   "transportWebrtc": {
+      "message": "WebRTC"
+   },
+   "tutorial": {
+      "message": "Tutorial"
+   },
+   "uidLabel": {
+      "message": "UID: "
+   },
+   "unpinFromTopbar": {
+      "message": "Rimuovi dalla barra"
+   },
+   "upgradeVip": {
+      "message": "Passa a VIP"
+   },
+   "usageExhaustedCancel": {
+      "message": "Annulla"
+   },
+   "usageExhaustedDesc": {
+      "message": "Puoi continuare gratuitamente domani oppure aggiornare ora per usare subito il servizio senza limiti."
+   },
+   "usageExhaustedOk": {
+      "message": "Aggiorna ora"
+   },
+   "usageExhaustedTitle": {
+      "message": "Il tempo gratuito di oggi è esaurito"
+   },
+   "usageReminderDesc": {
+      "message": "Hai utilizzato il servizio continuativamente per oltre 30 minuti. Passa al piano superiore per un servizio stabile e senza limiti."
+   },
+   "usageReminderLater": {
+      "message": "Più tardi"
+   },
+   "usageReminderOk": {
+      "message": "Aggiorna ora"
+   },
+   "usageReminderTitle": {
+      "message": "Sblocca altri vantaggi per membri"
+   },
+   "vipExpireAt": {
+      "message": "Scade: "
+   },
+   "vipStatus": {
+      "message": "Stato VIP"
+   }
+}

@@ -1,0 +1,713 @@
+{
+   "actionTitle": {
+      "message": "Ouvrir ViiTor Traduction"
+   },
+   "advancedModel": {
+      "message": "Modèle avancé"
+   },
+   "advancedModelShort": {
+      "message": "Avancé"
+   },
+   "advancedModelVipDesc": {
+      "message": "Le modèle avancé est réservé aux membres. Passez à la version supérieure pour utiliser le modèle de transcription amélioré."
+   },
+   "advancedModelVipLater": {
+      "message": "Peut-être plus tard"
+   },
+   "advancedModelVipOk": {
+      "message": "Mettre à niveau maintenant"
+   },
+   "advancedModelVipTitle": {
+      "message": "Débloquer le modèle avancé"
+   },
+   "aiSummary": {
+      "message": "Résumé IA"
+   },
+   "aiSummaryCollecting": {
+      "message": "Vérification…"
+   },
+   "aiSummaryCurrentSession": {
+      "message": "Session en cours"
+   },
+   "aiSummaryEmpty": {
+      "message": "Pas encore de résumé."
+   },
+   "aiSummaryErrorEmpty": {
+      "message": "Cet enregistrement ne contient aucun texte à résumer."
+   },
+   "aiSummaryErrorFailed": {
+      "message": "Impossible de générer le résumé."
+   },
+   "aiSummaryErrorFiltered": {
+      "message": "Ce contenu n’a pas pu être résumé."
+   },
+   "aiSummaryGenerate": {
+      "message": "Résumé IA"
+   },
+   "aiSummaryGenerating": {
+      "message": "Génération du résumé…"
+   },
+   "aiSummaryLeaveHint": {
+      "message": "S’exécute en arrière-plan : vous pouvez fermer et revenir plus tard."
+   },
+   "aiSummaryLineCount": {
+      "message": "{count} lignes"
+   },
+   "aiSummaryNoHistory": {
+      "message": "Aucun enregistrement à résumer."
+   },
+   "aiSummaryNoHistoryHint": {
+      "message": "Lancez les sous-titres en direct et la session apparaîtra ici."
+   },
+   "aiSummaryPending": {
+      "message": "Génération…"
+   },
+   "aiSummaryReady": {
+      "message": "Prêt à résumer"
+   },
+   "aiSummaryReadyHint": {
+      "message": "Choisissez un modèle ci-dessus, puis générez."
+   },
+   "aiSummaryRegenerate": {
+      "message": "Régénérer"
+   },
+   "aiSummaryRetry": {
+      "message": "Réessayer"
+   },
+   "aiSummaryStaleTemplate": {
+      "message": "Ce résumé utilisait un autre modèle."
+   },
+   "aiSummaryTemplate": {
+      "message": "Modèle de résumé"
+   },
+   "aiSummaryView": {
+      "message": "Voir le résumé"
+   },
+   "aiSummaryVipDesc": {
+      "message": "Le résumé IA est réservé aux membres. Passez à la version supérieure pour transformer vos enregistrements en comptes rendus structurés."
+   },
+   "aiSummaryVipLater": {
+      "message": "Plus tard"
+   },
+   "aiSummaryVipOk": {
+      "message": "Mettre à niveau"
+   },
+   "aiSummaryVipTitle": {
+      "message": "Débloquer le résumé IA"
+   },
+   "appDescription": {
+      "message": "ViiTor Real-Time Translation est un plugin gratuit，qui fournit des services de transcription et de traduction audio en temps réel pour la diffusion audio et vidéo en direct, la vidéo en ligne et les réunions en ligne. Sa fonction de sous-titrage bilingue couvre YouTube, Bilibili, Twitch et de nombreuses autres plateformes, ce qui vous offre une garantie solide pour les scénarios multilingues."
+   },
+   "appName": {
+      "message": "ViiTor Translate-Traduction AI,sous-titres bilingues en temps réel,gratuit"
+   },
+   "audioVideoTranscription": {
+      "message": "Transcription audio et vidéo"
+   },
+   "autoDetect": {
+      "message": "Détection auto"
+   },
+   "autoHideHeader": {
+      "message": "Masquer automatiquement la barre de menu"
+   },
+   "backgroundOpacity": {
+      "message": "Opacité de l'arrière-plan"
+   },
+   "bilingualSubtitles": {
+      "message": "Sous-titres bilingues"
+   },
+   "browserTooOld": {
+      "message": "La version de votre navigateur est trop ancienne. Mettez-le à jour et réessayez."
+   },
+   "cancel": {
+      "message": "Annuler"
+   },
+   "colorBlack": {
+      "message": "Noir"
+   },
+   "colorBlue": {
+      "message": "Bleu"
+   },
+   "colorCustom": {
+      "message": "Personnalisé"
+   },
+   "colorCyan": {
+      "message": "Cyan"
+   },
+   "colorGreen": {
+      "message": "Vert"
+   },
+   "colorOrange": {
+      "message": "Orange"
+   },
+   "colorPurple": {
+      "message": "Violet"
+   },
+   "colorRed": {
+      "message": "Rouge"
+   },
+   "colorWhite": {
+      "message": "Blanc"
+   },
+   "colorYellow": {
+      "message": "Jaune"
+   },
+   "commentDailyLimitReached": {
+      "message": "Les 1 800 traductions gratuites d’aujourd’hui ont été utilisées. Passez à VIP pour des traductions illimitées."
+   },
+   "commentEmptyPaused": {
+      "message": "En pause. Reprenez pour continuer à traduire les nouveaux commentaires."
+   },
+   "commentEmptyStatic": {
+      "message": "Faites défiler les commentaires pour traduire ceux que vous voyez"
+   },
+   "commentEmptyWaiting": {
+      "message": "Écoute des commentaires, en attente de nouveaux messages…"
+   },
+   "commentShowBilingual": {
+      "message": "Bilingue"
+   },
+   "commentShowOriginal": {
+      "message": "Original"
+   },
+   "commentShowTranslationOnly": {
+      "message": "Traduction seule"
+   },
+   "commentSiteBilibili": {
+      "message": "Danmaku des directs et vidéos Bilibili"
+   },
+   "commentSiteDouyin": {
+      "message": "Commentaires en direct et danmaku Douyin"
+   },
+   "commentSiteTiktok": {
+      "message": "Chat en direct et commentaires vidéo TikTok"
+   },
+   "commentSiteTwitcasting": {
+      "message": "Chat en direct TwitCasting"
+   },
+   "commentSiteTwitch": {
+      "message": "Chat en direct Twitch"
+   },
+   "commentSiteWeverse": {
+      "message": "Chat en direct Weverse"
+   },
+   "commentSiteYoutube": {
+      "message": "Chat en direct et commentaires vidéo YouTube"
+   },
+   "commentTranslate": {
+      "message": "Traduction du chat en direct"
+   },
+   "commentTranslateHintGot": {
+      "message": "J’ai compris"
+   },
+   "commentTranslateHintSitesTitle": {
+      "message": "Sites pris en charge"
+   },
+   "commentTranslateHintTitle": {
+      "message": "Traduction des commentaires"
+   },
+   "commentTranslateHintVip": {
+      "message": "Utilisateurs non membres : 1 800 traductions gratuites par jour à la vitesse de base\nUtilisateurs VIP : traductions illimitées, 4 fois plus rapides que pour les non-membres"
+   },
+   "commentTranslateVipLater": {
+      "message": "Plus tard"
+   },
+   "commentTranslateVipOk": {
+      "message": "S’abonner"
+   },
+   "contactSupport": {
+      "message": "Contactez-nous"
+   },
+   "copied": {
+      "message": "Copié"
+   },
+   "copy": {
+      "message": "Copier"
+   },
+   "copyEmpty": {
+      "message": "Aucun sous-titre à copier"
+   },
+   "copySubtitles": {
+      "message": "Copier les sous-titres"
+   },
+   "customColorVipDesc": {
+      "message": "Les couleurs de sous-titres personnalisées sont réservées aux membres. Passez à l’abonnement pour un style plus personnalisé."
+   },
+   "customColorVipLater": {
+      "message": "Plus tard"
+   },
+   "customColorVipOk": {
+      "message": "S’abonner maintenant"
+   },
+   "customColorVipTitle": {
+      "message": "Débloquer les couleurs personnalisées"
+   },
+   "defaultModel": {
+      "message": "Modèle par défaut"
+   },
+   "defaultModelShort": {
+      "message": "Défaut"
+   },
+   "dockCollapse": {
+      "message": "Réduire le menu"
+   },
+   "dockExpand": {
+      "message": "Développer le menu"
+   },
+   "dockResize": {
+      "message": "Redimensionner le menu"
+   },
+   "dockResizeHint": {
+      "message": "Glisser pour redimensionner, double-cliquer pour réinitialiser"
+   },
+   "documentTranslate": {
+      "message": "Traduction de document"
+   },
+   "favoriteSentences": {
+      "message": "Phrases enregistrées"
+   },
+   "featureComingSoon": {
+      "message": "Bientôt disponible"
+   },
+   "featureComingSoonTag": {
+      "message": "Bientôt"
+   },
+   "feedback": {
+      "message": "Commentaires"
+   },
+   "feedbackOptionLanguageMissing": {
+      "message": "Langue non prise en charge"
+   },
+   "feedbackOptionNetworkError": {
+      "message": "Erreur réseau"
+   },
+   "feedbackOptionOther": {
+      "message": "Autre"
+   },
+   "feedbackOptionRecognitionInaccuracy": {
+      "message": "Sous-titres désynchronisés"
+   },
+   "feedbackOptionSubtitleFast": {
+      "message": "Sous-titres trop rapides à lire"
+   },
+   "feedbackOptionSubtitleMissing": {
+      "message": "Reconnaissance inexacte"
+   },
+   "feedbackOptionTranslationInaccuracy": {
+      "message": "Traduction inexacte"
+   },
+   "feedbackOptionTranslationNoResult": {
+      "message": "Aucun résultat de traduction"
+   },
+   "feedbackOtherPlaceholder": {
+      "message": "Veuillez saisir le problème spécifique..."
+   },
+   "feedbackReturnBtn": {
+      "message": "Retour"
+   },
+   "feedbackSelectPlaceholder": {
+      "message": "Veuillez sélectionner..."
+   },
+   "feedbackSubmitBtn": {
+      "message": "Soumettre"
+   },
+   "feedbackSuccessMessage": {
+      "message": "Commentaires soumis avec succès ! Merci pour votre suggestion"
+   },
+   "fontColor": {
+      "message": "Couleur de police"
+   },
+   "fontSize": {
+      "message": "Taille de police"
+   },
+   "fontSizeLarge": {
+      "message": "G"
+   },
+   "fontSizeMedium": {
+      "message": "M"
+   },
+   "fontSizeSmall": {
+      "message": "P"
+   },
+   "fontStroke": {
+      "message": "Contour de police"
+   },
+   "glossary": {
+      "message": "Glossaire"
+   },
+   "glossaryDefault": {
+      "message": "Par défaut"
+   },
+   "glossaryEmpty": {
+      "message": "Aucun glossaire"
+   },
+   "glossaryVipDesc": {
+      "message": "Le glossaire est une fonctionnalité réservée aux membres. Passez à la version supérieure pour associer des glossaires personnalisés à vos sessions."
+   },
+   "glossaryVipLater": {
+      "message": "Plus tard"
+   },
+   "glossaryVipOk": {
+      "message": "Mettre à niveau"
+   },
+   "glossaryVipTitle": {
+      "message": "Débloquer le glossaire"
+   },
+   "highlightTranslation": {
+      "message": "Surligner la traduction"
+   },
+   "history": {
+      "message": "Historique"
+   },
+   "historyClear": {
+      "message": "Effacer"
+   },
+   "historyClearConfirm": {
+      "message": "Effacer tout l'historique ?"
+   },
+   "historyDelete": {
+      "message": "Supprimer"
+   },
+   "historyEmpty": {
+      "message": "Aucun historique pour le moment"
+   },
+   "historyExport": {
+      "message": "Télécharger"
+   },
+   "historyLimitHint": {
+      "message": "Seuls les 20 derniers enregistrements sont conservés localement."
+   },
+   "historyUntitled": {
+      "message": "Page sans titre"
+   },
+   "langLoadError": {
+      "message": "Échec du chargement de la liste des langues, veuillez réessayer"
+   },
+   "langLoadFailed": {
+      "message": "Échec du chargement de la liste des langues, "
+   },
+   "langLoading": {
+      "message": "Chargement..."
+   },
+   "lightMode": {
+      "message": "Mode clair"
+   },
+   "lightModeVipDesc": {
+      "message": "Le mode clair est réservé aux membres. Passez à l’abonnement pour plus d’options d’apparence et des avantages de service stable."
+   },
+   "lightModeVipLater": {
+      "message": "Plus tard"
+   },
+   "lightModeVipOk": {
+      "message": "S’abonner maintenant"
+   },
+   "lightModeVipTitle": {
+      "message": "Débloquer le mode clair"
+   },
+   "login": {
+      "message": "Se connecter"
+   },
+   "loginRequiredBanner": {
+      "message": "Connectez-vous pour continuer"
+   },
+   "logout": {
+      "message": "Déconnexion"
+   },
+   "menuLayout": {
+      "message": "Style menu"
+   },
+   "menuLayoutDock": {
+      "message": "Latéral"
+   },
+   "menuLayoutDockHint": {
+      "message": "S’ancre à côté de la page et la réduit sans rien masquer."
+   },
+   "menuLayoutFloat": {
+      "message": "Flottant"
+   },
+   "menuLayoutFloatHint": {
+      "message": "Flotte au-dessus de la page et se déplace librement."
+   },
+   "modelQuality": {
+      "message": "Qualité du modèle"
+   },
+   "modelSelection": {
+      "message": "Choix du modèle"
+   },
+   "more": {
+      "message": "Plus"
+   },
+   "moreTools": {
+      "message": "Plus d’outils"
+   },
+   "networkErrorRetry": {
+      "message": "Erreur réseau. Veuillez réessayer plus tard."
+   },
+   "ok": {
+      "message": "OK"
+   },
+   "openMenu": {
+      "message": "Ouvrir le menu"
+   },
+   "openSubtitleBox": {
+      "message": "Zone de sous-titres"
+   },
+   "peakLimitVipDesc": {
+      "message": "Le service connaît actuellement une forte affluence. Passez à l’abonnement pour débloquer des serveurs dédiés aux membres."
+   },
+   "peakLimitVipLater": {
+      "message": "Plus tard"
+   },
+   "peakLimitVipOk": {
+      "message": "S’abonner maintenant"
+   },
+   "peakLimitVipTitle": {
+      "message": "Limite d’accès en période de forte affluence"
+   },
+   "pinToTopbar": {
+      "message": "Épingler à la barre"
+   },
+   "pipClose": {
+      "message": "Fermer l'incrustation"
+   },
+   "pipOpen": {
+      "message": "Sous-titres en incrustation"
+   },
+   "pipPlaceholder": {
+      "message": "Les sous-titres s'affichent au premier plan dans la fenêtre d'incrustation ; passez à d'autres onglets ou applications pour continuer à regarder"
+   },
+   "ratingSuccess": {
+      "message": "Évaluation réussie !"
+   },
+   "ratingTitle": {
+      "message": "Êtes-vous satisfait de cette traduction ?"
+   },
+   "realtimeSubtitle": {
+      "message": "Sous-titres en direct"
+   },
+   "recordCaptureFailed": {
+      "message": "Impossible de capturer l audio de la page. Actualisez et réessayez."
+   },
+   "recordPause": {
+      "message": "Pause"
+   },
+   "recordStart": {
+      "message": "Démarrer"
+   },
+   "recordStartFailed": {
+      "message": "Échec du démarrage. Veuillez réessayer plus tard."
+   },
+   "resizeWindow": {
+      "message": "Redimensionner"
+   },
+   "retry": {
+      "message": "veuillez réessayer"
+   },
+   "savedAdd": {
+      "message": "Enregistrer"
+   },
+   "savedClearConfirm": {
+      "message": "Effacer toutes les phrases enregistrées ?"
+   },
+   "savedEmpty": {
+      "message": "Aucune phrase enregistrée"
+   },
+   "savedNoMatch": {
+      "message": "Aucune phrase correspondante"
+   },
+   "savedRemove": {
+      "message": "Retirer des enregistrements"
+   },
+   "savedSearch": {
+      "message": "Rechercher les phrases enregistrées"
+   },
+   "savedToastAdded": {
+      "message": "Phrase enregistrée"
+   },
+   "savedToastRemoved": {
+      "message": "Retirée des enregistrements"
+   },
+   "scrollToBottom": {
+      "message": "Aller en bas"
+   },
+   "sessionClearConfirm": {
+      "message": "Effacer l’enregistrement de cette session ? Cette action est irréversible."
+   },
+   "sessionEmpty": {
+      "message": "Aucun sous-titre dans cette session pour le moment"
+   },
+   "sessionGenerating": {
+      "message": "Génération des sous-titres…"
+   },
+   "sessionJumpLatest": {
+      "message": "Dernier"
+   },
+   "sessionNotes": {
+      "message": "Notes de session"
+   },
+   "sessionRecordCount": {
+      "message": "Enregistrements"
+   },
+   "sessionSearch": {
+      "message": "Rechercher dans l’original ou la traduction"
+   },
+   "sessionTimeline": {
+      "message": "Chronologie"
+   },
+   "settings": {
+      "message": "Paramètres"
+   },
+   "share": {
+      "message": "Partager"
+   },
+   "startupSurface": {
+      "message": "Afficher au démarrage"
+   },
+   "startupSurfaceAuto": {
+      "message": "Automatique"
+   },
+   "startupSurfaceAutoHint": {
+      "message": "La boîte de sous-titres est toujours affichée ; le menu apparaît sur les sites pris en charge."
+   },
+   "startupSurfaceBoth": {
+      "message": "Tout afficher"
+   },
+   "startupSurfaceBothHint": {
+      "message": "Les deux sont affichés ensemble."
+   },
+   "startupSurfaceMenu": {
+      "message": "Menu seul"
+   },
+   "startupSurfaceMenuHint": {
+      "message": "Au démarrage, seul le menu. Touchez « Sous-titres en direct » pour commencer."
+   },
+   "startupSurfaceSubtitle": {
+      "message": "Boîte de sous-titres seule"
+   },
+   "startupSurfaceSubtitleHint": {
+      "message": "Au démarrage, seule la boîte de sous-titres. Le menu s’ouvre depuis celle-ci à tout moment."
+   },
+   "statusListening": {
+      "message": "Écoute de l'audio de la page"
+   },
+   "statusReady": {
+      "message": "Prêt"
+   },
+   "strokeBlack": {
+      "message": "Noir"
+   },
+   "strokeNone": {
+      "message": "Aucun"
+   },
+   "strokeWhite": {
+      "message": "Blanc"
+   },
+   "stylePreview": {
+      "message": "ViiTor Traduction"
+   },
+   "subtitleSpeed": {
+      "message": "Vitesse de rafraîchissement des sous-titres"
+   },
+   "subtitleSpeedFast": {
+      "message": "Rapide"
+   },
+   "subtitleSpeedFastHint": {
+      "message": "Mise à jour rapide, alliant réactivité et confort de lecture."
+   },
+   "subtitleSpeedFinalOnly": {
+      "message": "Le plus lent"
+   },
+   "subtitleSpeedFinalOnlyHint": {
+      "message": "N’affiche que les résultats stabilisés, mais avec une latence d’affichage plus élevée."
+   },
+   "subtitleSpeedRealtime": {
+      "message": "Temps réel"
+   },
+   "subtitleSpeedRealtimeHint": {
+      "message": "Mise à jour dès réception des résultats. Latence minimale, mais le texte change souvent."
+   },
+   "subtitleSpeedSlow": {
+      "message": "Standard"
+   },
+   "subtitleSpeedSlowHint": {
+      "message": "Fréquence légèrement réduite pour une lecture plus stable."
+   },
+   "subtitleSpeedSlowest": {
+      "message": "Assez lent"
+   },
+   "subtitleSpeedSlowestHint": {
+      "message": "Fréquence de mise à jour réduite, moins de changements de texte, lecture facilitée."
+   },
+   "subtitleSpeedStandard": {
+      "message": "Assez rapide"
+   },
+   "subtitleSpeedStandardHint": {
+      "message": "Fréquence de mise à jour modérée, avec relativement moins de changements de texte."
+   },
+   "subtitleStyle": {
+      "message": "Style des sous-titres"
+   },
+   "swapLanguages": {
+      "message": "Inverser les langues"
+   },
+   "tabSilentDetected": {
+      "message": "Aucun son détecté sur la page. Vérifiez que la vidéo est en lecture et non en sourdine"
+   },
+   "tools": {
+      "message": "Fonctions"
+   },
+   "transportAuto": {
+      "message": "Automatique"
+   },
+   "transportDirect": {
+      "message": "Direct"
+   },
+   "transportMode": {
+      "message": "Transport"
+   },
+   "transportWebrtc": {
+      "message": "WebRTC"
+   },
+   "tutorial": {
+      "message": "Tutoriel"
+   },
+   "uidLabel": {
+      "message": "UID : "
+   },
+   "unpinFromTopbar": {
+      "message": "Détacher de la barre"
+   },
+   "upgradeVip": {
+      "message": "Passer à VIP"
+   },
+   "usageExhaustedCancel": {
+      "message": "Annuler"
+   },
+   "usageExhaustedDesc": {
+      "message": "Vous pourrez continuer gratuitement demain, ou passer à l’abonnement pour une utilisation illimitée immédiate."
+   },
+   "usageExhaustedOk": {
+      "message": "S’abonner maintenant"
+   },
+   "usageExhaustedTitle": {
+      "message": "Le temps gratuit du jour est épuisé"
+   },
+   "usageReminderDesc": {
+      "message": "Vous utilisez le service depuis plus de 30 minutes en continu. Passez à l’abonnement pour un service stable et illimité."
+   },
+   "usageReminderLater": {
+      "message": "Plus tard"
+   },
+   "usageReminderOk": {
+      "message": "S’abonner maintenant"
+   },
+   "usageReminderTitle": {
+      "message": "Débloquer plus d’avantages membre"
+   },
+   "vipExpireAt": {
+      "message": "Expire : "
+   },
+   "vipStatus": {
+      "message": "Statut VIP"
+   }
+}

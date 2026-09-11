@@ -1,0 +1,713 @@
+{
+   "actionTitle": {
+      "message": "ViiTor Translate खोलें"
+   },
+   "advancedModel": {
+      "message": "उन्नत मॉडल"
+   },
+   "advancedModelShort": {
+      "message": "उन्नत"
+   },
+   "advancedModelVipDesc": {
+      "message": "उन्नत मॉडल केवल सदस्यों के लिए उपलब्ध है। बेहतर ट्रांसक्रिप्शन मॉडल का उपयोग करने के लिए अपग्रेड करें।"
+   },
+   "advancedModelVipLater": {
+      "message": "शायद बाद में"
+   },
+   "advancedModelVipOk": {
+      "message": "अभी अपग्रेड करें"
+   },
+   "advancedModelVipTitle": {
+      "message": "उन्नत मॉडल अनलॉक करें"
+   },
+   "aiSummary": {
+      "message": "AI सारांश"
+   },
+   "aiSummaryCollecting": {
+      "message": "जाँच हो रही है…"
+   },
+   "aiSummaryCurrentSession": {
+      "message": "वर्तमान सत्र"
+   },
+   "aiSummaryEmpty": {
+      "message": "अभी कोई सारांश नहीं।"
+   },
+   "aiSummaryErrorEmpty": {
+      "message": "इस रिकॉर्ड में कोई पाठ नहीं है।"
+   },
+   "aiSummaryErrorFailed": {
+      "message": "सारांश नहीं बन सका।"
+   },
+   "aiSummaryErrorFiltered": {
+      "message": "इस सामग्री का सारांश नहीं बन सका।"
+   },
+   "aiSummaryGenerate": {
+      "message": "AI सारांश"
+   },
+   "aiSummaryGenerating": {
+      "message": "सारांश बन रहा है…"
+   },
+   "aiSummaryLeaveHint": {
+      "message": "पृष्ठभूमि में चल रहा है — आप बंद करके बाद में देख सकते हैं।"
+   },
+   "aiSummaryLineCount": {
+      "message": "{count} पंक्तियाँ"
+   },
+   "aiSummaryNoHistory": {
+      "message": "सारांश के लिए कोई रिकॉर्ड नहीं।"
+   },
+   "aiSummaryNoHistoryHint": {
+      "message": "लाइव सबटाइटल शुरू करें, सत्र यहाँ दिखेगा।"
+   },
+   "aiSummaryPending": {
+      "message": "बन रहा है…"
+   },
+   "aiSummaryReady": {
+      "message": "सारांश के लिए तैयार"
+   },
+   "aiSummaryReadyHint": {
+      "message": "ऊपर टेम्पलेट चुनें, फिर बनाएं।"
+   },
+   "aiSummaryRegenerate": {
+      "message": "फिर से बनाएं"
+   },
+   "aiSummaryRetry": {
+      "message": "पुनः प्रयास करें"
+   },
+   "aiSummaryStaleTemplate": {
+      "message": "यह सारांश किसी और टेम्पलेट से बना है।"
+   },
+   "aiSummaryTemplate": {
+      "message": "सारांश टेम्पलेट"
+   },
+   "aiSummaryView": {
+      "message": "सारांश देखें"
+   },
+   "aiSummaryVipDesc": {
+      "message": "AI सारांश केवल सदस्यों के लिए है। अपग्रेड करके अपने रिकॉर्ड को संरचित कार्यवृत्त में बदलें।"
+   },
+   "aiSummaryVipLater": {
+      "message": "बाद में"
+   },
+   "aiSummaryVipOk": {
+      "message": "अभी अपग्रेड करें"
+   },
+   "aiSummaryVipTitle": {
+      "message": "AI सारांश अनलॉक करें"
+   },
+   "appDescription": {
+      "message": "ViiTor तत्काल अनुवाद मुफ़्त प्लगइन ऑडियो और वीडियो लाइव स्ट्रीमिंग, ऑनलाइन वीडियो और ऑनलाइन मीटिंग्स के लिए ऑडियो का तत्काल ट्रांसक्रिप्शन और अनुवाद सेवाएं प्रदान करता है, इसका द्विभाषी सबटाइटल फंक्शन YouTube, Bilibili, Twitch जैसे कई प्लेटफॉर्म्स को कवर करता है, जो आप के लिए क्रॉस-भाषा परिदृश्यों में मजबूत सुरक्षा प्रदान करता है।"
+   },
+   "appName": {
+      "message": "ViiTor तत्काल अनुवाद - AI अनुवाद और तत्काल द्विभाषी सबटाइटल&मुफ़्त"
+   },
+   "audioVideoTranscription": {
+      "message": "ऑडियो और वीडियो ट्रांसक्रिप्शन"
+   },
+   "autoDetect": {
+      "message": "स्वतः पहचान"
+   },
+   "autoHideHeader": {
+      "message": "मेनू बार स्वतः छुपाएं"
+   },
+   "backgroundOpacity": {
+      "message": "पृष्ठभूमि पारदर्शिता"
+   },
+   "bilingualSubtitles": {
+      "message": "द्विभाषी उपशीर्षक"
+   },
+   "browserTooOld": {
+      "message": "आपका ब्राउज़र संस्करण बहुत पुराना है। कृपया ब्राउज़र अपडेट करके पुनः प्रयास करें।"
+   },
+   "cancel": {
+      "message": "रद्द करें"
+   },
+   "colorBlack": {
+      "message": "काला"
+   },
+   "colorBlue": {
+      "message": "नीला"
+   },
+   "colorCustom": {
+      "message": "कस्टम"
+   },
+   "colorCyan": {
+      "message": "सियान"
+   },
+   "colorGreen": {
+      "message": "हरा"
+   },
+   "colorOrange": {
+      "message": "नारंगी"
+   },
+   "colorPurple": {
+      "message": "बैंगनी"
+   },
+   "colorRed": {
+      "message": "लाल"
+   },
+   "colorWhite": {
+      "message": "सफ़ेद"
+   },
+   "colorYellow": {
+      "message": "पीला"
+   },
+   "commentDailyLimitReached": {
+      "message": "आज के 1,800 निःशुल्क अनुवाद उपयोग हो चुके हैं। असीमित अनुवाद के लिए VIP में अपग्रेड करें।"
+   },
+   "commentEmptyPaused": {
+      "message": "रोका गया. नई टिप्पणियों का अनुवाद जारी रखने के लिए फिर से शुरू करें."
+   },
+   "commentEmptyStatic": {
+      "message": "दिख रही टिप्पणियों का अनुवाद करने के लिए स्क्रॉल करें"
+   },
+   "commentEmptyWaiting": {
+      "message": "टिप्पणियाँ सुनी जा रही हैं, नए संदेशों की प्रतीक्षा है…"
+   },
+   "commentShowBilingual": {
+      "message": "द्विभाषी"
+   },
+   "commentShowOriginal": {
+      "message": "मूल"
+   },
+   "commentShowTranslationOnly": {
+      "message": "केवल अनुवाद"
+   },
+   "commentSiteBilibili": {
+      "message": "Bilibili लाइव और वीडियो डनमाकू"
+   },
+   "commentSiteDouyin": {
+      "message": "Douyin लाइव कमेंट और वीडियो डनमाकू"
+   },
+   "commentSiteTiktok": {
+      "message": "TikTok लाइव चैट और वीडियो कमेंट"
+   },
+   "commentSiteTwitcasting": {
+      "message": "TwitCasting लाइव चैट"
+   },
+   "commentSiteTwitch": {
+      "message": "Twitch लाइव चैट"
+   },
+   "commentSiteWeverse": {
+      "message": "Weverse लाइव चैट"
+   },
+   "commentSiteYoutube": {
+      "message": "YouTube लाइव चैट और वीडियो टिप्पणियाँ"
+   },
+   "commentTranslate": {
+      "message": "लाइव चैट अनुवाद"
+   },
+   "commentTranslateHintGot": {
+      "message": "समझ गया"
+   },
+   "commentTranslateHintSitesTitle": {
+      "message": "समर्थित साइटें"
+   },
+   "commentTranslateHintTitle": {
+      "message": "कमेंट अनुवाद"
+   },
+   "commentTranslateHintVip": {
+      "message": "गैर-सदस्य उपयोगकर्ता: प्रतिदिन 1800 निःशुल्क अनुवाद, सामान्य अनुवाद गति के साथ\nVIP उपयोगकर्ता: असीमित अनुवाद, गैर-सदस्यों की तुलना में 4 गुना तेज़"
+   },
+   "commentTranslateVipLater": {
+      "message": "बाद में"
+   },
+   "commentTranslateVipOk": {
+      "message": "अभी अपग्रेड करें"
+   },
+   "contactSupport": {
+      "message": "हमसे संपर्क करें"
+   },
+   "copied": {
+      "message": "कॉपी किया गया"
+   },
+   "copy": {
+      "message": "कॉपी"
+   },
+   "copyEmpty": {
+      "message": "कॉपी करने के लिए कोई उपशीर्षक नहीं है"
+   },
+   "copySubtitles": {
+      "message": "उपशीर्षक कॉपी करें"
+   },
+   "customColorVipDesc": {
+      "message": "कस्टम सबटाइटल रंग केवल सदस्यों के लिए हैं। अधिक व्यक्तिगत सबटाइटल शैली बनाने के लिए अपग्रेड करें।"
+   },
+   "customColorVipLater": {
+      "message": "बाद में"
+   },
+   "customColorVipOk": {
+      "message": "अभी अपग्रेड करें"
+   },
+   "customColorVipTitle": {
+      "message": "कस्टम रंग अनलॉक करें"
+   },
+   "defaultModel": {
+      "message": "डिफ़ॉल्ट मॉडल"
+   },
+   "defaultModelShort": {
+      "message": "डिफ़ॉल्ट"
+   },
+   "dockCollapse": {
+      "message": "मेन्यू समेटें"
+   },
+   "dockExpand": {
+      "message": "मेन्यू फैलाएँ"
+   },
+   "dockResize": {
+      "message": "मेन्यू की चौड़ाई बदलें"
+   },
+   "dockResizeHint": {
+      "message": "आकार बदलने के लिए खींचें, रीसेट करने के लिए डबल-क्लिक करें"
+   },
+   "documentTranslate": {
+      "message": "दस्तावेज़ अनुवाद"
+   },
+   "favoriteSentences": {
+      "message": "सहेजे गए वाक्य"
+   },
+   "featureComingSoon": {
+      "message": "जल्द आ रहा है"
+   },
+   "featureComingSoonTag": {
+      "message": "जल्द"
+   },
+   "feedback": {
+      "message": "प्रतिक्रिया"
+   },
+   "feedbackOptionLanguageMissing": {
+      "message": "भाषा समर्थित नहीं"
+   },
+   "feedbackOptionNetworkError": {
+      "message": "नेटवर्क त्रुटि"
+   },
+   "feedbackOptionOther": {
+      "message": "अन्य"
+   },
+   "feedbackOptionRecognitionInaccuracy": {
+      "message": "उपशीर्षक सिंक समस्याएं"
+   },
+   "feedbackOptionSubtitleFast": {
+      "message": "उपशीर्षक पढ़ने के लिए बहुत तेज़"
+   },
+   "feedbackOptionSubtitleMissing": {
+      "message": "पहचान गलत"
+   },
+   "feedbackOptionTranslationInaccuracy": {
+      "message": "अनुवाद गलत"
+   },
+   "feedbackOptionTranslationNoResult": {
+      "message": "अनुवाद परिणाम नहीं"
+   },
+   "feedbackOtherPlaceholder": {
+      "message": "कृपया विशिष्ट समस्या दर्ज करें..."
+   },
+   "feedbackReturnBtn": {
+      "message": "वापस"
+   },
+   "feedbackSelectPlaceholder": {
+      "message": "कृपया चुनें..."
+   },
+   "feedbackSubmitBtn": {
+      "message": "भेजें"
+   },
+   "feedbackSuccessMessage": {
+      "message": "फीडबैक सफलतापूर्वक भेजा गया! आपके सुझाव के लिए धन्यवाद"
+   },
+   "fontColor": {
+      "message": "फ़ॉन्ट रंग"
+   },
+   "fontSize": {
+      "message": "फ़ॉन्ट आकार"
+   },
+   "fontSizeLarge": {
+      "message": "ब"
+   },
+   "fontSizeMedium": {
+      "message": "म"
+   },
+   "fontSizeSmall": {
+      "message": "छ"
+   },
+   "fontStroke": {
+      "message": "फ़ॉन्ट स्ट्रोक"
+   },
+   "glossary": {
+      "message": "शब्दावली"
+   },
+   "glossaryDefault": {
+      "message": "डिफ़ॉल्ट"
+   },
+   "glossaryEmpty": {
+      "message": "कोई शब्दावली नहीं"
+   },
+   "glossaryVipDesc": {
+      "message": "शब्दावली केवल सदस्यों के लिए सुविधा है. अपने सत्रों में कस्टम शब्दावली जोड़ने के लिए अपग्रेड करें."
+   },
+   "glossaryVipLater": {
+      "message": "बाद में"
+   },
+   "glossaryVipOk": {
+      "message": "अभी अपग्रेड करें"
+   },
+   "glossaryVipTitle": {
+      "message": "शब्दावली अनलॉक करें"
+   },
+   "highlightTranslation": {
+      "message": "अनुवाद हाइलाइट करें"
+   },
+   "history": {
+      "message": "इतिहास"
+   },
+   "historyClear": {
+      "message": "साफ़ करें"
+   },
+   "historyClearConfirm": {
+      "message": "क्या सभी इतिहास रिकॉर्ड साफ़ करें?"
+   },
+   "historyDelete": {
+      "message": "हटाएं"
+   },
+   "historyEmpty": {
+      "message": "अभी कोई इतिहास नहीं"
+   },
+   "historyExport": {
+      "message": "डाउनलोड करें"
+   },
+   "historyLimitHint": {
+      "message": "स्थानीय रूप से केवल नवीनतम 20 रिकॉर्ड रखे जाते हैं."
+   },
+   "historyUntitled": {
+      "message": "शीर्षक रहित पेज"
+   },
+   "langLoadError": {
+      "message": "भाषा सूची लोड नहीं हुई, कृपया पुनः प्रयास करें"
+   },
+   "langLoadFailed": {
+      "message": "भाषा सूची लोड नहीं हुई, "
+   },
+   "langLoading": {
+      "message": "लोड हो रहा है..."
+   },
+   "lightMode": {
+      "message": "लाइट मोड"
+   },
+   "lightModeVipDesc": {
+      "message": "लाइट मोड केवल सदस्यों के लिए है। अधिक रूप-रंग विकल्पों और स्थिर सेवा लाभों के लिए अपग्रेड करें।"
+   },
+   "lightModeVipLater": {
+      "message": "बाद में"
+   },
+   "lightModeVipOk": {
+      "message": "अभी अपग्रेड करें"
+   },
+   "lightModeVipTitle": {
+      "message": "लाइट मोड अनलॉक करें"
+   },
+   "login": {
+      "message": "साइन इन"
+   },
+   "loginRequiredBanner": {
+      "message": "कृपया उपयोग करने के लिए साइन इन करें"
+   },
+   "logout": {
+      "message": "लॉग आउट"
+   },
+   "menuLayout": {
+      "message": "मेन्यू शैली"
+   },
+   "menuLayoutDock": {
+      "message": "साइडबार"
+   },
+   "menuLayoutDockHint": {
+      "message": "पेज के बगल में लगता है और उसे छोटा करता है, कुछ भी नहीं ढकता।"
+   },
+   "menuLayoutFloat": {
+      "message": "फ़्लोटिंग"
+   },
+   "menuLayoutFloatHint": {
+      "message": "पेज के ऊपर तैरता है और कहीं भी खींचा जा सकता है।"
+   },
+   "modelQuality": {
+      "message": "मॉडल गुणवत्ता"
+   },
+   "modelSelection": {
+      "message": "मॉडल चयन"
+   },
+   "more": {
+      "message": "अधिक"
+   },
+   "moreTools": {
+      "message": "और टूल"
+   },
+   "networkErrorRetry": {
+      "message": "नेटवर्क त्रुटि। कृपया बाद में फिर कोशिश करें।"
+   },
+   "ok": {
+      "message": "ठीक है"
+   },
+   "openMenu": {
+      "message": "मेन्यू खोलें"
+   },
+   "openSubtitleBox": {
+      "message": "सबटाइटल बॉक्स"
+   },
+   "peakLimitVipDesc": {
+      "message": "अभी सेवा पर बहुत अधिक ट्रैफिक है। विशेष सदस्य सर्वर अनलॉक करने के लिए अपग्रेड करें।"
+   },
+   "peakLimitVipLater": {
+      "message": "बाद में"
+   },
+   "peakLimitVipOk": {
+      "message": "अभी अपग्रेड करें"
+   },
+   "peakLimitVipTitle": {
+      "message": "पीक समय एक्सेस सीमा"
+   },
+   "pinToTopbar": {
+      "message": "टूलबार में पिन करें"
+   },
+   "pipClose": {
+      "message": "पिक्चर-इन-पिक्चर बंद करें"
+   },
+   "pipOpen": {
+      "message": "पिक्चर-इन-पिक्चर सबटाइटल"
+   },
+   "pipPlaceholder": {
+      "message": "सबटाइटल पिक्चर-इन-पिक्चर विंडो में सबसे ऊपर पिन होकर दिख रहे हैं; देखना जारी रखने के लिए दूसरे टैब या ऐप पर जाएँ"
+   },
+   "ratingSuccess": {
+      "message": "रेटिंग सफल!"
+   },
+   "ratingTitle": {
+      "message": "क्या आप इस अनुवाद से संतुष्ट हैं?"
+   },
+   "realtimeSubtitle": {
+      "message": "लाइव सबटाइटल"
+   },
+   "recordCaptureFailed": {
+      "message": "पेज का ऑडियो कैप्चर नहीं हो सका। कृपया रीफ्रेश करके पुनः प्रयास करें।"
+   },
+   "recordPause": {
+      "message": "रोकें"
+   },
+   "recordStart": {
+      "message": "शुरू करें"
+   },
+   "recordStartFailed": {
+      "message": "शुरू नहीं हो सका। कृपया बाद में फिर कोशिश करें।"
+   },
+   "resizeWindow": {
+      "message": "विंडो का आकार बदलें"
+   },
+   "retry": {
+      "message": "कृपया पुनः प्रयास करें"
+   },
+   "savedAdd": {
+      "message": "सहेजें"
+   },
+   "savedClearConfirm": {
+      "message": "सभी सहेजे गए वाक्य हटाएँ?"
+   },
+   "savedEmpty": {
+      "message": "अभी तक कोई सहेजा गया वाक्य नहीं"
+   },
+   "savedNoMatch": {
+      "message": "कोई मिलता-जुलता वाक्य नहीं"
+   },
+   "savedRemove": {
+      "message": "सहेजे गए से हटाएँ"
+   },
+   "savedSearch": {
+      "message": "सहेजे गए वाक्य खोजें"
+   },
+   "savedToastAdded": {
+      "message": "वाक्य सहेजा गया"
+   },
+   "savedToastRemoved": {
+      "message": "सहेजे गए से हटाया गया"
+   },
+   "scrollToBottom": {
+      "message": "नीचे स्क्रॉल करें"
+   },
+   "sessionClearConfirm": {
+      "message": "इस सत्र का रिकॉर्ड साफ़ करें? इसे वापस नहीं किया जा सकता।"
+   },
+   "sessionEmpty": {
+      "message": "इस सत्र में अभी कोई उपशीर्षक नहीं है"
+   },
+   "sessionGenerating": {
+      "message": "उपशीर्षक बनाए जा रहे हैं…"
+   },
+   "sessionJumpLatest": {
+      "message": "नवीनतम"
+   },
+   "sessionNotes": {
+      "message": "सत्र नोट्स"
+   },
+   "sessionRecordCount": {
+      "message": "रिकॉर्ड"
+   },
+   "sessionSearch": {
+      "message": "मूल पाठ या अनुवाद खोजें"
+   },
+   "sessionTimeline": {
+      "message": "समयरेखा"
+   },
+   "settings": {
+      "message": "सेटिंग्स"
+   },
+   "share": {
+      "message": "शेयर करें"
+   },
+   "startupSurface": {
+      "message": "शुरू होने पर दिखाएँ"
+   },
+   "startupSurfaceAuto": {
+      "message": "स्वचालित"
+   },
+   "startupSurfaceAutoHint": {
+      "message": "सबटाइटल बॉक्स हमेशा दिखता है; मेनू समर्थित साइटों पर दिखाई देता है।"
+   },
+   "startupSurfaceBoth": {
+      "message": "दोनों दिखाएँ"
+   },
+   "startupSurfaceBothHint": {
+      "message": "दोनों एक साथ दिखते हैं।"
+   },
+   "startupSurfaceMenu": {
+      "message": "केवल मेनू"
+   },
+   "startupSurfaceMenuHint": {
+      "message": "शुरू होने पर केवल मेनू। शुरू करने के लिए \"लाइव सबटाइटल\" दबाएँ।"
+   },
+   "startupSurfaceSubtitle": {
+      "message": "केवल सबटाइटल बॉक्स"
+   },
+   "startupSurfaceSubtitleHint": {
+      "message": "शुरू होने पर केवल सबटाइटल बॉक्स। मेनू उससे कभी भी खोलें।"
+   },
+   "statusListening": {
+      "message": "पृष्ठ ऑडियो सुन रहे हैं"
+   },
+   "statusReady": {
+      "message": "तैयार"
+   },
+   "strokeBlack": {
+      "message": "काला"
+   },
+   "strokeNone": {
+      "message": "कोई नहीं"
+   },
+   "strokeWhite": {
+      "message": "सफ़ेद"
+   },
+   "stylePreview": {
+      "message": "ViiTor अनुवाद"
+   },
+   "subtitleSpeed": {
+      "message": "उपशीर्षक ताज़ा करने की गति"
+   },
+   "subtitleSpeedFast": {
+      "message": "तेज़"
+   },
+   "subtitleSpeedFastHint": {
+      "message": "तेज़ी से अपडेट होता है, तत्परता और पठनीयता में संतुलन रखता है।"
+   },
+   "subtitleSpeedFinalOnly": {
+      "message": "सबसे धीमा"
+   },
+   "subtitleSpeedFinalOnlyHint": {
+      "message": "केवल स्थिर पहचान परिणाम दिखाता है, लेकिन प्रदर्शन में अधिक विलंब होता है।"
+   },
+   "subtitleSpeedRealtime": {
+      "message": "रीयल-टाइम"
+   },
+   "subtitleSpeedRealtimeHint": {
+      "message": "परिणाम आते ही अपडेट होता है। विलंब सबसे कम, लेकिन टेक्स्ट बार-बार बदलता है।"
+   },
+   "subtitleSpeedSlow": {
+      "message": "मानक"
+   },
+   "subtitleSpeedSlowHint": {
+      "message": "अपडेट दर थोड़ी कम करके पढ़ने का अनुभव अधिक स्थिर बनाता है।"
+   },
+   "subtitleSpeedSlowest": {
+      "message": "कुछ धीमा"
+   },
+   "subtitleSpeedSlowestHint": {
+      "message": "कम अपडेट दर, टेक्स्ट कम बदलता है और पढ़ना आसान होता है।"
+   },
+   "subtitleSpeedStandard": {
+      "message": "कुछ तेज़"
+   },
+   "subtitleSpeedStandardHint": {
+      "message": "मध्यम अपडेट दर, टेक्स्ट में अपेक्षाकृत कम बदलाव।"
+   },
+   "subtitleStyle": {
+      "message": "उपशीर्षक शैली"
+   },
+   "swapLanguages": {
+      "message": "भाषाएँ बदलें"
+   },
+   "tabSilentDetected": {
+      "message": "पेज पर कोई ऑडियो नहीं मिला। कृपया जांचें कि वीडियो चल रहा है और म्यूट नहीं है"
+   },
+   "tools": {
+      "message": "सुविधाएँ"
+   },
+   "transportAuto": {
+      "message": "स्वचालित"
+   },
+   "transportDirect": {
+      "message": "सीधा"
+   },
+   "transportMode": {
+      "message": "ट्रांसपोर्ट"
+   },
+   "transportWebrtc": {
+      "message": "WebRTC"
+   },
+   "tutorial": {
+      "message": "ट्यूटोरियल"
+   },
+   "uidLabel": {
+      "message": "UID: "
+   },
+   "unpinFromTopbar": {
+      "message": "टूलबार से हटाएँ"
+   },
+   "upgradeVip": {
+      "message": "VIP अपग्रेड"
+   },
+   "usageExhaustedCancel": {
+      "message": "रद्द करें"
+   },
+   "usageExhaustedDesc": {
+      "message": "आप कल फिर मुफ्त में उपयोग कर सकते हैं, या अभी अपग्रेड करके तुरंत असीमित उपयोग कर सकते हैं।"
+   },
+   "usageExhaustedOk": {
+      "message": "अभी अपग्रेड करें"
+   },
+   "usageExhaustedTitle": {
+      "message": "आज का मुफ्त समय समाप्त हो गया है"
+   },
+   "usageReminderDesc": {
+      "message": "आपने 30 मिनट से अधिक समय तक लगातार सेवा का उपयोग किया है। असीमित और स्थिर सेवा के लिए सदस्यता अपग्रेड करें।"
+   },
+   "usageReminderLater": {
+      "message": "बाद में"
+   },
+   "usageReminderOk": {
+      "message": "अभी अपग्रेड करें"
+   },
+   "usageReminderTitle": {
+      "message": "अधिक सदस्य लाभ अनलॉक करें"
+   },
+   "vipExpireAt": {
+      "message": "समाप्ति: "
+   },
+   "vipStatus": {
+      "message": "VIP स्थिति"
+   }
+}

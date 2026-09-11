@@ -1,0 +1,713 @@
+{
+   "actionTitle": {
+      "message": "Mở ViiTor Translate"
+   },
+   "advancedModel": {
+      "message": "Mô hình nâng cao"
+   },
+   "advancedModelShort": {
+      "message": "Nâng cao"
+   },
+   "advancedModelVipDesc": {
+      "message": "Mô hình nâng cao là tính năng chỉ dành cho thành viên. Hãy nâng cấp để sử dụng mô hình phiên âm cải tiến."
+   },
+   "advancedModelVipLater": {
+      "message": "Để sau"
+   },
+   "advancedModelVipOk": {
+      "message": "Nâng cấp ngay"
+   },
+   "advancedModelVipTitle": {
+      "message": "Mở khóa mô hình nâng cao"
+   },
+   "aiSummary": {
+      "message": "Tóm tắt AI"
+   },
+   "aiSummaryCollecting": {
+      "message": "Đang kiểm tra…"
+   },
+   "aiSummaryCurrentSession": {
+      "message": "Phiên hiện tại"
+   },
+   "aiSummaryEmpty": {
+      "message": "Chưa có tóm tắt."
+   },
+   "aiSummaryErrorEmpty": {
+      "message": "Bản ghi này không có nội dung để tóm tắt."
+   },
+   "aiSummaryErrorFailed": {
+      "message": "Không thể tạo tóm tắt."
+   },
+   "aiSummaryErrorFiltered": {
+      "message": "Không thể tóm tắt nội dung này."
+   },
+   "aiSummaryGenerate": {
+      "message": "Tóm tắt AI"
+   },
+   "aiSummaryGenerating": {
+      "message": "Đang tạo tóm tắt…"
+   },
+   "aiSummaryLeaveHint": {
+      "message": "Chạy ở chế độ nền — bạn có thể đóng và quay lại sau."
+   },
+   "aiSummaryLineCount": {
+      "message": "{count} dòng"
+   },
+   "aiSummaryNoHistory": {
+      "message": "Chưa có bản ghi để tóm tắt."
+   },
+   "aiSummaryNoHistoryHint": {
+      "message": "Bắt đầu phụ đề trực tiếp, phiên sẽ hiện ở đây."
+   },
+   "aiSummaryPending": {
+      "message": "Đang tạo…"
+   },
+   "aiSummaryReady": {
+      "message": "Sẵn sàng tóm tắt"
+   },
+   "aiSummaryReadyHint": {
+      "message": "Chọn mẫu ở trên, rồi tạo tóm tắt."
+   },
+   "aiSummaryRegenerate": {
+      "message": "Tạo lại"
+   },
+   "aiSummaryRetry": {
+      "message": "Thử lại"
+   },
+   "aiSummaryStaleTemplate": {
+      "message": "Tóm tắt này dùng mẫu khác."
+   },
+   "aiSummaryTemplate": {
+      "message": "Mẫu tóm tắt"
+   },
+   "aiSummaryView": {
+      "message": "Xem tóm tắt"
+   },
+   "aiSummaryVipDesc": {
+      "message": "Tóm tắt AI là tính năng dành riêng cho thành viên. Nâng cấp để chuyển bản ghi thành biên bản có cấu trúc."
+   },
+   "aiSummaryVipLater": {
+      "message": "Để sau"
+   },
+   "aiSummaryVipOk": {
+      "message": "Nâng cấp ngay"
+   },
+   "aiSummaryVipTitle": {
+      "message": "Mở khóa Tóm tắt AI"
+   },
+   "appDescription": {
+      "message": "ViiTor Dịch Thuật Thời Gian Thực là mộy Plugin miễn phí, có khả năng cung cấp dịch vụ chuyển viết và dịch thuật âm thanh trực tiếp cho các buổi phát sóng trực tiếp âm thanh và video, video trực tuyến cũng như hội nghị trực tuyến, với chức năng phụ đề song ngữ bao gồm nhiều nền tảng như YouTube, Bilibili, Twitch, đảm bảo sự hỗ trợ vững chắc trong các trường hợp giao tiếp đa ngôn ngữ."
+   },
+   "appName": {
+      "message": "ViiTor Dịch - Dịch AI & Phụ đề song ngữ thời gian thực & Miễn Phí"
+   },
+   "audioVideoTranscription": {
+      "message": "Chuyển âm thanh và video thành văn bản"
+   },
+   "autoDetect": {
+      "message": "Tự động nhận diện"
+   },
+   "autoHideHeader": {
+      "message": "Tự động ẩn thanh menu"
+   },
+   "backgroundOpacity": {
+      "message": "Độ trong suốt nền"
+   },
+   "bilingualSubtitles": {
+      "message": "Phụ đề song ngữ"
+   },
+   "browserTooOld": {
+      "message": "Phiên bản trình duyệt của bạn quá cũ. Vui lòng cập nhật trình duyệt và thử lại."
+   },
+   "cancel": {
+      "message": "Hủy"
+   },
+   "colorBlack": {
+      "message": "Đen"
+   },
+   "colorBlue": {
+      "message": "Xanh dương"
+   },
+   "colorCustom": {
+      "message": "Tùy chỉnh"
+   },
+   "colorCyan": {
+      "message": "Xanh lơ"
+   },
+   "colorGreen": {
+      "message": "Xanh lá"
+   },
+   "colorOrange": {
+      "message": "Cam"
+   },
+   "colorPurple": {
+      "message": "Tím"
+   },
+   "colorRed": {
+      "message": "Đỏ"
+   },
+   "colorWhite": {
+      "message": "Trắng"
+   },
+   "colorYellow": {
+      "message": "Vàng"
+   },
+   "commentDailyLimitReached": {
+      "message": "Bạn đã dùng hết 1.800 lượt dịch miễn phí hôm nay. Nâng cấp lên VIP để dịch không giới hạn."
+   },
+   "commentEmptyPaused": {
+      "message": "Đã tạm dừng. Tiếp tục để dịch các bình luận mới."
+   },
+   "commentEmptyStatic": {
+      "message": "Cuộn bình luận để dịch những bình luận bạn đang xem"
+   },
+   "commentEmptyWaiting": {
+      "message": "Đang lắng nghe bình luận, chờ tin nhắn mới…"
+   },
+   "commentShowBilingual": {
+      "message": "Song ngữ"
+   },
+   "commentShowOriginal": {
+      "message": "Bản gốc"
+   },
+   "commentShowTranslationOnly": {
+      "message": "Chỉ bản dịch"
+   },
+   "commentSiteBilibili": {
+      "message": "Danmaku livestream và video Bilibili"
+   },
+   "commentSiteDouyin": {
+      "message": "Bình luận livestream và danmaku video Douyin"
+   },
+   "commentSiteTiktok": {
+      "message": "Trò chuyện trực tiếp và bình luận video TikTok"
+   },
+   "commentSiteTwitcasting": {
+      "message": "Trò chuyện trực tiếp TwitCasting"
+   },
+   "commentSiteTwitch": {
+      "message": "Trò chuyện trực tiếp Twitch"
+   },
+   "commentSiteWeverse": {
+      "message": "Trò chuyện trực tiếp Weverse"
+   },
+   "commentSiteYoutube": {
+      "message": "Trò chuyện trực tiếp và bình luận video trên YouTube"
+   },
+   "commentTranslate": {
+      "message": "Dịch trò chuyện trực tiếp"
+   },
+   "commentTranslateHintGot": {
+      "message": "Đã hiểu"
+   },
+   "commentTranslateHintSitesTitle": {
+      "message": "Trang web được hỗ trợ"
+   },
+   "commentTranslateHintTitle": {
+      "message": "Dịch bình luận"
+   },
+   "commentTranslateHintVip": {
+      "message": "Người dùng không phải thành viên: 1.800 lượt dịch miễn phí mỗi ngày với tốc độ cơ bản\nNgười dùng VIP: Dịch không giới hạn, nhanh gấp 4 lần người dùng không phải thành viên"
+   },
+   "commentTranslateVipLater": {
+      "message": "Để sau"
+   },
+   "commentTranslateVipOk": {
+      "message": "Nâng cấp ngay"
+   },
+   "contactSupport": {
+      "message": "Liên hệ với chúng tôi"
+   },
+   "copied": {
+      "message": "Đã sao chép"
+   },
+   "copy": {
+      "message": "Sao chép"
+   },
+   "copyEmpty": {
+      "message": "Không có phụ đề để sao chép"
+   },
+   "copySubtitles": {
+      "message": "Sao chép phụ đề"
+   },
+   "customColorVipDesc": {
+      "message": "Màu phụ đề tùy chỉnh là tính năng dành riêng cho thành viên. Nâng cấp để tạo phong cách phụ đề cá nhân hơn."
+   },
+   "customColorVipLater": {
+      "message": "Để sau"
+   },
+   "customColorVipOk": {
+      "message": "Nâng cấp ngay"
+   },
+   "customColorVipTitle": {
+      "message": "Mở khóa màu tùy chỉnh"
+   },
+   "defaultModel": {
+      "message": "Mô hình mặc định"
+   },
+   "defaultModelShort": {
+      "message": "Mặc định"
+   },
+   "dockCollapse": {
+      "message": "Thu gọn menu"
+   },
+   "dockExpand": {
+      "message": "Mở rộng menu"
+   },
+   "dockResize": {
+      "message": "Đổi kích thước menu"
+   },
+   "dockResizeHint": {
+      "message": "Kéo để đổi kích thước, nhấp đúp để đặt lại"
+   },
+   "documentTranslate": {
+      "message": "Dịch tài liệu"
+   },
+   "favoriteSentences": {
+      "message": "Câu đã lưu"
+   },
+   "featureComingSoon": {
+      "message": "Sắp ra mắt"
+   },
+   "featureComingSoonTag": {
+      "message": "Sắp có"
+   },
+   "feedback": {
+      "message": "Phản hồi"
+   },
+   "feedbackOptionLanguageMissing": {
+      "message": "Không hỗ trợ ngôn ngữ cần thiết"
+   },
+   "feedbackOptionNetworkError": {
+      "message": "Lỗi mạng"
+   },
+   "feedbackOptionOther": {
+      "message": "Khác"
+   },
+   "feedbackOptionRecognitionInaccuracy": {
+      "message": "Vấn đề đồng bộ phụ đề"
+   },
+   "feedbackOptionSubtitleFast": {
+      "message": "Phụ đề quá nhanh không đọc kịp"
+   },
+   "feedbackOptionSubtitleMissing": {
+      "message": "Nhận dạng không chính xác"
+   },
+   "feedbackOptionTranslationInaccuracy": {
+      "message": "Dịch không chính xác"
+   },
+   "feedbackOptionTranslationNoResult": {
+      "message": "Không có kết quả dịch"
+   },
+   "feedbackOtherPlaceholder": {
+      "message": "Vui lòng nhập vấn đề cụ thể..."
+   },
+   "feedbackReturnBtn": {
+      "message": "Quay lại"
+   },
+   "feedbackSelectPlaceholder": {
+      "message": "Vui lòng chọn..."
+   },
+   "feedbackSubmitBtn": {
+      "message": "Gửi"
+   },
+   "feedbackSuccessMessage": {
+      "message": "Gửi phản hồi thành công! Cảm ơn đề xuất của bạn"
+   },
+   "fontColor": {
+      "message": "Màu chữ"
+   },
+   "fontSize": {
+      "message": "Cỡ chữ"
+   },
+   "fontSizeLarge": {
+      "message": "L"
+   },
+   "fontSizeMedium": {
+      "message": "V"
+   },
+   "fontSizeSmall": {
+      "message": "N"
+   },
+   "fontStroke": {
+      "message": "Viền chữ"
+   },
+   "glossary": {
+      "message": "Bảng thuật ngữ"
+   },
+   "glossaryDefault": {
+      "message": "Mặc định"
+   },
+   "glossaryEmpty": {
+      "message": "Không có bảng thuật ngữ"
+   },
+   "glossaryVipDesc": {
+      "message": "Thuật ngữ là tính năng chỉ dành cho thành viên. Nâng cấp để đính kèm thuật ngữ tùy chỉnh vào phiên của bạn."
+   },
+   "glossaryVipLater": {
+      "message": "Để sau"
+   },
+   "glossaryVipOk": {
+      "message": "Nâng cấp ngay"
+   },
+   "glossaryVipTitle": {
+      "message": "Mở khóa thuật ngữ"
+   },
+   "highlightTranslation": {
+      "message": "Đánh dấu bản dịch"
+   },
+   "history": {
+      "message": "Lịch sử"
+   },
+   "historyClear": {
+      "message": "Xóa sạch"
+   },
+   "historyClearConfirm": {
+      "message": "Xóa tất cả lịch sử?"
+   },
+   "historyDelete": {
+      "message": "Xóa"
+   },
+   "historyEmpty": {
+      "message": "Chưa có lịch sử"
+   },
+   "historyExport": {
+      "message": "Tải xuống"
+   },
+   "historyLimitHint": {
+      "message": "Chỉ lưu cục bộ 20 bản ghi mới nhất."
+   },
+   "historyUntitled": {
+      "message": "Trang chưa có tiêu đề"
+   },
+   "langLoadError": {
+      "message": "Không tải được danh sách ngôn ngữ, vui lòng thử lại"
+   },
+   "langLoadFailed": {
+      "message": "Không tải được danh sách ngôn ngữ, "
+   },
+   "langLoading": {
+      "message": "Đang tải..."
+   },
+   "lightMode": {
+      "message": "Chế độ sáng"
+   },
+   "lightModeVipDesc": {
+      "message": "Chế độ sáng là tính năng dành riêng cho thành viên. Nâng cấp để dùng thêm tùy chọn giao diện và quyền lợi dịch vụ ổn định."
+   },
+   "lightModeVipLater": {
+      "message": "Để sau"
+   },
+   "lightModeVipOk": {
+      "message": "Nâng cấp ngay"
+   },
+   "lightModeVipTitle": {
+      "message": "Mở khóa chế độ sáng"
+   },
+   "login": {
+      "message": "Đăng nhập"
+   },
+   "loginRequiredBanner": {
+      "message": "Vui lòng đăng nhập để sử dụng"
+   },
+   "logout": {
+      "message": "Đăng xuất"
+   },
+   "menuLayout": {
+      "message": "Kiểu menu"
+   },
+   "menuLayoutDock": {
+      "message": "Thanh bên"
+   },
+   "menuLayoutDockHint": {
+      "message": "Gắn cạnh trang và thu nhỏ trang lại nên không che nội dung."
+   },
+   "menuLayoutFloat": {
+      "message": "Nổi"
+   },
+   "menuLayoutFloatHint": {
+      "message": "Nổi trên trang và có thể kéo đến bất kỳ đâu."
+   },
+   "modelQuality": {
+      "message": "Chất lượng mô hình"
+   },
+   "modelSelection": {
+      "message": "Chọn mô hình"
+   },
+   "more": {
+      "message": "Thêm"
+   },
+   "moreTools": {
+      "message": "Công cụ khác"
+   },
+   "networkErrorRetry": {
+      "message": "Lỗi mạng. Vui lòng thử lại sau."
+   },
+   "ok": {
+      "message": "OK"
+   },
+   "openMenu": {
+      "message": "Mở menu"
+   },
+   "openSubtitleBox": {
+      "message": "Hộp phụ đề"
+   },
+   "peakLimitVipDesc": {
+      "message": "Dịch vụ hiện đang trong giờ cao điểm. Nâng cấp thành viên để mở khóa máy chủ chuyên dụng."
+   },
+   "peakLimitVipLater": {
+      "message": "Để sau"
+   },
+   "peakLimitVipOk": {
+      "message": "Nâng cấp ngay"
+   },
+   "peakLimitVipTitle": {
+      "message": "Giới hạn truy cập giờ cao điểm"
+   },
+   "pinToTopbar": {
+      "message": "Ghim lên thanh công cụ"
+   },
+   "pipClose": {
+      "message": "Đóng Picture-in-Picture"
+   },
+   "pipOpen": {
+      "message": "Phụ đề Picture-in-Picture"
+   },
+   "pipPlaceholder": {
+      "message": "Phụ đề được ghim luôn nổi trên cùng trong cửa sổ Picture-in-Picture; chuyển sang tab hoặc ứng dụng khác để tiếp tục xem"
+   },
+   "ratingSuccess": {
+      "message": "Đánh giá thành công!"
+   },
+   "ratingTitle": {
+      "message": "Bạn có hài lòng với bản dịch này không?"
+   },
+   "realtimeSubtitle": {
+      "message": "Phụ đề trực tiếp"
+   },
+   "recordCaptureFailed": {
+      "message": "Không thể thu âm thanh trang. Vui lòng tải lại và thử lại."
+   },
+   "recordPause": {
+      "message": "Tạm dừng"
+   },
+   "recordStart": {
+      "message": "Bắt đầu"
+   },
+   "recordStartFailed": {
+      "message": "Không thể bắt đầu. Vui lòng thử lại sau."
+   },
+   "resizeWindow": {
+      "message": "Thay đổi kích thước cửa sổ"
+   },
+   "retry": {
+      "message": "vui lòng thử lại"
+   },
+   "savedAdd": {
+      "message": "Lưu"
+   },
+   "savedClearConfirm": {
+      "message": "Xóa tất cả câu đã lưu?"
+   },
+   "savedEmpty": {
+      "message": "Chưa có câu nào được lưu"
+   },
+   "savedNoMatch": {
+      "message": "Không có câu phù hợp"
+   },
+   "savedRemove": {
+      "message": "Bỏ khỏi mục đã lưu"
+   },
+   "savedSearch": {
+      "message": "Tìm câu đã lưu"
+   },
+   "savedToastAdded": {
+      "message": "Đã lưu câu"
+   },
+   "savedToastRemoved": {
+      "message": "Đã bỏ khỏi mục đã lưu"
+   },
+   "scrollToBottom": {
+      "message": "Cuộn xuống cuối"
+   },
+   "sessionClearConfirm": {
+      "message": "Xóa bản ghi phiên này? Không thể hoàn tác thao tác này."
+   },
+   "sessionEmpty": {
+      "message": "Chưa có phụ đề trong phiên này"
+   },
+   "sessionGenerating": {
+      "message": "Đang tạo phụ đề…"
+   },
+   "sessionJumpLatest": {
+      "message": "Mới nhất"
+   },
+   "sessionNotes": {
+      "message": "Ghi chú phiên"
+   },
+   "sessionRecordCount": {
+      "message": "Bản ghi"
+   },
+   "sessionSearch": {
+      "message": "Tìm kiếm bản gốc hoặc bản dịch"
+   },
+   "sessionTimeline": {
+      "message": "Dòng thời gian"
+   },
+   "settings": {
+      "message": "Cài đặt"
+   },
+   "share": {
+      "message": "Chia sẻ"
+   },
+   "startupSurface": {
+      "message": "Hiển thị khi khởi động"
+   },
+   "startupSurfaceAuto": {
+      "message": "Tự động"
+   },
+   "startupSurfaceAutoHint": {
+      "message": "Hộp phụ đề luôn hiển thị; menu xuất hiện trên các trang được hỗ trợ."
+   },
+   "startupSurfaceBoth": {
+      "message": "Hiện cả hai"
+   },
+   "startupSurfaceBothHint": {
+      "message": "Cả hai hiển thị cùng lúc."
+   },
+   "startupSurfaceMenu": {
+      "message": "Chỉ menu"
+   },
+   "startupSurfaceMenuHint": {
+      "message": "Khi khởi động chỉ hiện menu. Nhấn \"Phụ đề trực tiếp\" để bắt đầu."
+   },
+   "startupSurfaceSubtitle": {
+      "message": "Chỉ hộp phụ đề"
+   },
+   "startupSurfaceSubtitleHint": {
+      "message": "Khi khởi động chỉ hiện hộp phụ đề. Mở menu từ đó bất cứ lúc nào."
+   },
+   "statusListening": {
+      "message": "Đang nghe âm thanh trang"
+   },
+   "statusReady": {
+      "message": "Sẵn sàng"
+   },
+   "strokeBlack": {
+      "message": "Đen"
+   },
+   "strokeNone": {
+      "message": "Không"
+   },
+   "strokeWhite": {
+      "message": "Trắng"
+   },
+   "stylePreview": {
+      "message": "复制字幕"
+   },
+   "subtitleSpeed": {
+      "message": "Tốc độ làm mới phụ đề"
+   },
+   "subtitleSpeedFast": {
+      "message": "Nhanh"
+   },
+   "subtitleSpeedFastHint": {
+      "message": "Cập nhật nhanh, cân bằng giữa tính tức thời và trải nghiệm đọc."
+   },
+   "subtitleSpeedFinalOnly": {
+      "message": "Chậm nhất"
+   },
+   "subtitleSpeedFinalOnlyHint": {
+      "message": "Chỉ hiển thị kết quả nhận dạng đã ổn định, nhưng độ trễ hiển thị cao hơn."
+   },
+   "subtitleSpeedRealtime": {
+      "message": "Thời gian thực"
+   },
+   "subtitleSpeedRealtimeHint": {
+      "message": "Cập nhật ngay khi có kết quả. Độ trễ thấp nhất, nhưng chữ thay đổi thường xuyên."
+   },
+   "subtitleSpeedSlow": {
+      "message": "Tiêu chuẩn"
+   },
+   "subtitleSpeedSlowHint": {
+      "message": "Giảm nhẹ tần suất cập nhật để đọc ổn định hơn."
+   },
+   "subtitleSpeedSlowest": {
+      "message": "Khá chậm"
+   },
+   "subtitleSpeedSlowestHint": {
+      "message": "Tần suất cập nhật thấp, giảm thay đổi chữ, dễ đọc hơn."
+   },
+   "subtitleSpeedStandard": {
+      "message": "Khá nhanh"
+   },
+   "subtitleSpeedStandardHint": {
+      "message": "Tốc độ cập nhật vừa phải, chữ thay đổi tương đối ít hơn."
+   },
+   "subtitleStyle": {
+      "message": "Kiểu phụ đề"
+   },
+   "swapLanguages": {
+      "message": "Hoán đổi ngôn ngữ"
+   },
+   "tabSilentDetected": {
+      "message": "Không phát hiện âm thanh trên trang. Vui lòng kiểm tra video có đang phát và không bị tắt tiếng"
+   },
+   "tools": {
+      "message": "Tính năng"
+   },
+   "transportAuto": {
+      "message": "Tự động"
+   },
+   "transportDirect": {
+      "message": "Trực tiếp"
+   },
+   "transportMode": {
+      "message": "Phương thức truyền tải"
+   },
+   "transportWebrtc": {
+      "message": "WebRTC"
+   },
+   "tutorial": {
+      "message": "Hướng dẫn"
+   },
+   "uidLabel": {
+      "message": "UID: "
+   },
+   "unpinFromTopbar": {
+      "message": "Bỏ ghim khỏi thanh"
+   },
+   "upgradeVip": {
+      "message": "Nâng cấp VIP"
+   },
+   "usageExhaustedCancel": {
+      "message": "Hủy"
+   },
+   "usageExhaustedDesc": {
+      "message": "Bạn có thể tiếp tục dùng miễn phí vào ngày mai, hoặc nâng cấp thành viên để dùng ngay không giới hạn thời gian."
+   },
+   "usageExhaustedOk": {
+      "message": "Nâng cấp ngay"
+   },
+   "usageExhaustedTitle": {
+      "message": "Đã hết thời lượng miễn phí hôm nay"
+   },
+   "usageReminderDesc": {
+      "message": "Bạn đã sử dụng liên tục hơn 30 phút. Nâng cấp thành viên để dùng dịch vụ ổn định không giới hạn thời gian."
+   },
+   "usageReminderLater": {
+      "message": "Để sau"
+   },
+   "usageReminderOk": {
+      "message": "Nâng cấp ngay"
+   },
+   "usageReminderTitle": {
+      "message": "Mở khóa thêm quyền lợi thành viên"
+   },
+   "vipExpireAt": {
+      "message": "Hết hạn: "
+   },
+   "vipStatus": {
+      "message": "Trạng thái VIP"
+   }
+}

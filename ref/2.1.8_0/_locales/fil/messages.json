@@ -1,0 +1,713 @@
+{
+   "actionTitle": {
+      "message": "Buksan ang ViiTor Translate"
+   },
+   "advancedModel": {
+      "message": "Advanced na Modelo"
+   },
+   "advancedModelShort": {
+      "message": "Advanced"
+   },
+   "advancedModelVipDesc": {
+      "message": "Ang advanced na modelo ay para lamang sa mga miyembro. Mag-upgrade para gamitin ang pinahusay na modelo ng transkripsyon."
+   },
+   "advancedModelVipLater": {
+      "message": "Sa ibang pagkakataon"
+   },
+   "advancedModelVipOk": {
+      "message": "Mag-upgrade ngayon"
+   },
+   "advancedModelVipTitle": {
+      "message": "I-unlock ang advanced na modelo"
+   },
+   "aiSummary": {
+      "message": "Buod ng AI"
+   },
+   "aiSummaryCollecting": {
+      "message": "Sinusuri…"
+   },
+   "aiSummaryCurrentSession": {
+      "message": "Kasalukuyang session"
+   },
+   "aiSummaryEmpty": {
+      "message": "Wala pang buod."
+   },
+   "aiSummaryErrorEmpty": {
+      "message": "Walang teksto ang rekording na ito."
+   },
+   "aiSummaryErrorFailed": {
+      "message": "Hindi makabuo ng buod."
+   },
+   "aiSummaryErrorFiltered": {
+      "message": "Hindi mabuod ang nilalamang ito."
+   },
+   "aiSummaryGenerate": {
+      "message": "Buod ng AI"
+   },
+   "aiSummaryGenerating": {
+      "message": "Bumubuo ng buod..."
+   },
+   "aiSummaryLeaveHint": {
+      "message": "Tumatakbo sa background — puwede mong isara at balikan mamaya."
+   },
+   "aiSummaryLineCount": {
+      "message": "{count} linya"
+   },
+   "aiSummaryNoHistory": {
+      "message": "Wala pang rekording na mabubuod."
+   },
+   "aiSummaryNoHistoryHint": {
+      "message": "Simulan ang live subtitles at lilitaw dito ang session."
+   },
+   "aiSummaryPending": {
+      "message": "Bumubuo…"
+   },
+   "aiSummaryReady": {
+      "message": "Handa nang buurin"
+   },
+   "aiSummaryReadyHint": {
+      "message": "Pumili ng template sa itaas, tapos bumuo."
+   },
+   "aiSummaryRegenerate": {
+      "message": "Bumuo muli"
+   },
+   "aiSummaryRetry": {
+      "message": "Subukan muli"
+   },
+   "aiSummaryStaleTemplate": {
+      "message": "Ibang template ang ginamit ng buod na ito."
+   },
+   "aiSummaryTemplate": {
+      "message": "Template ng buod"
+   },
+   "aiSummaryView": {
+      "message": "Tingnan ang buod"
+   },
+   "aiSummaryVipDesc": {
+      "message": "Ang AI Summary ay para lang sa mga miyembro. Mag-upgrade upang gawing structured minutes ang iyong mga rekording."
+   },
+   "aiSummaryVipLater": {
+      "message": "Sa susunod na lang"
+   },
+   "aiSummaryVipOk": {
+      "message": "Mag-upgrade na"
+   },
+   "aiSummaryVipTitle": {
+      "message": "I-unlock ang AI Summary"
+   },
+   "appDescription": {
+      "message": "Ang ViiTor Real-Time Translation plugin ay kayang magbigay ng serbisyo ng real-time na transcription at pagsasalin ng audio para sa live na audio at video broadcasts, online videos, at online meetings, na may tampok na bilingual subtitles na sumasaklaw sa maraming platform tulad ng YouTube, Bilibili, Twitch, na nagbibigay ng matibay na suporta sa mga sitwasyong nangangailangan ng pagtawid sa iba't ibang wika."
+   },
+   "appName": {
+      "message": "ViiTor Traducir - Pagsasalin at Bilingual na Mga Subtitle sa Real-Time"
+   },
+   "audioVideoTranscription": {
+      "message": "Transkripsyon ng Audio at Video"
+   },
+   "autoDetect": {
+      "message": "Awtomatikong pagtukoy"
+   },
+   "autoHideHeader": {
+      "message": "Auto-hide ng Menu Bar"
+   },
+   "backgroundOpacity": {
+      "message": "Transparency ng Background"
+   },
+   "bilingualSubtitles": {
+      "message": "Dalawang-wikang Subtitle"
+   },
+   "browserTooOld": {
+      "message": "Luma na ang bersyon ng iyong browser. I-update ang browser at subukang muli."
+   },
+   "cancel": {
+      "message": "Kanselahin"
+   },
+   "colorBlack": {
+      "message": "Itim"
+   },
+   "colorBlue": {
+      "message": "Asul"
+   },
+   "colorCustom": {
+      "message": "Pasadya"
+   },
+   "colorCyan": {
+      "message": "Siyan"
+   },
+   "colorGreen": {
+      "message": "Berde"
+   },
+   "colorOrange": {
+      "message": "Kahel"
+   },
+   "colorPurple": {
+      "message": "Lila"
+   },
+   "colorRed": {
+      "message": "Pula"
+   },
+   "colorWhite": {
+      "message": "Puti"
+   },
+   "colorYellow": {
+      "message": "Dilaw"
+   },
+   "commentDailyLimitReached": {
+      "message": "Nagamit na ang 1,800 libreng pagsasalin para sa araw na ito. Mag-upgrade sa VIP para sa walang limitasyong pagsasalin."
+   },
+   "commentEmptyPaused": {
+      "message": "Naka-pause. Ipagpatuloy para patuloy na isalin ang mga bagong komento."
+   },
+   "commentEmptyStatic": {
+      "message": "Mag-scroll sa mga komento para isalin ang mga nakikita mo"
+   },
+   "commentEmptyWaiting": {
+      "message": "Nakikinig sa mga komento, naghihintay ng bagong mensahe…"
+   },
+   "commentShowBilingual": {
+      "message": "Bilingguwal"
+   },
+   "commentShowOriginal": {
+      "message": "Orihinal"
+   },
+   "commentShowTranslationOnly": {
+      "message": "Salin lamang"
+   },
+   "commentSiteBilibili": {
+      "message": "Bilibili live at video danmaku"
+   },
+   "commentSiteDouyin": {
+      "message": "Douyin live na komento at video danmaku"
+   },
+   "commentSiteTiktok": {
+      "message": "TikTok live chat at mga komento sa video"
+   },
+   "commentSiteTwitcasting": {
+      "message": "Live chat sa TwitCasting"
+   },
+   "commentSiteTwitch": {
+      "message": "Live chat sa Twitch"
+   },
+   "commentSiteWeverse": {
+      "message": "Live chat sa Weverse"
+   },
+   "commentSiteYoutube": {
+      "message": "YouTube live chat at mga komento sa video"
+   },
+   "commentTranslate": {
+      "message": "Pagsasalin ng Live Chat"
+   },
+   "commentTranslateHintGot": {
+      "message": "Naintindihan ko"
+   },
+   "commentTranslateHintSitesTitle": {
+      "message": "Mga sinusuportahang site"
+   },
+   "commentTranslateHintTitle": {
+      "message": "Pagsasalin ng Komento"
+   },
+   "commentTranslateHintVip": {
+      "message": "Mga hindi miyembro: 1,800 libreng pagsasalin bawat araw sa karaniwang bilis\nMga VIP user: Walang limitasyong pagsasalin na 4× na mas mabilis kaysa sa hindi miyembro"
+   },
+   "commentTranslateVipLater": {
+      "message": "Mamaya na lang"
+   },
+   "commentTranslateVipOk": {
+      "message": "Mag-upgrade na"
+   },
+   "contactSupport": {
+      "message": "Makipag-ugnayan sa amin"
+   },
+   "copied": {
+      "message": "Nakopya"
+   },
+   "copy": {
+      "message": "Kopyahin"
+   },
+   "copyEmpty": {
+      "message": "Walang subtitle na makokopya"
+   },
+   "copySubtitles": {
+      "message": "Kopyahin ang Subtitles"
+   },
+   "customColorVipDesc": {
+      "message": "Ang custom na kulay ng subtitle ay para lamang sa mga miyembro. Mag-upgrade para gumawa ng mas personal na istilo ng subtitle."
+   },
+   "customColorVipLater": {
+      "message": "Mamaya na"
+   },
+   "customColorVipOk": {
+      "message": "Mag-upgrade ngayon"
+   },
+   "customColorVipTitle": {
+      "message": "I-unlock ang custom na kulay"
+   },
+   "defaultModel": {
+      "message": "Default na modelo"
+   },
+   "defaultModelShort": {
+      "message": "Paunang setting"
+   },
+   "dockCollapse": {
+      "message": "Itiklop ang menu"
+   },
+   "dockExpand": {
+      "message": "Palawakin ang menu"
+   },
+   "dockResize": {
+      "message": "Baguhin ang lapad ng menu"
+   },
+   "dockResizeHint": {
+      "message": "I-drag para baguhin, i-double-click para i-reset"
+   },
+   "documentTranslate": {
+      "message": "Pagsasalin ng dokumento"
+   },
+   "favoriteSentences": {
+      "message": "Mga Naka-save na Pangungusap"
+   },
+   "featureComingSoon": {
+      "message": "Malapit nang dumating"
+   },
+   "featureComingSoonTag": {
+      "message": "Malapit na"
+   },
+   "feedback": {
+      "message": "Puna"
+   },
+   "feedbackOptionLanguageMissing": {
+      "message": "Hindi suportado ang wika"
+   },
+   "feedbackOptionNetworkError": {
+      "message": "Problema sa network"
+   },
+   "feedbackOptionOther": {
+      "message": "Iba pa"
+   },
+   "feedbackOptionRecognitionInaccuracy": {
+      "message": "Mga problema sa subtitle sync"
+   },
+   "feedbackOptionSubtitleFast": {
+      "message": "Masyadong mabilis ang subtitle para mabasa"
+   },
+   "feedbackOptionSubtitleMissing": {
+      "message": "Hindi tumpak ang pagkilala"
+   },
+   "feedbackOptionTranslationInaccuracy": {
+      "message": "Hindi tumpak ang translation"
+   },
+   "feedbackOptionTranslationNoResult": {
+      "message": "Walang resulta ng translation"
+   },
+   "feedbackOtherPlaceholder": {
+      "message": "Pakitype ang tukoy na problema..."
+   },
+   "feedbackReturnBtn": {
+      "message": "Bumalik"
+   },
+   "feedbackSelectPlaceholder": {
+      "message": "Pakipili..."
+   },
+   "feedbackSubmitBtn": {
+      "message": "Magpadala"
+   },
+   "feedbackSuccessMessage": {
+      "message": "Matagumpay na naipadala ang feedback! Salamat sa inyong mungkahi"
+   },
+   "fontColor": {
+      "message": "Kulay ng Font"
+   },
+   "fontSize": {
+      "message": "Laki ng Font"
+   },
+   "fontSizeLarge": {
+      "message": "L"
+   },
+   "fontSizeMedium": {
+      "message": "K"
+   },
+   "fontSizeSmall": {
+      "message": "M"
+   },
+   "fontStroke": {
+      "message": "Balangkas ng Font"
+   },
+   "glossary": {
+      "message": "Glosaryo"
+   },
+   "glossaryDefault": {
+      "message": "Paunang setting"
+   },
+   "glossaryEmpty": {
+      "message": "Walang glosaryo"
+   },
+   "glossaryVipDesc": {
+      "message": "Ang glosaryo ay tampok na para lang sa miyembro. Mag-upgrade para maglakip ng custom na glosaryo sa iyong mga session."
+   },
+   "glossaryVipLater": {
+      "message": "Sa susunod na lang"
+   },
+   "glossaryVipOk": {
+      "message": "Mag-upgrade na"
+   },
+   "glossaryVipTitle": {
+      "message": "I-unlock ang glosaryo"
+   },
+   "highlightTranslation": {
+      "message": "I-highlight ang Pagsasalin"
+   },
+   "history": {
+      "message": "Kasaysayan"
+   },
+   "historyClear": {
+      "message": "I-clear"
+   },
+   "historyClearConfirm": {
+      "message": "I-clear ang lahat ng tala ng kasaysayan?"
+   },
+   "historyDelete": {
+      "message": "Tanggalin"
+   },
+   "historyEmpty": {
+      "message": "Wala pang kasaysayan"
+   },
+   "historyExport": {
+      "message": "I-download"
+   },
+   "historyLimitHint": {
+      "message": "Ang pinakabagong 20 tala lamang ang iniimbak nang lokal."
+   },
+   "historyUntitled": {
+      "message": "Pahinang walang pamagat"
+   },
+   "langLoadError": {
+      "message": "Nabigong i-load ang listahan ng wika, pakisubukang muli"
+   },
+   "langLoadFailed": {
+      "message": "Nabigong i-load ang listahan ng wika, "
+   },
+   "langLoading": {
+      "message": "Naglo-load..."
+   },
+   "lightMode": {
+      "message": "Maliwanag na mode"
+   },
+   "lightModeVipDesc": {
+      "message": "Ang light mode ay para lamang sa mga miyembro. Mag-upgrade para sa mas maraming opsyon sa hitsura at matatag na serbisyo."
+   },
+   "lightModeVipLater": {
+      "message": "Mamaya na"
+   },
+   "lightModeVipOk": {
+      "message": "Mag-upgrade ngayon"
+   },
+   "lightModeVipTitle": {
+      "message": "I-unlock ang light mode"
+   },
+   "login": {
+      "message": "Mag-sign in"
+   },
+   "loginRequiredBanner": {
+      "message": "Mag-sign in para magpatuloy"
+   },
+   "logout": {
+      "message": "Mag-sign out"
+   },
+   "menuLayout": {
+      "message": "Estilo menu"
+   },
+   "menuLayoutDock": {
+      "message": "Gilid"
+   },
+   "menuLayoutDockHint": {
+      "message": "Naka-dock sa tabi ng pahina at pinaliliit ito kaya walang natatakpan."
+   },
+   "menuLayoutFloat": {
+      "message": "Lutang"
+   },
+   "menuLayoutFloatHint": {
+      "message": "Lumulutang sa ibabaw ng pahina at puwedeng i-drag kahit saan."
+   },
+   "modelQuality": {
+      "message": "Kalidad ng modelo"
+   },
+   "modelSelection": {
+      "message": "Pagpili ng modelo"
+   },
+   "more": {
+      "message": "Higit pa"
+   },
+   "moreTools": {
+      "message": "Iba Pang Tool"
+   },
+   "networkErrorRetry": {
+      "message": "Problema sa network. Pakisubukang muli mamaya."
+   },
+   "ok": {
+      "message": "OK"
+   },
+   "openMenu": {
+      "message": "Buksan ang menu"
+   },
+   "openSubtitleBox": {
+      "message": "Kahon ng subtitle"
+   },
+   "peakLimitVipDesc": {
+      "message": "Kasalukuyang mataas ang traffic ng serbisyo. Mag-upgrade para ma-unlock ang dedikadong server para sa mga miyembro."
+   },
+   "peakLimitVipLater": {
+      "message": "Mamaya na"
+   },
+   "peakLimitVipOk": {
+      "message": "Mag-upgrade ngayon"
+   },
+   "peakLimitVipTitle": {
+      "message": "Limitasyon sa access sa peak time"
+   },
+   "pinToTopbar": {
+      "message": "I-pin sa toolbar"
+   },
+   "pipClose": {
+      "message": "Isara ang Picture-in-Picture"
+   },
+   "pipOpen": {
+      "message": "Picture-in-Picture na subtitles"
+   },
+   "pipPlaceholder": {
+      "message": "Naka-pin sa itaas ang mga subtitle sa Picture-in-Picture window; lumipat sa ibang tab o app at patuloy na manood"
+   },
+   "ratingSuccess": {
+      "message": "Matagumpay na rating!"
+   },
+   "ratingTitle": {
+      "message": "Nasiyahan ka ba sa translation na ito?"
+   },
+   "realtimeSubtitle": {
+      "message": "Live na Subtitle"
+   },
+   "recordCaptureFailed": {
+      "message": "Hindi makuha ang audio ng page. I-refresh at subukang muli."
+   },
+   "recordPause": {
+      "message": "I-pause"
+   },
+   "recordStart": {
+      "message": "Simulan"
+   },
+   "recordStartFailed": {
+      "message": "Hindi makapagsimula. Pakisubukang muli mamaya."
+   },
+   "resizeWindow": {
+      "message": "Baguhin ang laki ng window"
+   },
+   "retry": {
+      "message": "pakisubukang muli"
+   },
+   "savedAdd": {
+      "message": "I-save"
+   },
+   "savedClearConfirm": {
+      "message": "I-clear lahat ng naka-save na pangungusap?"
+   },
+   "savedEmpty": {
+      "message": "Wala pang naka-save na pangungusap"
+   },
+   "savedNoMatch": {
+      "message": "Walang tugmang pangungusap"
+   },
+   "savedRemove": {
+      "message": "Alisin sa naka-save"
+   },
+   "savedSearch": {
+      "message": "Maghanap ng naka-save na pangungusap"
+   },
+   "savedToastAdded": {
+      "message": "Na-save ang pangungusap"
+   },
+   "savedToastRemoved": {
+      "message": "Inalis sa naka-save"
+   },
+   "scrollToBottom": {
+      "message": "Mag-scroll sa ibaba"
+   },
+   "sessionClearConfirm": {
+      "message": "Burahin ang tala ng sesyong ito? Hindi na ito maibabalik."
+   },
+   "sessionEmpty": {
+      "message": "Wala pang subtitle sa sesyong ito"
+   },
+   "sessionGenerating": {
+      "message": "Gumagawa ng mga subtitle…"
+   },
+   "sessionJumpLatest": {
+      "message": "Pinakabago"
+   },
+   "sessionNotes": {
+      "message": "Mga Tala ng Sesyon"
+   },
+   "sessionRecordCount": {
+      "message": "Mga tala"
+   },
+   "sessionSearch": {
+      "message": "Maghanap sa orihinal o salin"
+   },
+   "sessionTimeline": {
+      "message": "Takbo ng oras"
+   },
+   "settings": {
+      "message": "Mga Setting"
+   },
+   "share": {
+      "message": "Ibahagi"
+   },
+   "startupSurface": {
+      "message": "Ipakita sa pagsisimula"
+   },
+   "startupSurfaceAuto": {
+      "message": "Awtomatiko"
+   },
+   "startupSurfaceAutoHint": {
+      "message": "Palaging lumalabas ang subtitle box; lumalabas ang menu sa mga suportadong site."
+   },
+   "startupSurfaceBoth": {
+      "message": "Ipakita pareho"
+   },
+   "startupSurfaceBothHint": {
+      "message": "Sabay na ipinapakita ang dalawa."
+   },
+   "startupSurfaceMenu": {
+      "message": "Menu lang"
+   },
+   "startupSurfaceMenuHint": {
+      "message": "Sa pagsisimula, menu lang. I-tap ang \"Live na subtitle\" para magsimula."
+   },
+   "startupSurfaceSubtitle": {
+      "message": "Subtitle box lang"
+   },
+   "startupSurfaceSubtitleHint": {
+      "message": "Sa pagsisimula, subtitle box lang. Buksan ang menu mula rito anumang oras."
+   },
+   "statusListening": {
+      "message": "Nakikinig sa audio ng pahina"
+   },
+   "statusReady": {
+      "message": "Handa na"
+   },
+   "strokeBlack": {
+      "message": "Itim"
+   },
+   "strokeNone": {
+      "message": "Wala"
+   },
+   "strokeWhite": {
+      "message": "Puti"
+   },
+   "stylePreview": {
+      "message": "ViiTor Isalin"
+   },
+   "subtitleSpeed": {
+      "message": "Bilis ng pag-refresh ng subtitle"
+   },
+   "subtitleSpeedFast": {
+      "message": "Mabilis"
+   },
+   "subtitleSpeedFastHint": {
+      "message": "Mabilis mag-update, binabalanse ang bilis at kadalian ng pagbasa."
+   },
+   "subtitleSpeedFinalOnly": {
+      "message": "Pinakamabagal"
+   },
+   "subtitleSpeedFinalOnlyHint": {
+      "message": "Ipinapakita lamang ang matatag na resulta ng pagkilala, ngunit mas mataas ang latency."
+   },
+   "subtitleSpeedRealtime": {
+      "message": "Real-time"
+   },
+   "subtitleSpeedRealtimeHint": {
+      "message": "Nag-a-update agad pagdating ng resulta. Pinakamababang latency, ngunit madalas magbago ang teksto."
+   },
+   "subtitleSpeedSlow": {
+      "message": "Karaniwan"
+   },
+   "subtitleSpeedSlowHint": {
+      "message": "Bahagyang binabawasan ang dalas ng pag-update para sa mas matatag na pagbasa."
+   },
+   "subtitleSpeedSlowest": {
+      "message": "Medyo mabagal"
+   },
+   "subtitleSpeedSlowestHint": {
+      "message": "Mas mababang dalas ng pag-update, mas kaunting pagbabago ng teksto, mas madaling basahin."
+   },
+   "subtitleSpeedStandard": {
+      "message": "Medyo mabilis"
+   },
+   "subtitleSpeedStandardHint": {
+      "message": "Katamtamang bilis ng pag-update na may medyo mas kaunting pagbabago sa teksto."
+   },
+   "subtitleStyle": {
+      "message": "Estilo ng Subtitle"
+   },
+   "swapLanguages": {
+      "message": "Pagpalitin ang mga wika"
+   },
+   "tabSilentDetected": {
+      "message": "Walang na-detect na audio sa page. Pakitiyak kung naglalaro ang video at hindi naka-mute"
+   },
+   "tools": {
+      "message": "Mga Feature"
+   },
+   "transportAuto": {
+      "message": "Awtomatiko"
+   },
+   "transportDirect": {
+      "message": "Direkta"
+   },
+   "transportMode": {
+      "message": "Paraan ng koneksyon"
+   },
+   "transportWebrtc": {
+      "message": "WebRTC"
+   },
+   "tutorial": {
+      "message": "Gabay"
+   },
+   "uidLabel": {
+      "message": "UID: "
+   },
+   "unpinFromTopbar": {
+      "message": "I-unpin sa toolbar"
+   },
+   "upgradeVip": {
+      "message": "I-upgrade ang VIP"
+   },
+   "usageExhaustedCancel": {
+      "message": "Kanselahin"
+   },
+   "usageExhaustedDesc": {
+      "message": "Maaari kang magpatuloy nang libre bukas, o mag-upgrade ngayon para agad na gumamit nang walang limitasyon sa oras."
+   },
+   "usageExhaustedOk": {
+      "message": "Mag-upgrade ngayon"
+   },
+   "usageExhaustedTitle": {
+      "message": "Naubos na ang libreng oras ngayong araw"
+   },
+   "usageReminderDesc": {
+      "message": "Mahigit 30 minuto ka nang tuloy-tuloy na gumagamit ng serbisyo. Mag-upgrade para sa matatag na serbisyo na walang limitasyon sa oras."
+   },
+   "usageReminderLater": {
+      "message": "Mamaya na"
+   },
+   "usageReminderOk": {
+      "message": "Mag-upgrade ngayon"
+   },
+   "usageReminderTitle": {
+      "message": "I-unlock ang higit pang benepisyo ng miyembro"
+   },
+   "vipExpireAt": {
+      "message": "Mag-e-expire: "
+   },
+   "vipStatus": {
+      "message": "Katayuan ng VIP"
+   }
+}
