@@ -32,7 +32,9 @@
     "sidePanel"
   ],
   "host_permissions": [
-    "*://*.youtube.com/*"
+    "*://*.youtube.com/*",
+    "https://generativelanguage.googleapis.com/*",
+    "https://api.groq.com/*"
   ],
   "content_scripts": [
     {
@@ -53,7 +55,6 @@
       "resources": [
         "icons/*",
         "overlay.css",
-        "audio-worklet-processor.js",
         "translation/*"
       ],
       "matches": [

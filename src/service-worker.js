@@ -131,14 +131,15 @@ async function startCapture(tabId, settingsPayload) {
     }
 
     console.log(`[BabelLive-SW] Forwarding session parameters to offscreen (Tab: ${tabId}, Stream: ${streamId?.slice(0, 10)}...)`);
-    chrome.runtime.sendMessage({
+    const response = await chrome.runtime.sendMessage({
       type: MSG.startCapture,
       streamId,
       tabId,
       settings
-    }).catch((err) => {
-      console.error('[BabelLive-SW ERROR] Failed to send startCapture to offscreen:', err);
     });
+    if (!response?.accepted) {
+      throw new Error('The audio capture document did not accept the start request.');
+    }
   } catch (err) {
     console.error('[BabelLive-SW ERROR] startCapture error:', err);
     if (ts.requestId !== reqId) return;
