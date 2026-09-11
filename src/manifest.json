@@ -1,0 +1,64 @@
+{
+  "manifest_version": 3,
+  "name": "BabelLive",
+  "description": "Real-time AI live translation with dual-language subtitle overlay on HTML5 videos.",
+  "version": "1.0.0",
+  "action": {
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
+    "default_title": "BabelLive — AI Live Translation",
+    "default_popup": "popup.html"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "background": {
+    "service_worker": "service-worker.js",
+    "type": "module"
+  },
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "tabCapture",
+    "offscreen",
+    "sidePanel"
+  ],
+  "host_permissions": [
+    "*://*.youtube.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.youtube.com/*"
+      ],
+      "js": ["content.js"],
+      "css": ["overlay.css"],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "icons/*",
+        "overlay.css",
+        "audio-worklet-processor.js",
+        "translation/*"
+      ],
+      "matches": [
+        "*://*.youtube.com/*"
+      ]
+    }
+  ]
+}

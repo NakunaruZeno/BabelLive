@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+
+# Build artifacts and packages
+dist/
+build/
+*.zip
+*.tar.gz
+*.rar
+
+# Environment & Credentials (STRICTLY IGNORED)
+.env
+.env.*
+*.key
+*.pem
+credentials.json
+secrets.json
+
+# Development & Research Folders
+ref/
+PIC/
+agent/
+.agents/
+
+# OS Artifacts
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# Editor & IDE Configs
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+.DS_Store
