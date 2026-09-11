@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BabelLive</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+
+<body>
+  <div class="popup-container">
+    <!-- Header -->
+    <header class="popup-header">
+      <div class="logo-group">
+        <div class="logo-icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <circle cx="14" cy="14" r="13" stroke="url(#logoGrad)" stroke-width="2" />
+            <path d="M8 18 L14 8 L20 18" stroke="url(#logoGrad)" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" fill="none" />
+            <circle cx="14" cy="20" r="1.5" fill="#06b6d4" />
+            <defs>
+              <linearGradient id="logoGrad" x1="0" y1="0" x2="28" y2="28">
+                <stop offset="0%" stop-color="#8b5cf6" />
+                <stop offset="100%" stop-color="#06b6d4" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <h1 class="logo-text">BabelLive</h1>
+        <span class="live-badge">
+          <span class="live-dot"></span>
+          LIVE
+        </span>
+      </div>
+      <label class="master-toggle" id="masterToggleLabel">
+        <input type="checkbox" id="masterToggle">
+        <span class="toggle-slider"></span>
+      </label>
+    </header>
+
+    <!-- Status Bar -->
+    <div class="status-bar" id="statusBar">
+      <div class="status-dot idle"></div>
+      <span class="status-text" id="statusText">Idle — Click toggle to start</span>
+    </div>
+
+    <!-- Language Router -->
+    <section class="section">
+      <h2 class="section-title">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M2 3h5M4.5 3v7M2 6h5M7 10l3-7 3 7M8.5 8h3" stroke="currentColor" stroke-width="1.2"
+            stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        Language
+      </h2>
+      <div class="language-router">
+        <div class="lang-select-wrapper">
+          <label class="lang-label">Source</label>
+          <select class="lang-select" id="sourceLang">
+            <option value="auto">🔍 Auto-detect</option>
+            <option value="ja" selected>🇯🇵 Japanese</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="zh">🇨🇳 Chinese</option>
+            <option value="ko">🇰🇷 Korean</option>
+            <option value="fr">🇫🇷 French</option>
+            <option value="de">🇩🇪 German</option>
+            <option value="es">🇪🇸 Spanish</option>
+            <option value="ru">🇷🇺 Russian</option>
+            <option value="th">🇹🇭 Thai</option>
+          </select>
+        </div>
+        <button class="swap-btn" id="swapLangs" title="Swap languages">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M5 7h10M12 4l3 3-3 3M15 13H5M8 16l-3-3 3-3" stroke="currentColor" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+        <div class="lang-select-wrapper">
+          <label class="lang-label">Target</label>
+          <select class="lang-select" id="targetLang">
+            <option value="vi" selected>🇻🇳 Vietnamese</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="ja">🇯🇵 Japanese</option>
+            <option value="zh">🇨🇳 Chinese</option>
+            <option value="ko">🇰🇷 Korean</option>
+            <option value="fr">🇫🇷 French</option>
+            <option value="de">🇩🇪 German</option>
+            <option value="es">🇪🇸 Spanish</option>
+            <option value="ru">🇷🇺 Russian</option>
+            <option value="th">🇹🇭 Thai</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- Subtitle Styling -->
+    <section class="section">
+      <h2 class="section-title">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <rect x="1" y="3" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.2" />
+          <path d="M4 9h3M9 9h3M4 11h8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+        </svg>
+        Subtitle Style
+      </h2>
+      <div class="style-presets">
+        <button class="preset-btn active" data-preset="anime" id="presetAnime">
+          <span class="preset-preview anime-preview">字</span>
+          <span class="preset-name">Anime</span>
+        </button>
+        <button class="preset-btn" data-preset="cinema" id="presetCinema">
+          <span class="preset-preview cinema-preview">Ab</span>
+          <span class="preset-name">Cinema</span>
+        </button>
+        <button class="preset-btn" data-preset="minimal" id="presetMinimal">
+          <span class="preset-preview minimal-preview">Aa</span>
+          <span class="preset-name">Minimal</span>
+        </button>
+      </div>
+
+      <!-- Font Size Slider -->
+      <div class="slider-group">
+        <label class="slider-label">
+          Font Size
+          <span class="slider-value" id="fontSizeValue">22px</span>
+        </label>
+        <input type="range" class="styled-slider" id="fontSizeSlider" min="14" max="36" value="22" step="1">
+      </div>
+
+      <!-- Bilingual Toggle -->
+      <div class="option-row">
+        <span class="option-label">Show Original (Bilingual)</span>
+        <label class="mini-toggle">
+          <input type="checkbox" id="bilingualToggle" checked>
+          <span class="mini-toggle-slider"></span>
+        </label>
+      </div>
+    </section>
+
+    <!-- Translation Engine -->
+    <section class="section">
+      <h2 class="section-title">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M8 1v4M4.5 2.5l1.4 1.4M11.5 2.5l-1.4 1.4M2 8h3M11 8h3M4.5 13.5l1.4-1.4M11.5 13.5l-1.4-1.4M8 11v4"
+            stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+          <circle cx="8" cy="8" r="2.5" stroke="currentColor" stroke-width="1.2" />
+        </svg>
+        Translation Engine
+      </h2>
+      <div class="engine-options">
+        <label class="engine-option" data-engine="cloud">
+          <input type="radio" name="engine" value="cloud" checked>
+          <div class="engine-card">
+            <div class="engine-icon">☁️</div>
+            <div class="engine-info">
+              <span class="engine-name">Cloud LLM</span>
+              <span class="engine-desc">Groq / Gemini Flash</span>
+            </div>
+          </div>
+        </label>
+        <label class="engine-option" data-engine="local">
+          <input type="radio" name="engine" value="local">
+          <div class="engine-card">
+            <div class="engine-icon">💻</div>
+            <div class="engine-info">
+              <span class="engine-name">Local AI</span>
+              <span class="engine-desc">WebGPU • Offline</span>
+            </div>
+          </div>
+        </label>
+        <label class="engine-option" data-engine="fallback">
+          <input type="radio" name="engine" value="fallback">
+          <div class="engine-card">
+            <div class="engine-icon">🌐</div>
+            <div class="engine-info">
+              <span class="engine-name">Fallback</span>
+              <span class="engine-desc">Free • No setup</span>
+            </div>
+          </div>
+        </label>
+      </div>
+
+      <!-- Cloud LLM Settings -->
+      <div class="engine-settings" id="cloudSettings">
+        <div class="option-row">
+          <span class="option-label">Provider</span>
+          <select class="mini-select" id="cloudProvider">
+            <option value="groq">Groq (30 RPM)</option>
+            <option value="gemini">Gemini Flash (15 RPM)</option>
+          </select>
+        </div>
+        <div class="api-key-group">
+          <div class="api-key-header">
+            <label class="api-key-label">API Keys</label>
+            <div class="api-key-actions">
+              <button class="eye-btn" id="toggleKeyVisibility" title="Show/Hide keys">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.2" />
+                  <circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.2" />
+                </svg>
+              </button>
+              <button class="add-key-btn" id="addKeyBtn" title="Add API key">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="api-key-list" id="apiKeyList">
+            <!-- Key rows will be inserted dynamically -->
+          </div>
+        </div>
+        <div class="key-status" id="keyStatus">
+          <span class="key-count">0 keys configured</span>
+        </div>
+      </div>
+
+      <!-- Local WebGPU Settings -->
+      <div class="engine-settings hidden" id="localSettings">
+        <div class="webgpu-status" id="webgpuStatus">
+          <div class="status-icon">⏳</div>
+          <span>Checking WebGPU support...</span>
+        </div>
+        <div class="model-download" id="modelDownload">
+          <div class="model-info">
+            <span class="model-name">NLLB-200 Distilled (INT4)</span>
+            <span class="model-size">~60MB</span>
+          </div>
+          <div class="download-progress hidden" id="downloadProgress">
+            <div class="progress-bar">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <span class="progress-text" id="progressText">0%</span>
+          </div>
+          <button class="download-btn" id="downloadModelBtn">Download Model</button>
+        </div>
+        <div class="system-warning hidden" id="systemWarning">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M7 1L1 13h12L7 1z" stroke="#f59e0b" stroke-width="1.2" />
+            <path d="M7 5v3M7 10v.5" stroke="#f59e0b" stroke-width="1.2" stroke-linecap="round" />
+          </svg>
+          <span>Requires WebGPU + 2.5GB free RAM</span>
+        </div>
+      </div>
+
+      <!-- Fallback notice -->
+      <div class="engine-settings hidden" id="fallbackSettings">
+        <div class="fallback-notice">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <circle cx="7" cy="7" r="6" stroke="#94a3b8" stroke-width="1.2" />
+            <path d="M7 4v3M7 9v.5" stroke="#94a3b8" stroke-width="1.2" stroke-linecap="round" />
+          </svg>
+          <span>Uses Google Translate as free fallback. No API key needed.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Demo Mode -->
+    <section class="section section-compact">
+      <div class="option-row">
+        <span class="option-label">🎬 Demo Mode <span class="hint">(mock subtitles)</span></span>
+        <label class="mini-toggle">
+          <input type="checkbox" id="demoToggle">
+          <span class="mini-toggle-slider"></span>
+        </label>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="popup-footer">
+      <span class="version">v1.0.0</span>
+      <span class="credit">BabelLive — AI Translation</span>
+    </footer>
+  </div>
+  <script src="popup.js"></script>
+</body>
+
+</html>

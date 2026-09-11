@@ -1,0 +1,237 @@
+/* ============================================================
+   BabelLive — Video Overlay Subtitle Styles
+   Injected by content.js into the active page.
+   Anime-inspired typography with 3 preset modes.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Inter:wght@400;600;700&display=swap');
+
+/* --- Overlay Container --- */
+.babellive-overlay {
+  position: absolute;
+  bottom: 12%;
+  left: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none !important;
+  z-index: 2147483647 !important;
+  transition: bottom 0.3s ease;
+  font-family: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.babellive-overlay.hidden {
+  display: none !important;
+}
+
+/* --- Subtitle Block (draggable) --- */
+.babellive-subtitle-block {
+  pointer-events: auto;
+  max-width: 85%;
+  min-width: 200px;
+  padding: 6px 18px 8px;
+  border-radius: 8px;
+  cursor: grab;
+  user-select: none;
+  text-align: center;
+  position: relative;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+/* Hide block when it has no subtitle content */
+.babellive-subtitle-block.empty {
+  display: none !important;
+}
+
+/* Hide YouTube native caption container when BabelLive is active */
+.babellive-hide-native-cc .ytp-caption-window-container {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.babellive-subtitle-block:active { cursor: grabbing; }
+.babellive-subtitle-block.dragging {
+  box-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
+  transform: scale(1.01);
+}
+
+/* --- Original (top row) --- */
+.babellive-original {
+  font-size: 14px;
+  color: #e2e8f0;
+  opacity: 0.85;
+  margin-bottom: 2px;
+  line-height: 1.5;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+  transition: opacity 0.3s ease, font-size 0.2s ease;
+}
+
+.babellive-original.hidden {
+  display: none;
+}
+
+/* --- Translated (bottom row) --- */
+.babellive-translated {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.4;
+  transition: opacity 0.3s ease, font-size 0.2s ease;
+}
+
+/* --- Fade animations --- */
+@keyframes subtitleFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes subtitleFadeOut {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-4px); }
+}
+
+.babellive-fade-in {
+  animation: subtitleFadeIn 0.3s ease forwards;
+}
+
+.babellive-fade-out {
+  animation: subtitleFadeOut 0.25s ease forwards;
+}
+
+/* ============================================================
+   PRESET: Anime Standard
+   Bold yellow font, 2px solid black stroke, subtle drop-shadow
+   ============================================================ */
+.babellive-preset-anime .babellive-translated {
+  color: #fde047;
+  -webkit-text-stroke: 2px #000;
+  text-shadow:
+    0 0 4px rgba(0, 0, 0, 0.9),
+    0 2px 6px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(253, 224, 71, 0.15);
+  paint-order: stroke fill;
+  font-weight: 700;
+}
+
+.babellive-preset-anime .babellive-original {
+  color: #e2e8f0;
+  -webkit-text-stroke: 1px rgba(0, 0, 0, 0.8);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+  paint-order: stroke fill;
+}
+
+/* ============================================================
+   PRESET: Cinema Crisp
+   Pure white bold font, translucent dark box background
+   ============================================================ */
+.babellive-preset-cinema .babellive-subtitle-block {
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(4px);
+  border-radius: 6px;
+  padding: 8px 24px 10px;
+}
+
+.babellive-preset-cinema .babellive-translated {
+  color: #ffffff;
+  font-weight: 700;
+  text-shadow: none;
+  -webkit-text-stroke: 0;
+}
+
+.babellive-preset-cinema .babellive-original {
+  color: rgba(255, 255, 255, 0.7);
+  -webkit-text-stroke: 0;
+  text-shadow: none;
+}
+
+/* ============================================================
+   PRESET: Minimalist
+   Pure white text with high-contrast outline
+   ============================================================ */
+.babellive-preset-minimal .babellive-translated {
+  color: #ffffff;
+  -webkit-text-stroke: 1.5px rgba(0, 0, 0, 0.85);
+  text-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.7),
+    0 0 8px rgba(0, 0, 0, 0.4);
+  paint-order: stroke fill;
+  font-weight: 600;
+}
+
+.babellive-preset-minimal .babellive-original {
+  color: rgba(255, 255, 255, 0.8);
+  -webkit-text-stroke: 1px rgba(0, 0, 0, 0.7);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  paint-order: stroke fill;
+}
+
+/* ============================================================
+   Floating Mini-bar (hover controls)
+   ============================================================ */
+.babellive-minibar {
+  position: absolute;
+  top: -32px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  transform: translateX(-50%) translateY(4px);
+}
+
+.babellive-subtitle-block:hover .babellive-minibar {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+.babellive-minibar-btn {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background 0.15s ease, color 0.15s ease;
+  padding: 0;
+}
+
+.babellive-minibar-btn:hover {
+  background: rgba(139, 92, 246, 0.2);
+  color: #e2e8f0;
+}
+
+.babellive-minibar-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* --- Resize Handle Visual Feedback --- */
+.babellive-subtitle-block::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 3px;
+  background: rgba(139, 92, 246, 0.3);
+  border-radius: 2px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.babellive-subtitle-block:hover::after { opacity: 1; }
