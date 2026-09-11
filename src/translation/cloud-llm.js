@@ -20,7 +20,7 @@ const PROVIDERS = {
   },
   gemini: {
     name: 'Gemini Flash',
-    baseUrl: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent',
+    baseUrl: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
     maxRPM: 15,
     headerKey: 'x-goog-api-key',
     headerPrefix: '',

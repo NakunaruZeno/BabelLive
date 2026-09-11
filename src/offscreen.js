@@ -1,10 +1,8 @@
 /**
  * BabelLive — Offscreen Document
- * Handles tab audio capture using getUserMedia + AudioWorklet + WebCodecs (Opus).
+ * Handles tab audio capture using getUserMedia + MediaRecorder.
  * Receives START/STOP from service worker, performs STT & Translation.
  */
-
-import { translate } from './translation/translation-router.js';
 
 const MSG = {
   startCapture: 'BABELLIVE_START_CAPTURE',
@@ -12,15 +10,14 @@ const MSG = {
   captureReady: 'BABELLIVE_CAPTURE_READY',
   captureError: 'BABELLIVE_CAPTURE_ERROR',
   captureEnded: 'BABELLIVE_CAPTURE_ENDED',
-  audioChunk: 'BABELLIVE_AUDIO_CHUNK',
 };
 
-const SAMPLE_RATE = 16000;
-const CHANNELS = 1;
-const FRAME_MS = 20;
-const FRAME_SIZE = (SAMPLE_RATE * FRAME_MS) / 1000; // 320 samples
-
-const WORKLET_URL = chrome.runtime.getURL('audio-worklet-processor.js');
+const SEGMENT_MS = 4000;
+const AUDIO_RMS_THRESHOLD = 0.0015;
+const MIN_AUDIO_BYTES = 1000;
+const GEMINI_MODEL = 'gemini-2.5-flash';
+const GROQ_TRANSCRIPTION_MODEL = 'whisper-large-v3-turbo';
+const GROQ_CHAT_MODEL = 'llama-3.1-8b-instant';
 const sessions = new Map();
 
 function sendToSW(message) {
@@ -36,17 +33,22 @@ const LANG_NAMES = {
 
 const STORAGE_KEY = 'babellive_settings';
 
-let sessionConfig = { apiKey: '', sourceLang: 'ja', targetLang: 'vi' };
+let sessionConfig = { apiKey: '', sourceLang: 'ja', targetLang: 'vi', cloudProvider: 'groq' };
+
+function getApiKey(tabId) {
+  const keys = (sessionConfig.apiKey || '').split(',').map((key) => key.trim()).filter(Boolean);
+  if (keys.length === 0) {
+    sendToSW({ type: MSG.captureError, tabId, error: 'No cloud API key provided.' });
+    return '';
+  }
+  return keys[Math.floor(Math.random() * keys.length)];
+}
 
 async function transcribeAndTranslateGemini(audioBase64, mimeType, tabId) {
-  const keys = (sessionConfig.apiKey || '').split(',').map((k) => k.trim()).filter(Boolean);
-  if (keys.length === 0) {
-    sendToSW({ type: MSG.captureError, tabId, error: 'No Gemini API key provided.' });
-    return null;
-  }
-  const apiKey = keys[Math.floor(Math.random() * keys.length)];
+  const apiKey = getApiKey(tabId);
+  if (!apiKey) return null;
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
   
   if (!apiKey.startsWith('AIza')) {
     console.warn('[BabelLive-Offscreen] Warning: API Key format may not match Google AI Studio (expected AIza...). Key prefix:', apiKey.slice(0, 4));
@@ -54,6 +56,7 @@ async function transcribeAndTranslateGemini(audioBase64, mimeType, tabId) {
 
   const srcName = LANG_NAMES[sessionConfig.sourceLang] || 'the source language';
   const tgtName = LANG_NAMES[sessionConfig.targetLang] || 'the target language';
+  const apiMimeType = (mimeType || 'audio/webm').split(';')[0];
 
   const prompt = `Transcribe the audio speech accurately into its original language (${srcName}) and immediately translate it into ${tgtName}. Return ONLY a valid JSON object without markdown formatting: {"original": "...", "translated": "..."}. If there is only silence or background noise, return {"original": "", "translated": ""}.`;
 
@@ -67,12 +70,12 @@ async function transcribeAndTranslateGemini(audioBase64, mimeType, tabId) {
           {
             role: 'user',
             parts: [
-              { inline_data: { mime_type: mimeType || 'audio/webm', data: audioBase64 } },
+              { inlineData: { mimeType: apiMimeType, data: audioBase64 } },
               { text: prompt },
             ],
           }
         ],
-        generationConfig: { response_mime_type: 'application/json', temperature: 0.2 },
+        generationConfig: { responseMimeType: 'application/json', temperature: 0.2 },
       }),
     });
 
@@ -102,7 +105,69 @@ async function transcribeAndTranslateGemini(audioBase64, mimeType, tabId) {
   return null;
 }
 
-async function handleAudioBuffer(tabId, audioBase64, mimeType) {
+async function transcribeAndTranslateGroq(blob, mimeType, tabId) {
+  const apiKey = getApiKey(tabId);
+  if (!apiKey) return null;
+
+  const extension = mimeType?.includes('ogg') ? 'ogg' : 'webm';
+  const form = new FormData();
+  form.append('file', blob, `babellive-${tabId}.${extension}`);
+  form.append('model', GROQ_TRANSCRIPTION_MODEL);
+  form.append('response_format', 'json');
+  form.append('temperature', '0');
+  if (sessionConfig.sourceLang && sessionConfig.sourceLang !== 'auto') {
+    form.append('language', sessionConfig.sourceLang);
+  }
+
+  const transcriptionResponse = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${apiKey}` },
+    body: form,
+  });
+  if (!transcriptionResponse.ok) {
+    const details = await transcriptionResponse.text().catch(() => '');
+    throw new Error(`Groq transcription error ${transcriptionResponse.status}: ${details}`);
+  }
+
+  const transcription = await transcriptionResponse.json();
+  const original = transcription.text?.trim() || '';
+  if (!original) return null;
+  if (sessionConfig.sourceLang === sessionConfig.targetLang) {
+    return { original, translated: original };
+  }
+
+  const srcName = LANG_NAMES[sessionConfig.sourceLang] || 'the source language';
+  const tgtName = LANG_NAMES[sessionConfig.targetLang] || 'the target language';
+  const translationResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: GROQ_CHAT_MODEL,
+      messages: [
+        {
+          role: 'system',
+          content: `Translate subtitles from ${srcName} to ${tgtName}. Return only the natural, concise translation.`,
+        },
+        { role: 'user', content: original },
+      ],
+      temperature: 0.2,
+      max_tokens: 500,
+    }),
+  });
+  if (!translationResponse.ok) {
+    const details = await translationResponse.text().catch(() => '');
+    throw new Error(`Groq translation error ${translationResponse.status}: ${details}`);
+  }
+
+  const translation = await translationResponse.json();
+  const translated = translation.choices?.[0]?.message?.content?.trim() || original;
+  return { original, translated };
+}
+
+async function handleAudioBuffer(tabId, blob, mimeType) {
   try {
     // Rely on in-memory sessionConfig, with a safe fallback just in case
     if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local && !sessionConfig.apiKey) {
@@ -112,12 +177,19 @@ async function handleAudioBuffer(tabId, audioBase64, mimeType) {
         sessionConfig.apiKey = settings.apiKeys;
         sessionConfig.sourceLang = settings.sourceLang || 'ja';
         sessionConfig.targetLang = settings.targetLang || 'vi';
+        sessionConfig.cloudProvider = settings.cloudProvider || 'groq';
       }
     }
 
-    // We rely purely on the 2-in-1 Gemini pipeline as requested
     if (sessionConfig.apiKey) {
-      const result = await transcribeAndTranslateGemini(audioBase64, mimeType, tabId);
+      let result;
+      if (sessionConfig.cloudProvider === 'gemini') {
+        const audioBase64 = await blobToBase64(blob);
+        if (!audioBase64) return;
+        result = await transcribeAndTranslateGemini(audioBase64, mimeType, tabId);
+      } else {
+        result = await transcribeAndTranslateGroq(blob, mimeType, tabId);
+      }
       if (result && (result.original || result.translated)) {
         console.log(`[BabelLive-Offscreen] Dispatching BABELLIVE_SUBTITLE_BROADCAST to Tab ${tabId}`);
         chrome.runtime.sendMessage({
@@ -128,11 +200,11 @@ async function handleAudioBuffer(tabId, audioBase64, mimeType) {
         });
       }
     } else {
-      // Missing API key handling
-      sendToSW({ type: MSG.captureError, tabId, error: 'No Gemini API key provided.' });
+      sendToSW({ type: MSG.captureError, tabId, error: 'No cloud API key provided.' });
     }
   } catch (e) {
-    console.warn('[BabelLive offscreen] handleAudioBuffer error:', e);
+    console.error('[BabelLive-Offscreen] Audio processing error:', e);
+    sendToSW({ type: MSG.captureError, tabId, error: e.message });
   }
 }
 
@@ -141,16 +213,18 @@ function createSession(tabId) {
     tabId,
     state: 'idle',
     opChain: Promise.resolve(),
+    processingChain: Promise.resolve(),
     audioCtx: null,
-    monitorAudioCtx: null,
-    encoder: null,
     source: null,
-    monitorSource: null,
-    workletNode: null,
+    analyser: null,
     monitorGain: null,
     mediaStream: null,
     recorder: null,
-    frameTimestamp: 0,
+    segmentTimer: null,
+    analysisTimer: null,
+    segmentHasAudio: false,
+    analyserReadCount: 0,
+    stopping: false,
   };
 }
 
@@ -182,38 +256,132 @@ async function closeAudioContext(ctx) {
 
 async function cleanupSession(session) {
   session.state = 'stopping';
+  session.stopping = true;
 
-  disconnectNode(session.workletNode);
-  disconnectNode(session.monitorGain);
-  disconnectNode(session.monitorSource);
-  disconnectNode(session.source);
-  session.mediaStream?.getTracks().forEach((track) => track.stop());
+  if (session.segmentTimer) clearTimeout(session.segmentTimer);
+  if (session.analysisTimer) clearInterval(session.analysisTimer);
 
   if (session.recorder && session.recorder.state !== 'inactive') {
+    session.recorder.ondataavailable = null;
+    session.recorder.onstop = null;
+    session.recorder.onerror = null;
     try { session.recorder.stop(); } catch { }
   }
   session.recorder = null;
 
-  const encoder = session.encoder;
-  if (encoder && encoder.state !== 'closed') {
-    try { await encoder.flush(); } catch { }
-    try { encoder.close(); } catch { }
-  }
+  disconnectNode(session.monitorGain);
+  disconnectNode(session.analyser);
+  disconnectNode(session.source);
+  session.mediaStream?.getTracks().forEach((track) => track.stop());
 
   await closeAudioContext(session.audioCtx);
-  await closeAudioContext(session.monitorAudioCtx);
 
-  session.workletNode = null;
   session.monitorGain = null;
-  session.monitorSource = null;
+  session.analyser = null;
   session.source = null;
   session.mediaStream = null;
-  session.encoder = null;
   session.audioCtx = null;
-  session.monitorAudioCtx = null;
-  session.frameTimestamp = 0;
+  session.segmentTimer = null;
+  session.analysisTimer = null;
   session.state = 'idle';
   sessions.delete(session.tabId);
+}
+
+function getRecorderMimeType() {
+  const candidates = [
+    'audio/webm;codecs=opus',
+    'audio/webm',
+    'audio/ogg;codecs=opus',
+  ];
+  return candidates.find((type) => MediaRecorder.isTypeSupported(type)) || '';
+}
+
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(reader.error || new Error('Unable to read recorded audio.'));
+    reader.onloadend = () => {
+      const result = reader.result;
+      resolve(typeof result === 'string' ? result.split(',')[1] || '' : '');
+    };
+    reader.readAsDataURL(blob);
+  });
+}
+
+function queueAudioSegment(session, blob, mimeType) {
+  if (blob.size < MIN_AUDIO_BYTES) return;
+
+  session.processingChain = session.processingChain
+    .then(async () => {
+      if (sessions.get(session.tabId) !== session || session.stopping) return;
+      console.log(`[BabelLive-Offscreen] Captured ${blob.size} bytes of ${mimeType || 'audio'} for tab ${session.tabId}`);
+      await handleAudioBuffer(session.tabId, blob, mimeType || 'audio/webm');
+    })
+    .catch((error) => {
+      console.warn('[BabelLive-Offscreen] Failed to process recorded audio:', error);
+    });
+}
+
+function startSignalAnalysis(session) {
+  // MediaRecorder works independently of Web Audio. If the context cannot run in
+  // the offscreen document, leave analyserReadCount at zero so segments are kept.
+  if (session.audioCtx.state !== 'running') return;
+
+  const samples = new Float32Array(session.analyser.fftSize);
+  session.analysisTimer = setInterval(() => {
+    if (sessions.get(session.tabId) !== session || session.stopping) return;
+
+    session.analyser.getFloatTimeDomainData(samples);
+    let sumSquares = 0;
+    for (let i = 0; i < samples.length; i++) sumSquares += samples[i] * samples[i];
+    const rms = Math.sqrt(sumSquares / samples.length);
+    session.analyserReadCount += 1;
+    if (rms >= AUDIO_RMS_THRESHOLD) session.segmentHasAudio = true;
+  }, 100);
+}
+
+function startRecorderSegment(session) {
+  if (sessions.get(session.tabId) !== session || session.stopping) return;
+
+  const mimeType = getRecorderMimeType();
+  const options = { audioBitsPerSecond: 64000 };
+  if (mimeType) options.mimeType = mimeType;
+
+  const recorder = new MediaRecorder(session.mediaStream, options);
+  const chunks = [];
+  session.recorder = recorder;
+  session.segmentHasAudio = false;
+  session.analyserReadCount = 0;
+
+  recorder.ondataavailable = (event) => {
+    if (event.data?.size) chunks.push(event.data);
+  };
+
+  recorder.onerror = (event) => {
+    const error = event.error || new Error('MediaRecorder failed while capturing tab audio.');
+    console.error('[BabelLive-Offscreen] MediaRecorder error:', error);
+    sendToSW({ type: MSG.captureError, tabId: session.tabId, error: error.message });
+  };
+
+  recorder.onstop = () => {
+    if (session.segmentTimer) clearTimeout(session.segmentTimer);
+    session.segmentTimer = null;
+    if (sessions.get(session.tabId) !== session || session.stopping) return;
+
+    const blob = new Blob(chunks, { type: recorder.mimeType || mimeType || 'audio/webm' });
+    // If analysis could not run, keep the segment instead of silently losing audio.
+    if (session.segmentHasAudio || session.analyserReadCount === 0) {
+      queueAudioSegment(session, blob, recorder.mimeType || mimeType);
+    }
+
+    // A fresh recorder makes every segment a complete, independently decodable file.
+    startRecorderSegment(session);
+  };
+
+  recorder.start();
+  session.segmentTimer = setTimeout(() => {
+    if (session.recorder === recorder && recorder.state === 'recording') recorder.stop();
+  }, SEGMENT_MS);
 }
 
 async function startCapture(streamId, tabId) {
@@ -224,149 +392,51 @@ async function startCapture(streamId, tabId) {
     return;
   }
 
-  if (session.mediaStream || session.audioCtx || session.encoder) {
+  if (session.mediaStream || session.audioCtx || session.recorder) {
     await cleanupSession(session);
     sessions.set(tabId, createSession(tabId));
   }
 
   const current = getOrCreateSession(tabId);
   current.state = 'starting';
+  current.stopping = false;
   console.log(`[BabelLive-Offscreen] Audio stream initialization begins for tab ${tabId} with streamId: ${streamId?.slice(0, 10)}...`);
 
   try {
+    if (!streamId) throw new Error('Chrome did not provide a tab audio stream ID.');
+
     current.mediaStream = await navigator.mediaDevices.getUserMedia({
       audio: { mandatory: { chromeMediaSource: 'tab', chromeMediaSourceId: streamId } },
       video: false,
     });
 
-    current.audioCtx = new AudioContext({ sampleRate: SAMPLE_RATE });
-    current.monitorAudioCtx = new AudioContext();
-    console.log(`[BabelLive-Offscreen] AudioContext state: ${current.audioCtx.state}`);
+    const audioTracks = current.mediaStream.getAudioTracks();
+    if (audioTracks.length === 0) throw new Error('The selected tab did not expose an audio track.');
+    audioTracks[0].addEventListener('ended', () => {
+      if (sessions.get(tabId) !== current || current.stopping) return;
+      cleanupSession(current).finally(() => {
+        sendToSW({ type: MSG.captureEnded, tabId });
+      });
+    }, { once: true });
 
-    await current.audioCtx.audioWorklet.addModule(WORKLET_URL);
-
-    const encoder = new AudioEncoder({
-      output: (chunk) => {
-        const active = sessions.get(tabId);
-        if (active?.encoder !== encoder) return;
-        const bytes = new Uint8Array(chunk.byteLength);
-        chunk.copyTo(bytes);
-        sendToSW({
-          type: MSG.audioChunk,
-          tabId,
-          data: Array.from(bytes),
-          timestamp: chunk.timestamp,
-        });
-      },
-      error: (err) => {
-        sendToSW({ type: MSG.captureError, tabId, error: err.message });
-      },
-    });
-    current.encoder = encoder;
-
-    encoder.configure({
-      codec: 'opus',
-      sampleRate: SAMPLE_RATE,
-      numberOfChannels: CHANNELS,
-      bitrate: 32000,
-    });
-
+    current.audioCtx = new AudioContext();
     current.source = current.audioCtx.createMediaStreamSource(current.mediaStream);
-    current.monitorSource = current.monitorAudioCtx.createMediaStreamSource(current.mediaStream);
-    current.workletNode = new AudioWorkletNode(current.audioCtx, 'audio-capture-processor', {
-      processorOptions: { frameSize: FRAME_SIZE },
-      numberOfOutputs: 0,
-    });
-
-    current.workletNode.port.onmessage = ({ data: pcm }) => {
-      const active = sessions.get(tabId);
-      if (active !== current) return;
-
-      // Simple Energy VAD
-      let sum = 0;
-      for (let i = 0; i < pcm.length; i++) sum += Math.abs(pcm[i]);
-      const energy = sum / pcm.length;
-      if (energy > 500) {
-        current.lastSpeechTime = Date.now();
-      }
-
-      if (encoder.state === 'configured') {
-        const audioData = new AudioData({
-          format: 's16-planar',
-          sampleRate: SAMPLE_RATE,
-          numberOfFrames: pcm.length,
-          numberOfChannels: CHANNELS,
-          timestamp: current.frameTimestamp,
-          data: pcm,
-        });
-        encoder.encode(audioData);
-        audioData.close();
-      }
-      current.frameTimestamp += FRAME_MS * 1000;
-    };
-
-    current.source.connect(current.workletNode);
-
-    // Monitor: keep tab audible
-    current.monitorGain = current.monitorAudioCtx.createGain();
+    current.analyser = current.audioCtx.createAnalyser();
+    current.analyser.fftSize = 2048;
+    current.analyser.smoothingTimeConstant = 0.2;
+    current.monitorGain = current.audioCtx.createGain();
     current.monitorGain.gain.value = 1;
-    current.monitorSource.connect(current.monitorGain);
-    current.monitorGain.connect(current.monitorAudioCtx.destination);
+    current.source.connect(current.analyser);
+    current.analyser.connect(current.monitorGain);
+    current.monitorGain.connect(current.audioCtx.destination);
+
+    if (current.audioCtx.state === 'suspended') await current.audioCtx.resume();
+    console.log(`[BabelLive-Offscreen] AudioContext state: ${current.audioCtx.state}`);
     console.log(`[BabelLive-Offscreen] Loopback destination connected for tab ${tabId}`);
 
-    // Setup MediaRecorder with VAD buffering
-    try {
-      const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
-        ? 'audio/webm;codecs=opus'
-        : 'audio/webm';
-
-      const recorder = new MediaRecorder(current.mediaStream, { mimeType });
-      current.recorder = recorder;
-
-      let chunkBuffer = [];
-      let isSpeaking = false;
-      let recordStartTime = Date.now();
-
-      recorder.ondataavailable = (e) => {
-        const active = sessions.get(tabId);
-        if (active !== current || !e.data || e.data.size < 100) return;
-
-        const now = Date.now();
-        const timeSinceLastSpeech = now - (current.lastSpeechTime || 0);
-        const hasSpeech = timeSinceLastSpeech < 1000;
-
-        if (hasSpeech) {
-          isSpeaking = true;
-          chunkBuffer.push(e.data);
-        } else if (isSpeaking) {
-          // Speech ended, finalize buffer and send
-          isSpeaking = false;
-          chunkBuffer.push(e.data);
-          const blob = new Blob(chunkBuffer, { type: mimeType });
-          chunkBuffer = [];
-
-          if (blob.size > 1000) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-              const res = reader.result;
-              if (typeof res === 'string') {
-                const base64data = res.split(',')[1];
-                if (base64data) {
-                  console.log(`[BabelLive-Offscreen] Base64 conversion success. Payload size: ${base64data.length} bytes`);
-                  handleAudioBuffer(tabId, base64data, mimeType);
-                }
-              }
-            };
-            reader.readAsDataURL(blob);
-          }
-        }
-      };
-
-      recorder.start(500); // 500ms chunks for VAD
-      console.log(`[BabelLive-Offscreen] MediaRecorder started with state: ${recorder.state}`);
-    } catch (recorderErr) {
-      console.error('[BabelLive-Offscreen] MediaRecorder init error:', recorderErr);
-    }
+    startSignalAnalysis(current);
+    startRecorderSegment(current);
+    console.log(`[BabelLive-Offscreen] MediaRecorder started with state: ${current.recorder.state}`);
 
     current.state = 'running';
     console.log('[BabelLive offscreen] Capture started successfully for tab:', tabId);
@@ -387,15 +457,21 @@ async function stopCapture(tabId) {
   sendToSW({ type: MSG.captureEnded, tabId });
 }
 
-chrome.runtime.onMessage.addListener((message) => {
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message?.type === MSG.startCapture && message.tabId != null) {
     if (message.settings) {
       sessionConfig.apiKey = message.settings.apiKeys || '';
       sessionConfig.sourceLang = message.settings.sourceLang || 'ja';
       sessionConfig.targetLang = message.settings.targetLang || 'vi';
+      sessionConfig.cloudProvider = message.settings.cloudProvider || 'groq';
     }
     enqueueForTab(message.tabId, () => startCapture(message.streamId, message.tabId));
+    sendResponse({ accepted: true });
+    return false;
   } else if (message?.type === MSG.stopCapture && message.tabId != null) {
     enqueueForTab(message.tabId, () => stopCapture(message.tabId));
+    sendResponse({ accepted: true });
+    return false;
   }
+  return false;
 });
