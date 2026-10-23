@@ -26,23 +26,45 @@
   display: none !important;
 }
 
-/* --- Subtitle Block (draggable) --- */
-.babellive-subtitle-block {
+/* --- Subtitle Stack (draggable container) --- */
+.babellive-subtitle-stack {
   pointer-events: auto;
   max-width: 85%;
   min-width: 200px;
-  padding: 6px 18px 8px;
-  border-radius: 8px;
   cursor: grab;
   user-select: none;
-  text-align: center;
   position: relative;
   transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* space between stacked subtitles */
+  align-items: center;
 }
 
-/* Hide block when it has no subtitle content */
-.babellive-subtitle-block.empty {
+.babellive-subtitle-stack.empty {
   display: none !important;
+}
+
+.babellive-subtitle-stack:active { cursor: grabbing; }
+.babellive-subtitle-stack.dragging {
+  box-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
+  transform: scale(1.01);
+  border-radius: 8px;
+}
+
+/* --- Subtitle Block --- */
+.babellive-subtitle-block {
+  padding: 6px 18px 8px;
+  border-radius: 8px;
+  text-align: center;
+  transition: opacity 0.3s ease;
+  width: fit-content;
+}
+
+.babellive-subtitle-block.interim-predicting .babellive-translated,
+.babellive-subtitle-block.interim-predicting .babellive-original {
+  opacity: 0.85;
+  color: #d1d5db; /* A slightly faded color for interim */
 }
 
 /* Hide YouTube native caption container when BabelLive is active */
@@ -51,11 +73,6 @@
   pointer-events: none !important;
 }
 
-.babellive-subtitle-block:active { cursor: grabbing; }
-.babellive-subtitle-block.dragging {
-  box-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
-  transform: scale(1.01);
-}
 
 /* --- Original (top row) --- */
 .babellive-original {
@@ -188,7 +205,7 @@
   transform: translateX(-50%) translateY(4px);
 }
 
-.babellive-subtitle-block:hover .babellive-minibar {
+.babellive-subtitle-stack:hover .babellive-minibar {
   opacity: 1;
   pointer-events: auto;
   transform: translateX(-50%) translateY(0);
@@ -220,10 +237,10 @@
 }
 
 /* --- Resize Handle Visual Feedback --- */
-.babellive-subtitle-block::after {
+.babellive-subtitle-stack::after {
   content: '';
   position: absolute;
-  bottom: -2px;
+  bottom: -4px;
   left: 50%;
   transform: translateX(-50%);
   width: 40px;
@@ -234,4 +251,4 @@
   transition: opacity 0.2s ease;
 }
 
-.babellive-subtitle-block:hover::after { opacity: 1; }
+.babellive-subtitle-stack:hover::after { opacity: 1; }

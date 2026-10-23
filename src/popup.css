@@ -967,6 +967,133 @@ body {
   background: rgba(148, 163, 184, 0.35);
 }
 
+/* --- Colab Server Settings --- */
+.colab-url-row {
+  display: flex;
+  gap: 6px;
+}
+
+.colab-url-input {
+  flex: 1;
+  padding: 8px 10px;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-glass);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-family: 'JetBrains Mono', 'Consolas', monospace;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.colab-url-input:focus {
+  border-color: var(--border-active);
+}
+
+.colab-url-input::placeholder {
+  color: var(--text-muted);
+}
+
+.test-btn {
+  padding: 8px 10px;
+  background: var(--accent-violet-dim);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 6px;
+  color: #a78bfa;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.test-btn:hover {
+  background: rgba(139, 92, 246, 0.3);
+  border-color: var(--accent-violet);
+}
+
+.test-btn:active {
+  transform: scale(0.95);
+}
+
+.launch-all-btn {
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+  border: none;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.launch-all-btn:hover {
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(139, 92, 246, 0.45), 0 0 10px rgba(6, 182, 212, 0.3);
+}
+
+.launch-all-btn:active {
+  transform: translateY(0);
+}
+
+.launch-all-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  filter: grayscale(0.5);
+}
+
+.colab-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 0;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.colab-status .status-dot.starting {
+  background: #f59e0b;
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.4);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.colab-status .status-dot.running {
+  background: #22c55e;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.4);
+}
+
+.colab-status .status-dot.error {
+  background: #ef4444;
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.4);
+}
+
+.colab-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-top: 4px;
+}
+
+.colab-hint svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
 /* --- Utility --- */
 .hidden {
   display: none !important;

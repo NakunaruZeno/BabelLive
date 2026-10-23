@@ -6,8 +6,8 @@
  */
 
 import { translateCloud, translateCloudBatch } from './cloud-llm.js';
-import { translateLocal } from './local-webgpu.js';
 import { translateFallback } from './fallback-translate.js';
+// local-webgpu removed: WebGPU is not supported in MV3 USER_MEDIA offscreen context.
 
 const STORAGE_KEY = 'babellive_settings';
 
@@ -54,7 +54,10 @@ export async function translate(text, sourceLang, targetLang) {
         return await translateCloud(text, sourceLang, targetLang, settings);
 
       case 'local':
-        return await translateLocal(text, sourceLang, targetLang);
+        // Local WebGPU is not supported in Chrome MV3 extension offscreen context.
+        // Falling back to Google Translate free endpoint.
+        console.warn('[BabelLive] Local engine not available in extension context. Using fallback.');
+        return await translateFallback(text, sourceLang, targetLang);
 
       case 'fallback':
         return await translateFallback(text, sourceLang, targetLang);

@@ -5,6 +5,9 @@
  */
 
 (() => {
+  // Only mount in the top frame to prevent duplicates in iframes
+  if (window.self !== window.top) return;
+
   if (window.__babellive_content_injected) return;
   window.__babellive_content_injected = true;
 
@@ -66,7 +69,6 @@
 
     const container = getPlayerContainer(video);
 
-    // If overlay already created but detached from DOM (e.g. YouTube SPA update)
     if (existing && !existing.overlay.isConnected) {
       container.appendChild(existing.overlay);
       return existing;
@@ -77,30 +79,18 @@
     overlay.className = `babellive-overlay babellive-preset-${settings.subtitlePreset}`;
     if (!isRunning && !settings.demoMode) overlay.classList.add('hidden');
 
-    // Subtitle block (draggable)
-    const block = document.createElement('div');
-    block.className = 'babellive-subtitle-block empty';
+    // Subtitle Stack (draggable container)
+    const stack = document.createElement('div');
+    stack.className = 'babellive-subtitle-stack empty';
 
-    // Original text row
-    const original = document.createElement('div');
-    original.className = 'babellive-original';
-    if (!settings.bilingual) original.classList.add('hidden');
-    original.textContent = '';
-
-    // Translated text row
-    const translated = document.createElement('div');
-    translated.className = 'babellive-translated';
-    translated.style.fontSize = `${settings.fontSize}px`;
-    translated.textContent = '';
-
-    // Mini-bar
+    // Mini-bar (attached to stack)
     const minibar = document.createElement('div');
     minibar.className = 'babellive-minibar';
     minibar.innerHTML = `
       <button class="babellive-minibar-btn" data-action="pin" title="Pin position">
         <svg viewBox="0 0 14 14" fill="none"><path d="M7 1v5M5 3h4M4 6h6v2l-1 4H5L4 8V6z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
-      <button class="babellive-minibar-btn" data-action="copy" title="Copy subtitle">
+      <button class="babellive-minibar-btn" data-action="copy" title="Copy last subtitle">
         <svg viewBox="0 0 14 14" fill="none"><rect x="4" y="4" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M10 4V2.5A1.5 1.5 0 008.5 1h-6A1.5 1.5 0 001 2.5v6A1.5 1.5 0 002.5 10H4" stroke="currentColor" stroke-width="1.2"/></svg>
       </button>
       <button class="babellive-minibar-btn" data-action="increase" title="Increase font">
@@ -111,21 +101,14 @@
       </button>
     `;
 
-    block.appendChild(minibar);
-    block.appendChild(original);
-    block.appendChild(translated);
-    overlay.appendChild(block);
-
-    // Insert overlay into video player container
+    stack.appendChild(minibar);
+    overlay.appendChild(stack);
     container.appendChild(overlay);
 
-    // Setup drag
-    setupDrag(block, overlay);
+    setupDrag(stack, overlay);
+    setupMinibar(minibar, stack);
 
-    // Setup minibar actions
-    setupMinibar(minibar, original, translated);
-
-    const data = { overlay, block, original, translated };
+    const data = { overlay, stack, activeBlock: null };
     overlays.set(video, data);
     return data;
   }
@@ -167,7 +150,7 @@
   }
 
   /* ── Mini-bar actions ──────────────────────── */
-  function setupMinibar(minibar, original, translated) {
+  function setupMinibar(minibar, stack) {
     minibar.addEventListener('click', (e) => {
       const btn = e.target.closest('.babellive-minibar-btn');
       if (!btn) return;
@@ -175,7 +158,12 @@
 
       switch (action) {
         case 'copy': {
-          const text = [original.textContent, translated.textContent].filter(Boolean).join('\n');
+          const blocks = Array.from(stack.querySelectorAll('.babellive-subtitle-block'));
+          if (blocks.length === 0) return;
+          const lastBlock = blocks[blocks.length - 1];
+          const original = lastBlock.querySelector('.babellive-original');
+          const translated = lastBlock.querySelector('.babellive-translated');
+          const text = [original?.textContent, translated?.textContent].filter(Boolean).join('\n');
           navigator.clipboard.writeText(text).catch(() => {});
           btn.style.color = '#22c55e';
           setTimeout(() => { btn.style.color = ''; }, 1000);
@@ -183,13 +171,13 @@
         }
         case 'increase': {
           settings.fontSize = Math.min(36, settings.fontSize + 2);
-          translated.style.fontSize = `${settings.fontSize}px`;
+          stack.querySelectorAll('.babellive-translated').forEach(el => el.style.fontSize = `${settings.fontSize}px`);
           saveSettingsToStorage();
           break;
         }
         case 'decrease': {
           settings.fontSize = Math.max(14, settings.fontSize - 2);
-          translated.style.fontSize = `${settings.fontSize}px`;
+          stack.querySelectorAll('.babellive-translated').forEach(el => el.style.fontSize = `${settings.fontSize}px`);
           saveSettingsToStorage();
           break;
         }
@@ -219,11 +207,12 @@
       overlay.className = overlay.className.replace(/babellive-preset-\w+/, '').trim();
       overlay.classList.add(`babellive-preset-${settings.subtitlePreset}`);
 
-      // Bilingual
-      original.classList.toggle('hidden', !settings.bilingual);
-
-      // Font size
-      translated.style.fontSize = `${settings.fontSize}px`;
+      // Bilingual & Font size apply to all blocks in stack
+      const originals = overlay.querySelectorAll('.babellive-original');
+      originals.forEach(el => el.classList.toggle('hidden', !settings.bilingual));
+      
+      const translateds = overlay.querySelectorAll('.babellive-translated');
+      translateds.forEach(el => el.style.fontSize = `${settings.fontSize}px`);
     });
 
     // YouTube live captions hook
@@ -256,37 +245,117 @@
     // (Removed: Duplicate DOM MutationObserver for .ytp-caption-segment that conflicted with Audio STT)
   }
 
+  /* ── Create a new subtitle block ───────────── */
+  function createSubtitleBlock() {
+    const block = document.createElement('div');
+    block.className = 'babellive-subtitle-block babellive-fade-in';
+    
+    const original = document.createElement('div');
+    original.className = 'babellive-original';
+    if (!settings.bilingual) original.classList.add('hidden');
+    
+    const translated = document.createElement('div');
+    translated.className = 'babellive-translated';
+    translated.style.fontSize = `${settings.fontSize}px`;
+    
+    block.appendChild(original);
+    block.appendChild(translated);
+    
+    return { block, original, translated };
+  }
+
   /* ── Render subtitle ───────────────────────── */
-  function renderSubtitle(video, originalText, translatedText) {
+  function renderSubtitle(video, originalText, translatedText, isInterim = false) {
     let data = overlays.get(video);
     if (!data || !data.overlay.isConnected) data = createOverlay(video);
 
-    console.log(`[BabelLive-Content] DOM Render Event: Assigning text to subtitle elements. Original: "${originalText}", Translated: "${translatedText}"`);
-    const { original, translated, block, overlay } = data;
-
+    const { overlay, stack } = data;
+    
     if (!originalText && !translatedText) {
-      block.classList.add('empty');
+      return;
+    }
+
+    const cleanOrig = (originalText || '').trim().replace(/\.+$/, '');
+    const cleanTrans = (translatedText || '').trim().replace(/\.+$/, '');
+
+    // Deduplication: ignore if identical to the previous finalized sentence
+    if (!isInterim && data.lastFinalText && (cleanTrans === data.lastFinalText || cleanOrig === data.lastFinalOriginal)) {
       return;
     }
 
     overlay.classList.remove('hidden');
-    block.classList.remove('empty');
+    stack.classList.remove('empty');
 
-    // Fade out old
-    block.classList.remove('babellive-fade-in');
-    block.classList.add('babellive-fade-out');
+    // Display density: maintain up to 2 active blocks to keep view clear
+    const maxBlocks = 2;
+    const existingBlocks = stack.querySelectorAll('.babellive-subtitle-block');
+    if (existingBlocks.length >= maxBlocks && !data.activeBlock) {
+      const oldest = existingBlocks[0];
+      oldest.remove();
+    }
 
-    setTimeout(() => {
-      original.textContent = originalText || '';
+    // Allocate new subtitle block if no active block exists
+    if (!data.activeBlock) {
+      const newBlockData = createSubtitleBlock();
+      stack.appendChild(newBlockData.block);
+      data.activeBlock = newBlockData;
+    }
+
+    const { block, original, translated } = data.activeBlock;
+
+    // Update text content
+    original.textContent = originalText || '';
+    if (!isInterim || translatedText) {
       translated.textContent = translatedText || '';
-      block.classList.remove('babellive-fade-out');
-      block.classList.add('babellive-fade-in');
-    }, 150);
+    }
+    
+    if (isInterim) {
+      block.classList.add('interim-predicting');
+      if (originalText && !originalText.endsWith('...')) original.textContent = originalText + '...';
+      if (translatedText && !translatedText.endsWith('...')) translated.textContent = translatedText + '...';
+    } else {
+      block.classList.remove('interim-predicting');
+      data.lastFinalText = cleanTrans;
+      data.lastFinalOriginal = cleanOrig;
+      // Sentence finalized: detach active block for next segment
+      data.activeBlock = null;
+    }
 
-    // Auto-hide after 7 seconds of inactivity
+    // Automatically fade out subtitles after inactivity
     if (data.hideTimer) clearTimeout(data.hideTimer);
     data.hideTimer = setTimeout(() => {
-      block.classList.add('empty');
+      const blocks = stack.querySelectorAll('.babellive-subtitle-block');
+      blocks.forEach(b => {
+        b.classList.remove('babellive-fade-in');
+        b.classList.add('babellive-fade-out');
+      });
+      setTimeout(() => {
+        stack.innerHTML = '';
+        data.lastFinalText = null;
+        data.lastFinalOriginal = null;
+        data.activeBlock = null;
+        // Re-append minibar controls
+        const minibar = document.createElement('div');
+        minibar.className = 'babellive-minibar';
+        minibar.innerHTML = `
+          <button class="babellive-minibar-btn" data-action="pin" title="Pin position">
+            <svg viewBox="0 0 14 14" fill="none"><path d="M7 1v5M5 3h4M4 6h6v2l-1 4H5L4 8V6z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="babellive-minibar-btn" data-action="copy" title="Copy last subtitle">
+            <svg viewBox="0 0 14 14" fill="none"><rect x="4" y="4" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M10 4V2.5A1.5 1.5 0 008.5 1h-6A1.5 1.5 0 001 2.5v6A1.5 1.5 0 002.5 10H4" stroke="currentColor" stroke-width="1.2"/></svg>
+          </button>
+          <button class="babellive-minibar-btn" data-action="increase" title="Increase font">
+            <svg viewBox="0 0 14 14" fill="none"><path d="M7 3v8M3 7h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </button>
+          <button class="babellive-minibar-btn" data-action="decrease" title="Decrease font">
+            <svg viewBox="0 0 14 14" fill="none"><path d="M3 7h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </button>
+        `;
+        setupMinibar(minibar, stack);
+        stack.appendChild(minibar);
+        stack.classList.add('empty');
+        data.activeBlock = null;
+      }, 300);
     }, 7000);
   }
 
@@ -294,9 +363,28 @@
   function clearSubtitles(video) {
     const data = overlays.get(video);
     if (!data) return;
-    data.original.textContent = '';
-    data.translated.textContent = '';
-    data.block.classList.add('empty');
+    data.stack.innerHTML = '';
+    // Re-append minibar
+    const minibar = document.createElement('div');
+    minibar.className = 'babellive-minibar';
+    minibar.innerHTML = `
+      <button class="babellive-minibar-btn" data-action="pin" title="Pin position">
+        <svg viewBox="0 0 14 14" fill="none"><path d="M7 1v5M5 3h4M4 6h6v2l-1 4H5L4 8V6z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="babellive-minibar-btn" data-action="copy" title="Copy last subtitle">
+        <svg viewBox="0 0 14 14" fill="none"><rect x="4" y="4" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M10 4V2.5A1.5 1.5 0 008.5 1h-6A1.5 1.5 0 001 2.5v6A1.5 1.5 0 002.5 10H4" stroke="currentColor" stroke-width="1.2"/></svg>
+      </button>
+      <button class="babellive-minibar-btn" data-action="increase" title="Increase font">
+        <svg viewBox="0 0 14 14" fill="none"><path d="M7 3v8M3 7h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+      <button class="babellive-minibar-btn" data-action="decrease" title="Decrease font">
+        <svg viewBox="0 0 14 14" fill="none"><path d="M3 7h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    `;
+    setupMinibar(minibar, data.stack);
+    data.stack.appendChild(minibar);
+    data.stack.classList.add('empty');
+    data.activeBlock = null;
     if (data.hideTimer) clearTimeout(data.hideTimer);
   }
 
@@ -424,6 +512,7 @@
           const { enabled, ...prefs } = message.settings;
           settings = { ...settings, ...prefs, enabled: true };
         }
+        scanForVideos();
         applySettings();
         sendResponse({ ok: true, isRunning: true });
         break;
@@ -448,14 +537,12 @@
 
       case 'BABELLIVE_SUBTITLE':
       case 'BABELLIVE_SUBTITLE_BROADCAST': {
-        console.log(`[BabelLive-Content] Received ${message.type}:`, { original: message.original, translated: message.translated });
-        if (!isRunning && !settings.demoMode) {
-          sendResponse({ ok: false, skipped: true });
-          return false;
-        }
+        console.log(`[BabelLive-Content] Received ${message.type}:`, { original: message.original, translated: message.translated, interim: message.isInterim });
+        isRunning = true;
+        settings.enabled = true;
         const videos = getActiveVideos();
         videos.forEach((v) => {
-          renderSubtitle(v, message.original, message.translated);
+          renderSubtitle(v, message.original, message.translated, message.isInterim);
         });
         sendResponse({ ok: true });
         break;
