@@ -14,9 +14,8 @@ const DEFAULTS = {
   subtitlePreset: 'anime',
   fontSize: 22,
   bilingual: true,
-  engine: 'cloud',
-  cloudProvider: 'groq',
-  apiKeys: '',
+  colabUrl: '',
+  colabNotebookUrl: '',
   demoMode: false,
 };
 
@@ -36,21 +35,14 @@ const els = {
   fontSizeSlider: $('#fontSizeSlider'),
   fontSizeValue: $('#fontSizeValue'),
   bilingualToggle: $('#bilingualToggle'),
-  engineRadios: $$('input[name="engine"]'),
-  cloudSettings: $('#cloudSettings'),
-  localSettings: $('#localSettings'),
-  fallbackSettings: $('#fallbackSettings'),
-  cloudProvider: $('#cloudProvider'),
-  apiKeyList: $('#apiKeyList'),
-  addKeyBtn: $('#addKeyBtn'),
-  toggleKeyVis: $('#toggleKeyVisibility'),
-  keyStatus: $('#keyStatus'),
-  webgpuStatus: $('#webgpuStatus'),
-  downloadModelBtn: $('#downloadModelBtn'),
-  downloadProgress: $('#downloadProgress'),
-  progressFill: $('#progressFill'),
-  progressText: $('#progressText'),
-  systemWarning: $('#systemWarning'),
+  colabSettings: $('#colabSettings'),
+  colabNotebookUrl: $('#colabNotebookUrl'),
+  oneClickStartBtn: $('#oneClickStartBtn'),
+  oneClickBtnText: $('#oneClickBtnText'),
+  colabUrl: $('#colabUrl'),
+  testColabBtn: $('#testColabBtn'),
+  colabStatus: $('#colabStatus'),
+  colabStatusText: $('#colabStatusText'),
   demoToggle: $('#demoToggle'),
 };
 
@@ -133,11 +125,11 @@ async function ensureTabConnected() {
         // Not injected yet, inject content script & styles programmatically
         try {
           await chrome.scripting.executeScript({
-            target: { tabId: tab.id, allFrames: true },
+            target: { tabId: tab.id, allFrames: false },
             files: ['content.js'],
           });
           await chrome.scripting.insertCSS({
-            target: { tabId: tab.id, allFrames: true },
+            target: { tabId: tab.id, allFrames: false },
             files: ['overlay.css'],
           });
           setTimeout(() => {
@@ -195,14 +187,9 @@ function applyStateToUI() {
   // Bilingual
   els.bilingualToggle.checked = state.bilingual;
 
-  // Engine
-  els.engineRadios.forEach((r) => { r.checked = r.value === state.engine; });
-  showEngineSettings(state.engine);
-
-  // Cloud
-  els.cloudProvider.value = state.cloudProvider;
-  renderApiKeyRows();
-  updateKeyCount();
+  // Colab
+  if (els.colabUrl) els.colabUrl.value = state.colabUrl || '';
+  if (els.colabNotebookUrl) els.colabNotebookUrl.value = state.colabNotebookUrl || '';
 
   // Demo
   els.demoToggle.checked = state.demoMode;
@@ -213,116 +200,71 @@ function updateStatusUI() {
   dot.className = 'status-dot';
   if (state.enabled) {
     dot.classList.add('connected');
-    els.statusText.textContent = `AI Engine: Connected — ${state.engine === 'cloud' ? (state.cloudProvider === 'groq' ? 'Groq' : 'Gemini Flash') : state.engine === 'local' ? 'Local WebGPU' : 'Fallback'}`;
+    els.statusText.textContent = `AI Engine: Connected — Colab Server`;
   } else {
     dot.classList.add('idle');
     els.statusText.textContent = 'Idle — Click toggle to start';
   }
 }
 
-function showEngineSettings(engine) {
-  els.cloudSettings.classList.toggle('hidden', engine !== 'cloud');
-  els.localSettings.classList.toggle('hidden', engine !== 'local');
-  els.fallbackSettings.classList.toggle('hidden', engine !== 'fallback');
+function formatColabUrl(val) {
+  let url = (val || '').trim().replace(/\/+$/, '');
+  if (!url) return '';
+  if (url.startsWith('http://')) url = url.replace('http://', 'ws://');
+  else if (url.startsWith('https://')) url = url.replace('https://', 'wss://');
+  else if (!url.startsWith('ws://') && !url.startsWith('wss://')) url = 'wss://' + url;
+  if (!url.endsWith('/ws/live')) url = url + '/ws/live';
+  return url;
 }
 
-function updateKeyCount() {
-  const keys = getApiKeysArray();
-  const countEl = els.keyStatus.querySelector('.key-count');
-  countEl.textContent = keys.length === 0
-    ? '0 keys configured'
-    : `${keys.length} key${keys.length > 1 ? 's' : ''} configured (rotation ${keys.length > 1 ? 'enabled' : 'disabled'})`;
-}
+function probeWebSocket(url, timeoutMs = 2000) {
+  return new Promise((resolve) => {
+    try {
+      const formatted = formatColabUrl(url);
+      if (!formatted) return resolve(false);
+      const ws = new WebSocket(formatted);
+      const timer = setTimeout(() => {
+        try { ws.close(); } catch {}
+        resolve(false);
+      }, timeoutMs);
 
-/* ── API Key Management ───────────────────────── */
-let keyVisibility = false;
-
-function getApiKeysArray() {
-  return (state.apiKeys || '').split(',').map((k) => k.trim()).filter(Boolean);
-}
-
-function syncApiKeysFromUI() {
-  const inputs = els.apiKeyList.querySelectorAll('.api-key-row-input');
-  const keys = Array.from(inputs).map((inp) => inp.value.trim()).filter(Boolean);
-  state.apiKeys = keys.join(',');
-  updateKeyCount();
-  saveState();
-}
-
-function createKeyRow(value = '') {
-  const row = document.createElement('div');
-  row.className = 'api-key-row';
-
-  const input = document.createElement('input');
-  input.type = keyVisibility ? 'text' : 'password';
-  input.className = 'api-key-row-input';
-  input.placeholder = 'Paste API key here...';
-  input.value = value;
-  input.spellcheck = false;
-  input.autocomplete = 'off';
-
-  let debounce;
-  input.addEventListener('input', () => {
-    clearTimeout(debounce);
-    debounce = setTimeout(syncApiKeysFromUI, 400);
-  });
-
-  const removeBtn = document.createElement('button');
-  removeBtn.className = 'remove-key-btn';
-  removeBtn.title = 'Remove this key';
-  removeBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
-  removeBtn.addEventListener('click', () => {
-    row.remove();
-    syncApiKeysFromUI();
-    // If no rows left, add an empty one
-    if (els.apiKeyList.children.length === 0) {
-      els.apiKeyList.appendChild(createKeyRow());
+      ws.onopen = () => {
+        clearTimeout(timer);
+        try { ws.close(); } catch {}
+        resolve(true);
+      };
+      ws.onerror = () => {
+        clearTimeout(timer);
+        resolve(false);
+      };
+    } catch {
+      resolve(false);
     }
   });
-
-  row.appendChild(input);
-  row.appendChild(removeBtn);
-  return row;
 }
 
-function renderApiKeyRows() {
-  els.apiKeyList.innerHTML = '';
-  const keys = getApiKeysArray();
-  if (keys.length === 0) {
-    // Always show at least one empty input
-    els.apiKeyList.appendChild(createKeyRow());
-  } else {
-    keys.forEach((key) => {
-      els.apiKeyList.appendChild(createKeyRow(key));
-    });
-  }
-}
-
-/* ── WebGPU Check ─────────────────────────────── */
-async function checkWebGPU() {
-  const statusEl = els.webgpuStatus;
-  const warningEl = els.systemWarning;
-
-  if (typeof navigator.gpu === 'undefined') {
-    statusEl.innerHTML = '<div class="status-icon">❌</div><span>WebGPU not supported in this browser</span>';
-    statusEl.className = 'webgpu-status unsupported';
-    warningEl.classList.remove('hidden');
-    els.downloadModelBtn.disabled = true;
+/* ── Colab Connection Test ──────────────────── */
+async function testColabConnection() {
+  const url = formatColabUrl(els.colabUrl?.value);
+  if (!url) {
+    if (els.colabStatusText) els.colabStatusText.textContent = 'Please enter a valid WebSocket URL';
     return;
   }
 
-  try {
-    const adapter = await navigator.gpu.requestAdapter();
-    if (!adapter) throw new Error('No adapter');
-    statusEl.innerHTML = '<div class="status-icon">✅</div><span>WebGPU supported — Ready</span>';
-    statusEl.className = 'webgpu-status supported';
-    warningEl.classList.add('hidden');
-    els.downloadModelBtn.disabled = false;
-  } catch {
-    statusEl.innerHTML = '<div class="status-icon">⚠️</div><span>WebGPU adapter unavailable</span>';
-    statusEl.className = 'webgpu-status unsupported';
-    warningEl.classList.remove('hidden');
-    els.downloadModelBtn.disabled = true;
+  const dot = els.colabStatus?.querySelector('.status-dot');
+  if (els.colabStatusText) els.colabStatusText.textContent = 'Testing connection...';
+  if (dot) dot.className = 'status-dot starting';
+
+  const isLive = await probeWebSocket(url, 2500);
+  if (isLive) {
+    if (dot) dot.className = 'status-dot running';
+    if (els.colabStatusText) {
+      els.colabStatusText.textContent = 'Connected to WebSocket backend.';
+      els.colabStatusText.style.color = 'var(--text-color)';
+    }
+  } else {
+    if (dot) dot.className = 'status-dot error';
+    if (els.colabStatusText) els.colabStatusText.textContent = 'Failed to connect to WebSocket endpoint.';
   }
 }
 
@@ -337,17 +279,16 @@ function bindEvents() {
     const tabId = tab?.id;
     const isYouTube = tab?.url?.includes('youtube.com/watch') || tab?.url?.includes('youtube.com/live');
     
-    // Mask API key for logging
-    const keys = getApiKeysArray();
-    const maskedKey = keys.length > 0 ? `${keys[0].substring(0, 8)}...****` : 'NONE';
-    console.log(`[BabelLive-Popup] Master Toggle Clicked! -> Tab ID: ${tabId} | isYouTube: ${isYouTube} | API Key: ${maskedKey}`);
+    // Mask URL for logging
+    const urlMasked = state.colabUrl ? `${state.colabUrl.substring(0, 15)}...` : 'NONE';
+    console.log(`[BabelLive-Popup] Master Toggle Clicked! -> Tab ID: ${tabId} | isYouTube: ${isYouTube} | URL: ${urlMasked}`);
 
     if (state.enabled) {
-      await chrome.storage.session.set({
-        [SESSION_KEY]: { isRunning: true, activeTabId: tabId },
-      }).catch(() => { });
-
-      console.log(`[BabelLive-Popup] Dispatching START_BABEL_SESSION to Service Worker for Tab ${tabId}...`);
+      // If WebSocket URL is missing but notebook link is available, trigger automated launch
+      if (!state.colabUrl && state.colabNotebookUrl) {
+        await handleOneClickStart();
+        return;
+      }
       chrome.runtime.sendMessage({
         action: 'START_LIVE_SESSION',
         type: 'BABELLIVE_START',
@@ -416,39 +357,7 @@ function bindEvents() {
     saveState();
   });
 
-  // Engine radio buttons
-  els.engineRadios.forEach((radio) => {
-    radio.addEventListener('change', () => {
-      state.engine = radio.value;
-      showEngineSettings(state.engine);
-      updateStatusUI();
-      saveState();
-    });
-  });
 
-  // Cloud provider
-  els.cloudProvider.addEventListener('change', () => {
-    state.cloudProvider = els.cloudProvider.value;
-    updateStatusUI();
-    saveState();
-  });
-
-  // Add key button
-  els.addKeyBtn.addEventListener('click', () => {
-    els.apiKeyList.appendChild(createKeyRow());
-    // Focus the new input
-    const inputs = els.apiKeyList.querySelectorAll('.api-key-row-input');
-    inputs[inputs.length - 1].focus();
-  });
-
-  // Toggle key visibility
-  els.toggleKeyVis.addEventListener('click', () => {
-    keyVisibility = !keyVisibility;
-    const inputs = els.apiKeyList.querySelectorAll('.api-key-row-input');
-    inputs.forEach((inp) => {
-      inp.type = keyVisibility ? 'text' : 'password';
-    });
-  });
 
   // Demo mode toggle
   els.demoToggle.addEventListener('change', () => {
@@ -459,26 +368,92 @@ function bindEvents() {
     }
   });
 
-  // Download model button (placeholder)
-  els.downloadModelBtn.addEventListener('click', async () => {
-    els.downloadModelBtn.disabled = true;
-    els.downloadModelBtn.textContent = 'Downloading...';
-    els.downloadProgress.classList.remove('hidden');
+  // Launch backend and initiate live subtitles
+  async function handleOneClickStart() {
+    state.colabNotebookUrl = (els.colabNotebookUrl?.value || '').trim();
+    state.colabUrl = formatColabUrl(els.colabUrl?.value);
+    saveState();
 
-    // Simulate download progress
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += Math.random() * 8 + 2;
-      if (progress >= 100) {
-        progress = 100;
-        clearInterval(interval);
-        els.downloadModelBtn.textContent = 'Model Ready ✓';
-        els.downloadModelBtn.style.background = 'linear-gradient(135deg, #22c55e, #06b6d4)';
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true }).catch(() => []);
+    const tabId = tab?.id;
+    const dot = els.colabStatus?.querySelector('.status-dot');
+    const btnText = els.oneClickBtnText;
+
+    // 1. If WebSocket URL is present, verify backend availability
+    if (state.colabUrl) {
+      if (btnText) btnText.textContent = 'Testing server connection...';
+      if (els.colabStatusText) els.colabStatusText.textContent = 'Verifying WebSocket endpoint...';
+      if (dot) dot.className = 'status-dot starting';
+
+      const isLive = await probeWebSocket(state.colabUrl, 1800);
+      if (isLive) {
+        if (dot) dot.className = 'status-dot running';
+        if (els.colabStatusText) {
+          els.colabStatusText.textContent = 'Connected to AI backend.';
+          els.colabStatusText.style.color = 'var(--text-color)';
+        }
+        if (btnText) btnText.textContent = 'Subtitles Active';
+        state.enabled = true;
+        els.masterToggle.checked = true;
+        updateStatusUI();
+
+        await chrome.storage.session.set({
+          [SESSION_KEY]: { isRunning: true, activeTabId: tabId },
+        }).catch(() => {});
+
+        chrome.runtime.sendMessage({
+          action: 'START_LIVE_SESSION',
+          type: 'BABELLIVE_START',
+          tabId,
+          settings: state
+        });
+        return;
       }
-      els.progressFill.style.width = `${progress}%`;
-      els.progressText.textContent = `${Math.round(progress)}%`;
-    }, 200);
+    }
+
+    // 2. If endpoint is not active yet, launch notebook tab with autorun parameter
+    if (state.colabNotebookUrl) {
+      if (btnText) btnText.textContent = 'Launching Colab environment...';
+      if (els.colabStatusText) {
+        els.colabStatusText.textContent = 'Opening Colab notebook...';
+        els.colabStatusText.style.color = '#f59e0b';
+      }
+      if (dot) dot.className = 'status-dot starting';
+
+      let url = state.colabNotebookUrl;
+      const separator = url.includes('?') ? '&' : '?';
+      url = url + separator + 'babellive_autorun=true&source_tab=' + tabId;
+      chrome.tabs.create({ url: url, active: true });
+      return;
+    }
+
+    // 3. Fallback when neither URL is configured
+    alert('Please enter your Google Colab Notebook URL or a WebSocket endpoint to proceed.');
+  }
+
+  els.testColabBtn?.addEventListener('click', testColabConnection);
+
+  els.colabUrl?.addEventListener('change', () => {
+    state.colabUrl = formatColabUrl(els.colabUrl.value);
+    if (els.colabUrl.value !== state.colabUrl) els.colabUrl.value = state.colabUrl;
+    saveState();
   });
+  els.colabUrl?.addEventListener('blur', () => {
+    state.colabUrl = formatColabUrl(els.colabUrl.value);
+    if (els.colabUrl.value !== state.colabUrl) els.colabUrl.value = state.colabUrl;
+    saveState();
+  });
+
+  els.colabNotebookUrl?.addEventListener('change', () => {
+    state.colabNotebookUrl = (els.colabNotebookUrl.value || '').trim();
+    saveState();
+  });
+  els.colabNotebookUrl?.addEventListener('blur', () => {
+    state.colabNotebookUrl = (els.colabNotebookUrl.value || '').trim();
+    saveState();
+  });
+
+  els.oneClickStartBtn?.addEventListener('click', handleOneClickStart);
 }
 
 /* ── Tab & Session Watchers ───────────────────── */
@@ -498,11 +473,29 @@ function setupTabWatchers() {
     }
   });
 
-  // Listen for runtime messages (e.g. STT errors)
+  // Listen for runtime messages (e.g. STT errors, Colab ready)
   chrome.runtime.onMessage.addListener((message) => {
+    if (message.type === 'BABELLIVE_COLAB_STATUS_UPDATE' || message.action === 'BABELLIVE_COLAB_READY') {
+      if (message.colabUrl) {
+        state.colabUrl = message.colabUrl;
+        if (els.colabUrl) els.colabUrl.value = message.colabUrl;
+      }
+      state.enabled = true;
+      if (els.masterToggle) els.masterToggle.checked = true;
+      if (els.oneClickBtnText) els.oneClickBtnText.textContent = 'Subtitles Active';
+      if (els.colabStatusText) {
+        els.colabStatusText.textContent = 'Connected to AI backend.';
+        els.colabStatusText.style.color = 'var(--text-color)';
+      }
+      const dot = els.colabStatus?.querySelector('.status-dot');
+      if (dot) dot.className = 'status-dot running';
+      updateStatusUI();
+    }
+
     if (message.type === 'BABELLIVE_CAPTURE_ERROR') {
       state.enabled = false;
       els.masterToggle.checked = false;
+      if (els.oneClickBtnText) els.oneClickBtnText.textContent = 'Launch & Start Subtitles';
       els.statusDot.className = 'status-dot idle';
       els.statusDot.style.background = '#ef4444'; // Red error dot
       els.statusDot.style.boxShadow = '0 0 8px rgba(239, 68, 68, 0.5)';
@@ -515,13 +508,12 @@ function setupTabWatchers() {
   });
 }
 
-/* ── Init ─────────────────────────────────────── */
+/* ── Init ─────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('[BabelLive-Popup] DOM loaded, initializing popup...');
   await loadState();
   applyStateToUI();
   bindEvents();
   setupTabWatchers();
-  checkWebGPU();
   ensureTabConnected();
 });

@@ -33,8 +33,14 @@
   ],
   "host_permissions": [
     "*://*.youtube.com/*",
-    "https://generativelanguage.googleapis.com/*",
-    "https://api.groq.com/*"
+    "*://translate.googleapis.com/*",
+    "*://api.groq.com/*",
+    "*://generativelanguage.googleapis.com/*",
+    "*://openrouter.ai/*",
+    "*://*.ngrok-free.app/*",
+    "*://*.ngrok-free.dev/*",
+    "*://*.ngrok.io/*",
+    "*://colab.research.google.com/*"
   ],
   "content_scripts": [
     {
@@ -44,7 +50,15 @@
       "js": ["content.js"],
       "css": ["overlay.css"],
       "run_at": "document_idle",
-      "all_frames": true
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "*://colab.research.google.com/*"
+      ],
+      "js": ["colab-automator.js"],
+      "run_at": "document_idle",
+      "all_frames": false
     }
   ],
   "content_security_policy": {
@@ -55,6 +69,7 @@
       "resources": [
         "icons/*",
         "overlay.css",
+        "audio-worklet-processor.js",
         "translation/*"
       ],
       "matches": [

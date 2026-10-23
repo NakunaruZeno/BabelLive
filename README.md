@@ -1,51 +1,129 @@
-# BabelLive 🌐🎤
+# BabelLive
 
-**Real-time bilingual AI subtitling extension for YouTube streams and videos.**  
-*Tiện ích mở rộng cung cấp phụ đề song ngữ theo thời gian thực sử dụng AI cho các luồng trực tiếp và video trên YouTube.*
+[English](README.md) | [Tiếng Việt](README.vi.md) | [日本語](README.ja.md)
 
-## 📖 Project Overview
+Real-time bilingual AI subtitling extension for YouTube livestreams and videos.
 
-BabelLive is a powerful Chrome Extension built with Manifest V3 that provides real-time bilingual subtitling for YouTube streams and videos. By leveraging the `tabCapture` API, it streams internal tab audio (without requiring a physical microphone) to **Groq Whisper** or the multimodal **Google Gemini 2.5 Flash** model for fast, accurate transcription and translation.
+BabelLive captures tab audio, performs low-latency speech recognition and contextual machine translation, and renders high-legibility dual-language subtitles directly over the active HTML5 video player.
 
-## ✨ Key Features
+---
 
-- **Internal Audio Loopback Capture:** Captures audio directly from the Chrome tab using the `tabCapture` API. No virtual audio cables or physical microphone permissions required.
-- **Real-time AI transcription:** Powered by Groq Whisper or Google Gemini 2.5 Flash for rapid speech-to-text and translation across multiple languages.
-- **Custom Visual Presets:** Enjoy beautiful, customizable overlay aesthetics including **Anime** and **Cinema** styles.
-- **YouTube Fullscreen Compatibility:** The subtitle overlay is injected directly into the YouTube player, ensuring perfect display even in fullscreen mode.
-- **Side Panel Integration:** Easily manage your translation sessions, configure language pairs, and adjust settings via the Chrome Side Panel.
+## Architectural Overview
 
-## 🛠 Architecture & Tech Stack
+BabelLive operates as a decoupled client-server system designed for low-latency live media translation:
 
-- **Framework:** Chrome Extension Manifest V3
-- **Audio Streaming:** `chrome.tabCapture` API & Offscreen Documents
-- **AI/ML:** Groq Whisper or Google Gemini 2.5 Flash (Multimodal Audio/Text)
-- **Frontend / Overlay:** Vanilla JavaScript, HTML5, and CSS3 injected via Content Scripts
+```text
+Browser Tab (YouTube)
+  │
+  ├─► chrome.tabCapture (Audio Stream)
+  │     │
+  │     ▼
+  │   Offscreen Document (AudioContext / ScriptProcessor)
+  │     │ (Direct 16kHz Int16 PCM Chunks)
+  │     ▼
+  │   WebSocket Channel (wss://)
+  │     │
+  │     ▼
+  │   AI Backend (FastAPI / Colab T4 GPU)
+  │     ├─► AudioStreamDecoder & RMS Energy VAD
+  │     ├─► Kotoba-Whisper v2.0 (Japanese STT)
+  │     └─► Qwen2.5-3B-Instruct (Contextual Translation)
+  │     │
+  │     ▼
+  │   WebSocket JSON Message (Interim & Final Captions)
+  │     │
+  │     ▼
+  └─◄ Content Script (DOM Overlay & Video Player Hook)
+```
 
-## 🚀 Installation Guide
+1. **Tab Capture Pipeline:** Captures internal tab audio via `chrome.tabCapture` inside a Chrome Manifest V3 offscreen document without muting tab audio.
+2. **Direct PCM Streaming:** Resamples audio to 16kHz Int16 mono PCM and transmits raw chunks via a secure WebSocket connection.
+3. **Speech Recognition (ASR):** Powered by `kotoba-tech/kotoba-whisper-v2.0` (trained on 7M ReazonSpeech samples, ~8.4% CER, 6.3x faster than Whisper large-v3).
+4. **Contextual Translation (LLM):** Powered by `Qwen/Qwen2.5-3B-Instruct`, preserving colloquial dialogue, conversational nuances, and honorific forms (Keigo).
+5. **DOM Subtitle Overlay:** Renders cinematic dual-language subtitles with auto-fade, repositioning, and font scaling controls directly inside the YouTube video container.
 
-BabelLive can be installed locally via Developer Mode:
+---
 
-1. **Clone the repository:**
+## Key Features
+
+- **Real-Time Streaming Inference:** Streaming WebSocket architecture providing both real-time predictive interim transcriptions and finalized sentence translations.
+- **Voice Activity Detection & Hallucination Suppression:** Energy-based thresholding (RMS) and duplicate token suppression prevent loop artifacts during silences and background music.
+- **Persistent Model Caching:** Uses Google Drive caching (`/content/drive/MyDrive/BabelLive_Cache/`) to eliminate repetitive dependency and weight downloads across Colab sessions.
+- **Automated Colab Runner:** Automated background script initiates notebook execution, dismisses author dialogs, and acquires the WebSocket address with a single click.
+- **Flexible Styling:** Includes Anime, Cinema, and Minimal subtitle styling presets with interactive dragging and font-size adjustments.
+- **Bilingual Display:** Toggles both original transcription and target translation simultaneously.
+
+---
+
+## Repository Structure
+
+```text
+BabelLive/
+├── colab/                      # Google Colab GPU backend
+│   ├── BabelLive_Backend.ipynb # Colab notebook (Kotoba-Whisper + Qwen2.5 + WebSocket)
+│   └── README.md               # Backend deployment instructions
+│
+├── src/                        # Chrome Extension (Manifest V3)
+│   ├── manifest.json           # Extension configuration and permissions
+│   ├── popup.html / popup.css  # Extension control popup interface
+│   ├── popup.js                # State management and tab communication
+│   ├── content.js              # Video player hook and subtitle overlay
+│   ├── overlay.css             # Subtitle styling and animations
+│   ├── offscreen.html / .js    # Tab audio capture and 16kHz PCM streaming
+│   ├── service-worker.js       # Background message router and session lifecycle
+│   ├── colab-automator.js      # Automated Colab notebook runner
+│   └── translation/            # Cloud LLM and local translation router modules
+│       ├── cloud-llm.js        # Fallback cloud translation (Groq / Gemini)
+│       ├── stream-buffer.js    # Rule-based sentence boundary processor
+│       └── translation-router.js
+│
+└── scripts/                    # Maintenance and compilation scripts
+    └── build_ipynb.py          # Generator for BabelLive_Backend.ipynb
+```
+
+---
+
+## Installation & Setup
+
+### 1. Load the Chrome Extension
+
+1. Clone or download this repository:
    ```bash
    git clone https://github.com/NakunaruZeno/BabelLive.git
    ```
 2. Open Google Chrome and navigate to `chrome://extensions/`.
-3. Enable **Developer mode** using the toggle switch in the top right corner.
-4. Click on the **Load unpacked** button.
-5. Select the `BabelLive` project folder (the directory containing `manifest.json`).
-6. The extension is now installed and ready to use!
+3. Enable **Developer mode** in the upper-right corner.
+4. Click **Load unpacked** and select the `src/` directory.
 
-## ⚙️ Setup & API Configuration
+### 2. Launch the AI Backend (Google Colab)
 
-To enable AI translation, provide an API key for the cloud provider selected in the popup:
+1. Open [Google Colab](https://colab.research.google.com/) and upload `colab/BabelLive_Backend.ipynb`.
+2. Save a copy to your Google Drive via **File** -> **Save a copy in Drive**.
+3. Set runtime hardware to **T4 GPU** under **Runtime** -> **Change runtime type**.
+4. Configure your `NGROK_AUTHTOKEN` in the Colab **Secrets** tab (Key icon) with notebook access enabled.
+5. In the BabelLive popup:
+   - Paste the Google Drive link into **Colab Notebook URL** and click **Launch & Start Subtitles**, or
+   - Execute the notebook manually (Ctrl+F9), copy the `wss://.../ws/live` URL, paste it into **Colab WebSocket URL**, and enable the master switch.
 
-1. Get an API key from Google AI Studio or Groq.
-2. Open the BabelLive extension via the Chrome toolbar icon or the Side Panel.
-3. Select the matching provider and paste its API key into the settings configuration.
-4. Select your source language and target language pairs.
-5. Navigate to any YouTube video or livestream and start the extension.
+---
 
-## 🔒 Security Notice
+## Technology Stack
 
-**Your keys are safe.** BabelLive respects your privacy and security. API keys and user configurations are stored strictly within your browser's local storage (`chrome.storage.local`). **Your credentials are never exposed, sent to telemetry, or transmitted to any third-party servers other than the official Google Gemini API.**
+- **Extension Framework:** Chrome Extensions API (Manifest V3), Web Audio API, HTML5 Canvas / DOM MutationObserver.
+- **Backend Service:** Python 3.10+, FastAPI, Uvicorn, WebSockets, PyNgrok.
+- **Speech Recognition:** Hugging Face Transformers, `kotoba-tech/kotoba-whisper-v2.0`, PyTorch.
+- **Translation:** `Qwen/Qwen2.5-3B-Instruct`, Accelerate.
+
+---
+
+## Security & Privacy
+
+- Audio captured via `chrome.tabCapture` is streamed directly to your private Colab runtime session.
+- Authentication tokens and configurations are stored locally inside `chrome.storage.local`.
+- No audio or transcription data is retained or shared with third parties.
+
+---
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.

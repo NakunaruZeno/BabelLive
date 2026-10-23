@@ -45,6 +45,42 @@ function getTabState(tabId) {
   return s;
 }
 
+/* ── Colab Heartbeat ──────────────────────── */
+let heartbeatInterval = null;
+
+function startColabHeartbeat(colabUrl) {
+  stopColabHeartbeat();
+  if (!colabUrl) return;
+
+  // Ping immediately to verify connectivity
+  fetch(`${colabUrl}/ping`, { 
+    method: 'POST',
+    signal: AbortSignal.timeout(5000)
+  })
+    .then(r => r.ok || r.status === 405 ? console.log('[BabelLive SW] Colab connected') : null)
+    .catch(() => console.warn('[BabelLive SW] Colab unreachable'));
+
+  // Ping every 4 minutes to keep Colab session alive
+  heartbeatInterval = setInterval(async () => {
+    try {
+      const r = await fetch(`${colabUrl}/ping`, { 
+        method: 'POST',
+        signal: AbortSignal.timeout(5000)
+      });
+      if (!r.ok && r.status !== 405) throw new Error(`HTTP ${r.status}`);
+    } catch {
+      console.warn('[BabelLive SW] Colab heartbeat failed');
+    }
+  }, 4 * 60 * 1000);
+}
+
+function stopColabHeartbeat() {
+  if (heartbeatInterval) {
+    clearInterval(heartbeatInterval);
+    heartbeatInterval = null;
+  }
+}
+
 /* ── Offscreen Document ─────────────────────── */
 let offscreenCreating = null;
 
@@ -130,6 +166,11 @@ async function startCapture(tabId, settingsPayload) {
       settings = store[STORAGE_KEY] || {};
     }
 
+    // Start Colab heartbeat if URL configured
+    if (settings.colabUrl) {
+      startColabHeartbeat(settings.colabUrl);
+    }
+
     console.log(`[BabelLive-SW] Forwarding session parameters to offscreen (Tab: ${tabId}, Stream: ${streamId?.slice(0, 10)}...)`);
     const response = await chrome.runtime.sendMessage({
       type: MSG.startCapture,
@@ -155,16 +196,17 @@ async function stopCapture(tabId) {
   if (ts.state === CaptureState.idle) {
     try {
       if (await hasOffscreen()) {
-        chrome.runtime.sendMessage({ type: MSG.stopCapture, tabId }).catch(() => {});
+        chrome.runtime.sendMessage({ type: MSG.stopCapture, tabId }).catch(() => { });
       }
-    } catch {}
+    } catch { }
     sendToTab(tabId, { type: MSG.clear });
     return;
   }
 
   ts.state = CaptureState.stopping;
+  stopColabHeartbeat();
   try {
-    chrome.runtime.sendMessage({ type: MSG.stopCapture, tabId }).catch(() => {});
+    chrome.runtime.sendMessage({ type: MSG.stopCapture, tabId }).catch(() => { });
   } catch {
     ts.state = CaptureState.idle;
     sendToTab(tabId, { type: MSG.clear });
@@ -176,7 +218,7 @@ async function injectContentScript(tabId) {
   try {
     console.log(`[BabelLive-SW] Pinging/Injecting content.js into Tab ${tabId}...`);
     await chrome.scripting.executeScript({
-      target: { tabId, allFrames: true },
+      target: { tabId, allFrames: false },
       files: ['content.js'],
     });
     console.log(`[BabelLive-SW] Successfully injected content.js`);
@@ -262,7 +304,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           if (!tab.url || !tab.url.includes('youtube.com')) return;
           stopCapture(tid);
           sendToTab(tid, { type: MSG.stop, action: 'STOP_LIVE_SESSION' });
-        } catch (e) {}
+        } catch (e) { }
       }
     };
 
@@ -328,10 +370,61 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           type: 'BABELLIVE_SUBTITLE_BROADCAST',
           original: message.original,
           translated: message.translated,
+          isInterim: message.isInterim || false,
         });
         break;
       }
     }
+  }
+
+  // Switch tab action triggered by Colab Automator
+  if (message.action === 'BABELLIVE_SWITCH_TAB' && message.tabId != null) {
+    chrome.tabs.update(message.tabId, { active: true }).catch(() => {});
+    return true;
+  }
+
+  // Handle Colab Backend Ready auto-detected by Colab Automator
+  if (message.action === 'BABELLIVE_COLAB_READY') {
+    const wsUrl = message.wsUrl;
+    const tabId = message.tabId;
+    console.log('[BabelLive-SW] Colab Backend is READY! wsUrl:', wsUrl, 'tabId:', tabId);
+
+    chrome.storage.local.get(STORAGE_KEY, async (res) => {
+      const current = res?.[STORAGE_KEY] || {};
+      const updated = { ...current, colabUrl: wsUrl, enabled: true };
+      await chrome.storage.local.set({ [STORAGE_KEY]: updated });
+
+      startColabHeartbeat(wsUrl);
+
+      // Notify open popup or extension UI
+      chrome.runtime.sendMessage({
+        type: 'BABELLIVE_COLAB_STATUS_UPDATE',
+        status: 'connected',
+        colabUrl: wsUrl,
+        tabId: tabId
+      }).catch(() => {});
+
+      if (tabId != null) {
+        try {
+          await chrome.tabs.update(tabId, { active: true });
+        } catch { }
+
+        await chrome.storage.session.set({
+          [SESSION_KEY]: { isRunning: true, activeTabId: tabId },
+        }).catch(() => {});
+
+        try {
+          await injectContentScript(tabId);
+          await startCapture(tabId, updated);
+          sendToTab(tabId, { type: MSG.start, action: 'START_LIVE_SESSION', settings: updated });
+        } catch (err) {
+          console.error('[BabelLive-SW ERROR] Failed to auto-start session after Colab ready:', err);
+        }
+      }
+    });
+
+    sendResponse({ ok: true });
+    return true;
   }
 
   return true;
@@ -354,7 +447,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
         console.log('[BabelLive SW] Resetting session on tab reload:', tabId);
         chrome.storage.session.set({
           [SESSION_KEY]: { isRunning: false, activeTabId: null },
-        }).catch(() => {});
+        }).catch(() => { });
       }
     });
   }
@@ -371,7 +464,7 @@ chrome.tabs.onRemoved.addListener((tabId) => {
     if (session && session.activeTabId === tabId) {
       chrome.storage.session.set({
         [SESSION_KEY]: { isRunning: false, activeTabId: null },
-      }).catch(() => {});
+      }).catch(() => { });
     }
   });
 });
@@ -381,7 +474,7 @@ chrome.runtime.onInstalled.addListener((details) => {
   // Clear any existing runtime session state on install/update
   chrome.storage.session.set({
     [SESSION_KEY]: { isRunning: false, activeTabId: null },
-  }).catch(() => {});
+  }).catch(() => { });
 
   if (details.reason === chrome.runtime.OnInstalledReason.INSTALL) {
     // Set default settings in persistent local storage
@@ -396,6 +489,7 @@ chrome.runtime.onInstalled.addListener((details) => {
         engine: 'cloud',
         cloudProvider: 'groq',
         apiKeys: '',
+        colabUrl: '',
         demoMode: false,
       },
     });

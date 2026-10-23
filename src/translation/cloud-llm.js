@@ -13,6 +13,7 @@ const PROVIDERS = {
   groq: {
     name: 'Groq',
     baseUrl: 'https://api.groq.com/openai/v1/chat/completions',
+    // FIX: whisper-large-v3-turbo is STT-only. Use a chat/LLM model for translation.
     model: 'llama-3.1-8b-instant',
     maxRPM: 30,
     headerKey: 'Authorization',
@@ -24,6 +25,15 @@ const PROVIDERS = {
     maxRPM: 15,
     headerKey: 'x-goog-api-key',
     headerPrefix: '',
+  },
+  openrouter: {
+    name: 'OpenRouter (Free)',
+    baseUrl: 'https://openrouter.ai/api/v1/chat/completions',
+    // Free tier models — no daily limit, higher RPM than Groq free
+    model: 'meta-llama/llama-3.1-8b-instruct:free',
+    maxRPM: 20,
+    headerKey: 'Authorization',
+    headerPrefix: 'Bearer ',
   },
 };
 
@@ -124,7 +134,7 @@ class RateLimiter {
 
 /* ── Smart Sentence Batching ─────────────────── */
 class SentenceBatcher {
-  constructor(flushCallback, windowMs = 4000) {
+  constructor(flushCallback, windowMs = 500) {
     this.buffer = [];
     this.resolvers = [];
     this.windowMs = windowMs;
@@ -170,6 +180,7 @@ const keyRotator = new KeyRotator();
 const rateLimiters = {
   groq: new RateLimiter(30),
   gemini: new RateLimiter(15),
+  openrouter: new RateLimiter(20),
 };
 
 let currentProvider = 'groq';
@@ -194,15 +205,22 @@ function buildPrompt(texts, sourceLang, targetLang) {
   return { systemPrompt, userContent };
 }
 
-/* ── API Call: Groq (OpenAI-compatible) ──────── */
-async function callGroq(systemPrompt, userContent, apiKey) {
-  const config = PROVIDERS.groq;
+/* ── API Call: OpenAI-compatible (Groq & OpenRouter) ──────── */
+async function callOpenAICompat(providerName, systemPrompt, userContent, apiKey) {
+  const config = PROVIDERS[providerName];
+  const headers = {
+    'Content-Type': 'application/json',
+    [config.headerKey]: `${config.headerPrefix}${apiKey}`,
+  };
+  // OpenRouter requires these headers for free-tier access
+  if (providerName === 'openrouter') {
+    headers['HTTP-Referer'] = 'https://github.com/BabelLive';
+    headers['X-Title'] = 'BabelLive';
+  }
+
   const response = await fetch(config.baseUrl, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      [config.headerKey]: `${config.headerPrefix}${apiKey}`,
-    },
+    headers,
     body: JSON.stringify({
       model: config.model,
       messages: [
@@ -220,7 +238,7 @@ async function callGroq(systemPrompt, userContent, apiKey) {
 
   if (!response.ok) {
     const errText = await response.text().catch(() => '');
-    throw new Error(`Groq API error ${response.status}: ${errText}`);
+    throw new Error(`${config.name} API error ${response.status}: ${errText}`);
   }
 
   const data = await response.json();
@@ -278,7 +296,7 @@ async function callProvider(texts, sourceLang, targetLang, settings, retries = 2
   }
 
   const { systemPrompt, userContent } = buildPrompt(texts, sourceLang, targetLang);
-  const limiter = rateLimiters[provider];
+  const limiter = rateLimiters[provider] || rateLimiters.groq;
 
   for (let attempt = 0; attempt <= retries; attempt++) {
     const apiKey = keyRotator.getNextKey();
@@ -288,10 +306,11 @@ async function callProvider(texts, sourceLang, targetLang, settings, retries = 2
       await limiter.acquire();
 
       let result;
-      if (provider === 'groq') {
-        result = await callGroq(systemPrompt, userContent, apiKey);
-      } else {
+      if (provider === 'gemini') {
         result = await callGemini(systemPrompt, userContent, apiKey);
+      } else {
+        // groq and openrouter both use OpenAI-compatible API
+        result = await callOpenAICompat(provider, systemPrompt, userContent, apiKey);
       }
 
       return result;
@@ -344,7 +363,7 @@ export async function translateCloud(text, sourceLang, targetLang, settings) {
     batcher = new SentenceBatcher(async (batch) => {
       const response = await callProvider(batch, sourceLang, targetLang, settings);
       return batch.length === 1 ? [response] : parseBatchResponse(response, batch.length);
-    }, 4000);
+    }, 500);
     batcher._sourceLang = sourceLang;
     batcher._targetLang = targetLang;
   }

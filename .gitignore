@@ -21,6 +21,9 @@ ref/
 PIC/
 agent/
 .agents/
+BabelLive/
+Ma_nguon_cua_yt/
+docs/
 
 # OS Artifacts
 .DS_Store
@@ -30,10 +33,17 @@ Thumbs.db
 ehthumbs.db
 desktop.ini
 
+# Python & Caches
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+*.log
+
 # Editor & IDE Configs
 .vscode/
 .idea/
 *.swp
 *.swo
 *.swn
-.DS_Store
