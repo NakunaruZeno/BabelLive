@@ -72,13 +72,10 @@ BabelLive/
 │   ├── offscreen.html / .js    # Tab audio capture and 16kHz PCM streaming
 │   ├── service-worker.js       # Background message router and session lifecycle
 │   ├── colab-automator.js      # Automated Colab notebook runner
-│   └── translation/            # Cloud LLM and local translation router modules
-│       ├── cloud-llm.js        # Fallback cloud translation (Groq / Gemini)
-│       ├── stream-buffer.js    # Rule-based sentence boundary processor
-│       └── translation-router.js
-│
-└── scripts/                    # Maintenance and compilation scripts
-    └── build_ipynb.py          # Generator for BabelLive_Backend.ipynb
+    └── translation/            # Cloud LLM and local translation router modules
+        ├── cloud-llm.js        # Fallback cloud translation (Groq / Gemini)
+        ├── stream-buffer.js    # Rule-based sentence boundary processor
+        └── translation-router.js
 ```
 
 ---

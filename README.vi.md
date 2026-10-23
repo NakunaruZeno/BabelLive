@@ -72,13 +72,10 @@ BabelLive/
 │   ├── offscreen.html / .js    # Thu âm thanh thẻ và truyền luồng PCM 16kHz
 │   ├── service-worker.js       # Bộ định tuyến thông điệp nền và quản lý vòng đời phiên
 │   ├── colab-automator.js      # Tự động hóa quá trình chạy Colab
-│   └── translation/            # Các module định tuyến và dịch thuật dự phòng
-│       ├── cloud-llm.js        # Dịch thuật qua Cloud LLM (Groq / Gemini)
-│       ├── stream-buffer.js    # Bộ xử lý ranh giới câu theo ngữ pháp
-│       └── translation-router.js
-│
-└── scripts/                    # Script hỗ trợ và biên dịch
-    └── build_ipynb.py          # Script tạo file BabelLive_Backend.ipynb
+    └── translation/            # Các module định tuyến và dịch thuật dự phòng
+        ├── cloud-llm.js        # Dịch thuật qua Cloud LLM (Groq / Gemini)
+        ├── stream-buffer.js    # Bộ xử lý ranh giới câu theo ngữ pháp
+        └── translation-router.js
 ```
 
 ---

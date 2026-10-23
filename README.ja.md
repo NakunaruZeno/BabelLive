@@ -72,13 +72,10 @@ BabelLive/
 │   ├── offscreen.html / .js    # タブ音声取得および16kHz PCM送信
 │   ├── service-worker.js       # バックグラウンドメッセージルーター
 │   ├── colab-automator.js      # Colab自動操作スクリプト
-│   └── translation/            # 翻訳ルーターおよびフォールバックモジュール
-│       ├── cloud-llm.js        # クラウドLLM翻訳アダプタ (Groq / Gemini)
-│       ├── stream-buffer.js    # 文境界判定プロセッサ
-│       └── translation-router.js
-│
-└── scripts/                    # 運用およびビルド用スクリプト
-    └── build_ipynb.py          # BabelLive_Backend.ipynb生成スクリプト
+    └── translation/            # 翻訳ルーターおよびフォールバックモジュール
+        ├── cloud-llm.js        # クラウドLLM翻訳アダプタ (Groq / Gemini)
+        ├── stream-buffer.js    # 文境界判定プロセッサ
+        └── translation-router.js
 ```
 
 ---
