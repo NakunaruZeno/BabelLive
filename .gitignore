@@ -24,6 +24,8 @@ agent/
 BabelLive/
 Ma_nguon_cua_yt/
 docs/
+scripts/
+tests/
 
 # OS Artifacts
 .DS_Store
