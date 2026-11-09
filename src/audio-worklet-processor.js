@@ -1,25 +1,28 @@
 /**
  * BabelLive — AudioWorklet Processor
- * Converts Float32 audio samples to Int16 PCM and buffers into frames.
- * Posts each frame (320 samples = 20ms @ 16kHz) to the main thread.
+ * Converts Float32 audio samples to 16kHz Int16 PCM on the dedicated audio rendering thread.
+ * Emits 2048-sample frames (128ms @ 16kHz = 4096 bytes) via zero-copy transferable ArrayBuffer.
  */
 class AudioCaptureProcessor extends AudioWorkletProcessor {
   constructor(options) {
     super();
-    this._frameSize = options.processorOptions?.frameSize ?? 320;
+    this._frameSize = options?.processorOptions?.frameSize || 2048;
     this._buffer = new Int16Array(this._frameSize);
     this._writePos = 0;
   }
 
   process(inputs) {
     const channel = inputs[0]?.[0];
-    if (!channel) return true;
+    if (!channel || channel.length === 0) return true;
+
     for (let i = 0; i < channel.length; i++) {
       const s = channel[i];
-      // Clamp and convert Float32 [-1, 1] to Int16 [-32768, 32767]
-      this._buffer[this._writePos++] = s < -1 ? -32768 : s > 1 ? 32767 : (s * 32767) | 0;
+      const clamped = s < -1 ? -1 : s > 1 ? 1 : s;
+      this._buffer[this._writePos++] = clamped < 0 ? (clamped * 0x8000) | 0 : (clamped * 0x7FFF) | 0;
+
       if (this._writePos >= this._frameSize) {
-        this.port.postMessage(this._buffer.slice(0));
+        const frame = new Int16Array(this._buffer);
+        this.port.postMessage(frame.buffer, [frame.buffer]);
         this._writePos = 0;
       }
     }

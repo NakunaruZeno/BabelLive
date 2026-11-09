@@ -1,29 +1,22 @@
 /**
  * BabelLive — Service Worker (Background)
- * Message router between popup, content script, and offscreen document.
- * Manages tab audio capture lifecycle and translation pipeline.
+ * Coordinates tab audio capture lifecycle, offscreen WebSocket worker,
+ * Colab/Modal keep-alive pings, and message routing to content scripts.
  */
 
-
-
-
-// Enable session storage access across trusted and untrusted contexts
 if (chrome.storage?.session?.setAccessLevel) {
-  chrome.storage.session.setAccessLevel({ accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS' })
-    .catch((error) => console.warn('[BabelLive SW] setAccessLevel error:', error));
+  chrome.storage.session
+    .setAccessLevel({ accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS' })
+    .catch(() => {});
 }
 
 const MSG = {
-  // Popup → SW
   start: 'BABELLIVE_START',
   stop: 'BABELLIVE_STOP',
   settingsUpdate: 'BABELLIVE_SETTINGS_UPDATE',
-
-  // SW → Content
   subtitle: 'BABELLIVE_SUBTITLE',
+  subtitleBroadcast: 'BABELLIVE_SUBTITLE_BROADCAST',
   clear: 'BABELLIVE_CLEAR',
-
-  // SW ↔ Offscreen (audio capture)
   startCapture: 'BABELLIVE_START_CAPTURE',
   stopCapture: 'BABELLIVE_STOP_CAPTURE',
   captureReady: 'BABELLIVE_CAPTURE_READY',
@@ -35,53 +28,73 @@ const STORAGE_KEY = 'babellive_settings';
 const SESSION_KEY = 'babellive_session';
 const OFFSCREEN_URL = 'offscreen.html';
 
-/* ── State ──────────────────────────────────── */
-const CaptureState = { idle: 'idle', starting: 'starting', running: 'running', stopping: 'stopping' };
-const tabStates = new Map(); // tabId → { state, requestId }
+const CaptureState = {
+  idle: 'idle',
+  starting: 'starting',
+  running: 'running',
+  stopping: 'stopping',
+};
+
+const tabStates = new Map(); // tabId -> { state, requestId }
 
 function getTabState(tabId) {
   let s = tabStates.get(tabId);
-  if (!s) { s = { state: CaptureState.idle, requestId: 0 }; tabStates.set(tabId, s); }
+  if (!s) {
+    s = { state: CaptureState.idle, requestId: 0 };
+    tabStates.set(tabId, s);
+  }
   return s;
 }
 
-/* ── Colab Heartbeat ──────────────────────── */
-let heartbeatInterval = null;
-
-function startColabHeartbeat(colabUrl) {
-  stopColabHeartbeat();
-  if (!colabUrl) return;
-
-  // Ping immediately to verify connectivity
-  fetch(`${colabUrl}/ping`, { 
-    method: 'POST',
-    signal: AbortSignal.timeout(5000)
-  })
-    .then(r => r.ok || r.status === 405 ? console.log('[BabelLive SW] Colab connected') : null)
-    .catch(() => console.warn('[BabelLive SW] Colab unreachable'));
-
-  // Ping every 4 minutes to keep Colab session alive
-  heartbeatInterval = setInterval(async () => {
-    try {
-      const r = await fetch(`${colabUrl}/ping`, { 
-        method: 'POST',
-        signal: AbortSignal.timeout(5000)
-      });
-      if (!r.ok && r.status !== 405) throw new Error(`HTTP ${r.status}`);
-    } catch {
-      console.warn('[BabelLive SW] Colab heartbeat failed');
-    }
-  }, 4 * 60 * 1000);
+async function setSessionState(isRunning, activeTabId = null) {
+  try {
+    await chrome.storage.session.set({
+      [SESSION_KEY]: { isRunning, activeTabId: isRunning ? activeTabId : null },
+    });
+  } catch {}
 }
 
-function stopColabHeartbeat() {
+/* ── Backend Heartbeat ──────────────────────── */
+let heartbeatInterval = null;
+
+function resolveHealthPingUrl(rawUrl) {
+  let u = (rawUrl || '').trim();
+  if (!u) return '';
+  u = u.split('?')[0].replace(/\/+$/, '');
+  if (u.startsWith('wss://')) u = u.replace('wss://', 'https://');
+  else if (u.startsWith('ws://')) u = u.replace('ws://', 'http://');
+  else if (!u.startsWith('http://') && !u.startsWith('https://')) u = 'https://' + u;
+  u = u.replace(/\/ws\/live$/, '');
+  return `${u}/ping`;
+}
+
+function startBackendHeartbeat(rawUrl) {
+  stopBackendHeartbeat();
+  const pingUrl = resolveHealthPingUrl(rawUrl);
+  if (!pingUrl) return;
+
+  const ping = async () => {
+    try {
+      await fetch(pingUrl, {
+        method: 'GET',
+        headers: { 'ngrok-skip-browser-warning': 'true' },
+        signal: AbortSignal.timeout(5000),
+      });
+    } catch {}
+  };
+
+  ping();
+  heartbeatInterval = setInterval(ping, 4 * 60 * 1000);
+}
+
+function stopBackendHeartbeat() {
   if (heartbeatInterval) {
     clearInterval(heartbeatInterval);
     heartbeatInterval = null;
   }
 }
 
-/* ── Offscreen Document ─────────────────────── */
+/* ── Offscreen Document Lifecycle ───────────── */
 let offscreenCreating = null;
 
 async function hasOffscreen() {
@@ -90,7 +103,10 @@ async function hasOffscreen() {
   }
   const url = chrome.runtime.getURL(OFFSCREEN_URL);
   if (typeof chrome.runtime?.getContexts === 'function') {
-    const contexts = await chrome.runtime.getContexts({ contextTypes: ['OFFSCREEN_DOCUMENT'], documentUrls: [url] });
+    const contexts = await chrome.runtime.getContexts({
+      contextTypes: ['OFFSCREEN_DOCUMENT'],
+      documentUrls: [url],
+    });
     return contexts.length > 0;
   }
   const clients = await self.clients.matchAll();
@@ -100,11 +116,15 @@ async function hasOffscreen() {
 async function ensureOffscreen() {
   if (await hasOffscreen()) return;
   if (!offscreenCreating) {
-    offscreenCreating = chrome.offscreen.createDocument({
-      url: OFFSCREEN_URL,
-      reasons: ['USER_MEDIA'],
-      justification: 'Capture tab audio for live translation',
-    }).finally(() => { offscreenCreating = null; });
+    offscreenCreating = chrome.offscreen
+      .createDocument({
+        url: OFFSCREEN_URL,
+        reasons: ['USER_MEDIA'],
+        justification: 'Capture tab audio for real-time AI subtitle translation',
+      })
+      .finally(() => {
+        offscreenCreating = null;
+      });
   }
   await offscreenCreating;
 }
@@ -114,10 +134,10 @@ async function closeOffscreenIfIdle() {
     if (s.state !== CaptureState.idle) return;
   }
   try {
-    if (await hasOffscreen()) await chrome.offscreen.closeDocument();
-  } catch (e) {
-    console.warn('[BabelLive SW] close offscreen failed', e);
-  }
+    if (await hasOffscreen()) {
+      await chrome.offscreen.closeDocument();
+    }
+  } catch {}
 }
 
 /* ── Tab Capture ────────────────────────────── */
@@ -133,16 +153,32 @@ function getStreamId(tabId) {
   });
 }
 
+async function injectContentScript(tabId) {
+  try {
+    await chrome.scripting.executeScript({
+      target: { tabId, allFrames: false },
+      files: ['content.js'],
+    });
+  } catch {}
+}
+
+function sendToTab(tabId, message) {
+  if (tabId == null) return;
+  chrome.tabs.sendMessage(tabId, message, () => {
+    if (chrome.runtime.lastError) {
+      // Suppress error if tab navigated or closed
+    }
+  });
+}
+
 async function startCapture(tabId, settingsPayload) {
-  console.log(`[BabelLive-SW] startCapture called for tab: ${tabId}`);
   const ts = getTabState(tabId);
   if (ts.state === CaptureState.running) {
-    console.log('[BabelLive-SW] Capture already running for tab:', tabId);
+    await setSessionState(true, tabId);
     sendToTab(tabId, { type: MSG.captureReady });
     return;
   }
   if (ts.state === CaptureState.starting || ts.state === CaptureState.stopping) {
-    console.log('[BabelLive-SW] Capture in state:', ts.state, ', skipping');
     return;
   }
 
@@ -150,14 +186,10 @@ async function startCapture(tabId, settingsPayload) {
   const reqId = ++ts.requestId;
 
   try {
-    console.log(`[BabelLive-SW] Getting stream ID via chrome.tabCapture...`);
     const streamId = await getStreamId(tabId);
-    console.log(`[BabelLive-SW] Generated streamId: ${streamId?.slice(0, 20)}...`);
     if (ts.requestId !== reqId || ts.state !== CaptureState.starting) return;
 
-    console.log(`[BabelLive-SW] Creating/verifying offscreen.html...`);
     await ensureOffscreen();
-    console.log('[BabelLive-SW] Offscreen document ready');
     if (ts.requestId !== reqId || ts.state !== CaptureState.starting) return;
 
     let settings = settingsPayload;
@@ -166,146 +198,90 @@ async function startCapture(tabId, settingsPayload) {
       settings = store[STORAGE_KEY] || {};
     }
 
-    // Start Colab heartbeat if URL configured
     if (settings.colabUrl) {
-      startColabHeartbeat(settings.colabUrl);
+      startBackendHeartbeat(settings.colabUrl);
     }
 
-    console.log(`[BabelLive-SW] Forwarding session parameters to offscreen (Tab: ${tabId}, Stream: ${streamId?.slice(0, 10)}...)`);
+    await setSessionState(true, tabId);
+
     const response = await chrome.runtime.sendMessage({
       type: MSG.startCapture,
       streamId,
       tabId,
-      settings
+      settings,
     });
+
     if (!response?.accepted) {
-      throw new Error('The audio capture document did not accept the start request.');
+      throw new Error('Audio capture worker failed to accept start request.');
     }
   } catch (err) {
-    console.error('[BabelLive-SW ERROR] startCapture error:', err);
     if (ts.requestId !== reqId) return;
     ts.state = CaptureState.idle;
+    await setSessionState(false, null);
     sendToTab(tabId, { type: MSG.captureError, error: err.message });
+    chrome.runtime
+      .sendMessage({ type: MSG.captureError, tabId, error: err.message })
+      .catch(() => {});
   }
 }
 
 async function stopCapture(tabId) {
   const ts = getTabState(tabId);
   ts.requestId++;
-
-  if (ts.state === CaptureState.idle) {
-    try {
-      if (await hasOffscreen()) {
-        chrome.runtime.sendMessage({ type: MSG.stopCapture, tabId }).catch(() => { });
-      }
-    } catch { }
-    sendToTab(tabId, { type: MSG.clear });
-    return;
-  }
-
   ts.state = CaptureState.stopping;
-  stopColabHeartbeat();
-  try {
-    chrome.runtime.sendMessage({ type: MSG.stopCapture, tabId }).catch(() => { });
-  } catch {
-    ts.state = CaptureState.idle;
-    sendToTab(tabId, { type: MSG.clear });
-  }
-}
 
-/* ── Content Script Injection ───────────────── */
-async function injectContentScript(tabId) {
-  try {
-    console.log(`[BabelLive-SW] Pinging/Injecting content.js into Tab ${tabId}...`);
-    await chrome.scripting.executeScript({
-      target: { tabId, allFrames: false },
-      files: ['content.js'],
-    });
-    console.log(`[BabelLive-SW] Successfully injected content.js`);
-  } catch (err) {
-    console.error('[BabelLive-SW ERROR] inject content.js failed', tabId, err);
-  }
+  stopBackendHeartbeat();
+  await setSessionState(false, null);
 
   try {
-    await chrome.scripting.executeScript({
-      target: { tabId, allFrames: true },
-      files: ['fullscreen-bridge.js'],
-      world: 'MAIN',
-    });
-    console.log(`[BabelLive-SW] Successfully injected fullscreen-bridge.js`);
-  } catch (err) {
-    console.error('[BabelLive-SW ERROR] inject fullscreen-bridge failed', tabId, err);
-  }
-}
-
-/* ── Messaging ──────────────────────────────── */
-function sendToTab(tabId, message) {
-  if (tabId == null) return;
-  chrome.tabs.sendMessage(tabId, message, () => {
-    // Reading chrome.runtime.lastError suppresses unchecked runtime error logs
-    if (chrome.runtime.lastError) {
-      // Intentionally ignored when tab is refreshing or unmounted
+    if (await hasOffscreen()) {
+      await chrome.runtime.sendMessage({ type: MSG.stopCapture, tabId }).catch(() => {});
     }
-  });
+  } catch {}
+
+  ts.state = CaptureState.idle;
+  tabStates.delete(tabId);
+  sendToTab(tabId, { type: MSG.clear });
+  await closeOffscreenIfIdle();
 }
 
-/* ── Language Names ──────────────────────────── */
-const LANG_NAMES = {
-  auto: 'the source language',
-  ja: 'Japanese', en: 'English', zh: 'Chinese', ko: 'Korean',
-  vi: 'Vietnamese', fr: 'French', de: 'German', es: 'Spanish',
-  ru: 'Russian', th: 'Thai',
-};
-
-
-/* ── Message Listener ───────────────────────── */
+/* ── Message Router ─────────────────────────── */
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  const isTab = !!sender.tab;
-  const tabId = sender.tab?.id;
+  const isTab = Boolean(sender.tab);
 
-  // Popup / UI → SW: Start Live Session
+  // 1. Start Live Session
   if (message.type === MSG.start || message.action === 'START_LIVE_SESSION') {
-    console.log(`[BabelLive-SW] Received START_BABEL_SESSION trigger for tab ${message.tabId || 'active'}`);
     const startForTab = async (tid, settingsPayload) => {
-      if (tid) {
-        try {
-          const tab = await chrome.tabs.get(tid);
-          if (!tab.url || !tab.url.includes('youtube.com')) {
-            console.warn('[BabelLive-SW] Cannot start on non-YouTube URL:', tab.url);
-            return;
-          }
-          await injectContentScript(tid);
-          await startCapture(tid, settingsPayload);
-          sendToTab(tid, { type: MSG.start, action: 'START_LIVE_SESSION' });
-        } catch (e) {
-          console.error('[BabelLive-SW ERROR] Failed to start tab:', e);
-        }
-      }
+      if (!tid) return;
+      try {
+        const tab = await chrome.tabs.get(tid);
+        if (!tab.url || !tab.url.includes('youtube.com')) return;
+        await injectContentScript(tid);
+        await startCapture(tid, settingsPayload);
+        sendToTab(tid, { type: MSG.start, action: 'START_LIVE_SESSION', settings: settingsPayload });
+      } catch {}
     };
 
     if (message.tabId != null) {
       startForTab(message.tabId, message.settings);
     } else {
-      chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         const tid = tabs[0]?.id;
-        if (tid) await startForTab(tid, message.settings);
+        if (tid) startForTab(tid, message.settings);
       });
     }
     sendResponse({ ok: true });
-    return true;
+    return false;
   }
 
-  // Popup / UI → SW: Stop Live Session
+  // 2. Stop Live Session
   if (message.type === MSG.stop || message.action === 'STOP_LIVE_SESSION') {
     const stopForTab = async (tid) => {
-      if (tid) {
-        try {
-          const tab = await chrome.tabs.get(tid);
-          if (!tab.url || !tab.url.includes('youtube.com')) return;
-          stopCapture(tid);
-          sendToTab(tid, { type: MSG.stop, action: 'STOP_LIVE_SESSION' });
-        } catch (e) { }
-      }
+      if (!tid) return;
+      try {
+        await stopCapture(tid);
+        sendToTab(tid, { type: MSG.stop, action: 'STOP_LIVE_SESSION' });
+      } catch {}
     };
 
     if (message.tabId != null) {
@@ -317,12 +293,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       });
     }
     sendResponse({ ok: true });
-    return true;
+    return false;
   }
 
-  // Popup → SW: Settings update (relay to content)
+  // 3. Settings Update (Broadcast to YouTube tabs + Offscreen worker)
   if (message.type === MSG.settingsUpdate) {
-    chrome.tabs.query({}, (tabs) => {
+    chrome.tabs.query({ url: '*://*.youtube.com/*' }, (tabs) => {
       tabs.forEach((t) => {
         if (t.id) sendToTab(t.id, message);
       });
@@ -331,153 +307,130 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return false;
   }
 
-
-  // Offscreen → SW: Capture events
+  // 4. Offscreen Worker Events
   if (!isTab && message.tabId != null) {
     const tid = message.tabId;
-    console.log('[BabelLive SW] Offscreen message:', message.type, 'for tab:', tid);
     switch (message.type) {
       case MSG.captureReady: {
         const ts = getTabState(tid);
-        console.log('[BabelLive SW] Capture ready, state was:', ts.state);
-        if (ts.state === CaptureState.starting) {
-          ts.state = CaptureState.running;
-          sendToTab(tid, { type: MSG.captureReady });
-        }
+        ts.state = CaptureState.running;
+        setSessionState(true, tid);
+        sendToTab(tid, { type: MSG.captureReady });
         break;
       }
       case MSG.captureError: {
-        console.error('[BabelLive SW] Capture error:', message.error);
         const ts = getTabState(tid);
         ts.state = CaptureState.idle;
+        setSessionState(false, null);
         sendToTab(tid, { type: MSG.captureError, error: message.error });
         closeOffscreenIfIdle();
         break;
       }
       case MSG.captureEnded: {
-        console.log('[BabelLive SW] Capture ended for tab:', tid);
         const ts = getTabState(tid);
         ts.state = CaptureState.idle;
-        sendToTab(tid, { type: MSG.captureEnded });
         tabStates.delete(tid);
+        setSessionState(false, null);
+        sendToTab(tid, { type: MSG.captureEnded });
         closeOffscreenIfIdle();
         break;
       }
-      case 'BABELLIVE_SUBTITLE':
-      case 'BABELLIVE_SUBTITLE_BROADCAST': {
-        // Relay subtitle from offscreen directly to the target tab
+      case MSG.subtitle:
+      case MSG.subtitleBroadcast: {
         sendToTab(tid, {
-          type: 'BABELLIVE_SUBTITLE_BROADCAST',
+          type: MSG.subtitleBroadcast,
           original: message.original,
           translated: message.translated,
-          isInterim: message.isInterim || false,
+          isInterim: Boolean(message.isInterim),
         });
         break;
       }
     }
+    return false;
   }
 
-  // Switch tab action triggered by Colab Automator
+  // 5. Switch Tab from Colab Automator
   if (message.action === 'BABELLIVE_SWITCH_TAB' && message.tabId != null) {
     chrome.tabs.update(message.tabId, { active: true }).catch(() => {});
-    return true;
+    sendResponse({ ok: true });
+    return false;
   }
 
-  // Handle Colab Backend Ready auto-detected by Colab Automator
+  // 6. Colab Automator Ready Callback
   if (message.action === 'BABELLIVE_COLAB_READY') {
     const wsUrl = message.wsUrl;
-    const tabId = message.tabId;
-    console.log('[BabelLive-SW] Colab Backend is READY! wsUrl:', wsUrl, 'tabId:', tabId);
+    let targetTabId = message.tabId;
 
     chrome.storage.local.get(STORAGE_KEY, async (res) => {
       const current = res?.[STORAGE_KEY] || {};
       const updated = { ...current, colabUrl: wsUrl, enabled: true };
       await chrome.storage.local.set({ [STORAGE_KEY]: updated });
 
-      startColabHeartbeat(wsUrl);
+      startBackendHeartbeat(wsUrl);
 
-      // Notify open popup or extension UI
-      chrome.runtime.sendMessage({
-        type: 'BABELLIVE_COLAB_STATUS_UPDATE',
-        status: 'connected',
-        colabUrl: wsUrl,
-        tabId: tabId
-      }).catch(() => {});
+      chrome.runtime
+        .sendMessage({
+          type: 'BABELLIVE_COLAB_STATUS_UPDATE',
+          status: 'connected',
+          colabUrl: wsUrl,
+          tabId: targetTabId,
+        })
+        .catch(() => {});
 
-      if (tabId != null) {
-        try {
-          await chrome.tabs.update(tabId, { active: true });
-        } catch { }
-
-        await chrome.storage.session.set({
-          [SESSION_KEY]: { isRunning: true, activeTabId: tabId },
-        }).catch(() => {});
-
-        try {
-          await injectContentScript(tabId);
-          await startCapture(tabId, updated);
-          sendToTab(tabId, { type: MSG.start, action: 'START_LIVE_SESSION', settings: updated });
-        } catch (err) {
-          console.error('[BabelLive-SW ERROR] Failed to auto-start session after Colab ready:', err);
+      if (targetTabId == null) {
+        const ytTabs = await chrome.tabs.query({ url: '*://*.youtube.com/*' }).catch(() => []);
+        if (ytTabs?.length > 0) {
+          targetTabId = ytTabs[0].id;
         }
+      }
+
+      if (targetTabId != null) {
+        try {
+          await chrome.tabs.update(targetTabId, { active: true });
+        } catch {}
+
+        await setSessionState(true, targetTabId);
+
+        try {
+          await injectContentScript(targetTabId);
+          await startCapture(targetTabId, updated);
+          sendToTab(targetTabId, {
+            type: MSG.start,
+            action: 'START_LIVE_SESSION',
+            settings: updated,
+          });
+        } catch {}
       }
     });
 
     sendResponse({ ok: true });
-    return true;
+    return false;
   }
 
-  return true;
+  return false;
 });
 
-/* ── Tab Lifecycle & Session Reset ──────────── */
+/* ── Tab Lifecycle Cleanup ──────────────────── */
 chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
   if (changeInfo.status === 'loading') {
-    const ts = getTabState(tabId);
-    if (ts.state !== CaptureState.idle) {
-      console.log('[BabelLive SW] Tab reloaded/navigated, stopping capture:', tabId);
+    const ts = tabStates.get(tabId);
+    if (ts && ts.state !== CaptureState.idle) {
       stopCapture(tabId);
-      tabStates.delete(tabId);
     }
-    // Check if reloading tab was active in session
-    chrome.storage.session.get(SESSION_KEY, (res) => {
-      if (chrome.runtime.lastError) return;
-      const session = res?.[SESSION_KEY];
-      if (session && (session.activeTabId === tabId || !session.activeTabId)) {
-        console.log('[BabelLive SW] Resetting session on tab reload:', tabId);
-        chrome.storage.session.set({
-          [SESSION_KEY]: { isRunning: false, activeTabId: null },
-        }).catch(() => { });
-      }
-    });
   }
 });
 
 chrome.tabs.onRemoved.addListener((tabId) => {
   if (tabStates.has(tabId)) {
     stopCapture(tabId);
-    tabStates.delete(tabId);
   }
-  chrome.storage.session.get(SESSION_KEY, (res) => {
-    if (chrome.runtime.lastError) return;
-    const session = res?.[SESSION_KEY];
-    if (session && session.activeTabId === tabId) {
-      chrome.storage.session.set({
-        [SESSION_KEY]: { isRunning: false, activeTabId: null },
-      }).catch(() => { });
-    }
-  });
 });
 
-/* ── Install handler ────────────────────────── */
+/* ── Install Handler ────────────────────────── */
 chrome.runtime.onInstalled.addListener((details) => {
-  // Clear any existing runtime session state on install/update
-  chrome.storage.session.set({
-    [SESSION_KEY]: { isRunning: false, activeTabId: null },
-  }).catch(() => { });
+  setSessionState(false, null);
 
   if (details.reason === chrome.runtime.OnInstalledReason.INSTALL) {
-    // Set default settings in persistent local storage
     chrome.storage.local.set({
       [STORAGE_KEY]: {
         enabled: false,
@@ -486,14 +439,10 @@ chrome.runtime.onInstalled.addListener((details) => {
         subtitlePreset: 'anime',
         fontSize: 22,
         bilingual: true,
-        engine: 'cloud',
-        cloudProvider: 'groq',
-        apiKeys: '',
         colabUrl: '',
+        colabNotebookUrl: '',
         demoMode: false,
       },
     });
   }
 });
-
-console.log('[BabelLive] Service worker initialized');

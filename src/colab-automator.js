@@ -1,17 +1,111 @@
 /**
  * BabelLive — Colab Automator
- * Automatically executes Google Colab notebook cells, dismisses author run warnings,
- * extracts the generated ngrok WebSocket URL, and activates subtitles on the source tab.
+ * Automatically executes Google Colab notebook cells, dismisses confirmation dialogs,
+ * extracts the generated ngrok WebSocket URL from shadow DOM / iframes, and returns to YouTube.
  */
 
 (function () {
+  const isIframe = window !== window.top;
+
+  const urlRegex = /(wss:\/\/[a-zA-Z0-9\-\._~%]+(?::\d+)?(?:\/[a-zA-Z0-9\-\._~%]*)*\/ws\/live)/i;
+  const ngrokHttpRegex = /(https:\/\/[a-zA-Z0-9\-\._~%]+\.ngrok[a-zA-Z0-9\-\.]*)/i;
+
+  /* ── 1. Iframe Output Scanner ───────────────── */
+  if (isIframe) {
+    let detectedInFrame = false;
+    const frameScanner = setInterval(() => {
+      if (detectedInFrame) return;
+
+      const text = document.body ? document.body.innerText || document.body.textContent || '' : '';
+      const match = text.match(urlRegex);
+      let finalWs = match ? match[1] : null;
+
+      if (!finalWs) {
+        const httpMatch = text.match(ngrokHttpRegex);
+        if (
+          httpMatch &&
+          (text.includes('BABELLIVE') ||
+            text.includes('AI BACKEND') ||
+            text.includes('WebSocket URL'))
+        ) {
+          finalWs =
+            httpMatch[1]
+              .replace(/\/+$/, '')
+              .replace('https://', 'wss://')
+              .replace('http://', 'ws://') + '/ws/live';
+        }
+      }
+
+      if (finalWs) {
+        detectedInFrame = true;
+        clearInterval(frameScanner);
+        chrome.runtime
+          .sendMessage({
+            action: 'BABELLIVE_COLAB_READY',
+            wsUrl: finalWs,
+          })
+          .catch(() => {});
+      }
+    }, 1500);
+
+    setTimeout(() => clearInterval(frameScanner), 360000);
+    return;
+  }
+
+  /* ── 2. Top Window Context ──────────────────── */
   const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.get('babellive_autorun') !== 'true') return;
+  let isAutoRun = urlParams.get('babellive_autorun') === 'true';
+  let originalTabId = urlParams.get('source_tab');
 
-  const originalTabId = urlParams.get('source_tab');
-  console.log('[BabelLive] Colab automator started for source tab:', originalTabId);
+  if (isAutoRun) {
+    sessionStorage.setItem('babellive_autorun', 'true');
+    if (originalTabId) sessionStorage.setItem('babellive_source_tab', originalTabId);
+  } else if (sessionStorage.getItem('babellive_autorun') === 'true') {
+    isAutoRun = true;
+    originalTabId = originalTabId || sessionStorage.getItem('babellive_source_tab');
+  }
 
-  // 1. Create floating status banner on Colab page
+  if (!isAutoRun) return;
+
+  function queryShadowAll(root, selector) {
+    const results = [];
+    try {
+      results.push(...root.querySelectorAll(selector));
+    } catch {}
+    const all = root.querySelectorAll('*');
+    for (const el of all) {
+      if (el.shadowRoot) {
+        results.push(...queryShadowAll(el.shadowRoot, selector));
+      }
+    }
+    return results;
+  }
+
+  function getDeepText(node) {
+    if (!node) return '';
+    if (node.nodeType === Node.TEXT_NODE) {
+      return node.textContent || '';
+    }
+    let text = '';
+    if (node.childNodes) {
+      for (const child of node.childNodes) {
+        text += ' ' + getDeepText(child);
+      }
+    }
+    if (node.shadowRoot) {
+      text += ' ' + getDeepText(node.shadowRoot);
+    }
+    return text;
+  }
+
+  function simulateClick(el) {
+    if (!el) return;
+    ['pointerdown', 'mousedown', 'pointerup', 'mouseup', 'click'].forEach((evtType) => {
+      el.dispatchEvent(new MouseEvent(evtType, { bubbles: true, cancelable: true, view: window }));
+    });
+  }
+
+  // Minimalist Studio Floating Status Pill
   const banner = document.createElement('div');
   banner.id = 'babellive-colab-banner';
   banner.style.cssText = `
@@ -19,63 +113,85 @@
     top: 16px;
     right: 16px;
     z-index: 2147483647;
-    background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95));
-    border: 1px solid rgba(139, 92, 246, 0.6);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 16px rgba(139, 92, 246, 0.4);
+    background: rgba(9, 9, 11, 0.94);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
     border-radius: 10px;
-    padding: 12px 18px;
-    color: #e2e8f0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    font-size: 13px;
+    padding: 12px 16px;
+    color: #f4f4f5;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 12px;
     backdrop-filter: blur(12px);
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    max-width: 400px;
-    transition: opacity 0.5s ease;
+    gap: 4px;
+    max-width: 360px;
+    transition: opacity 0.4s ease;
   `;
   banner.innerHTML = `
-    <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: #38bdf8;">
-      <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#38bdf8; box-shadow:0 0 8px #38bdf8;"></span>
-      BabelLive Automator
+    <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: #fafafa; letter-spacing: -0.01em;">
+      <span id="babellive-banner-dot" style="display:inline-block; width:7px; height:7px; border-radius:50%; background:#f59e0b;"></span>
+      BabelLive Auto-Runner
     </div>
-    <div id="babellive-banner-status" style="color: #94a3b8; font-size: 12px; line-height: 1.4;">
-      Preparing to initialize AI runtime...
+    <div id="babellive-banner-status" style="color: #a1a1aa; font-size: 11.5px; line-height: 1.45;">
+      Preparing Colab runtime execution...
     </div>
   `;
   document.body.appendChild(banner);
 
-  function updateStatus(text, color = '#94a3b8') {
+  function updateStatus(text, dotColor = '#f59e0b') {
     const el = document.getElementById('babellive-banner-status');
-    if (el) {
-      el.textContent = text;
-      el.style.color = color;
-    }
+    const dot = document.getElementById('babellive-banner-dot');
+    if (el) el.textContent = text;
+    if (dot) dot.style.background = dotColor;
   }
 
-  // 2. Automatically confirm author warning modal if displayed by Google Colab
-  const dismissInterval = setInterval(() => {
-    const buttons = document.querySelectorAll('mwc-button, colab-dialog button, paper-button, button');
-    for (const btn of buttons) {
+  // Auto-dismiss Colab Dialogs
+  const dialogDismissInterval = setInterval(() => {
+    const allButtons = [
+      ...document.querySelectorAll(
+        'mwc-button, colab-dialog button, paper-button, button, md-filled-button, md-outlined-button'
+      ),
+      ...queryShadowAll(
+        document,
+        'mwc-button, colab-dialog button, paper-button, button, md-filled-button, md-outlined-button'
+      ),
+    ];
+
+    for (const btn of allButtons) {
       const txt = (btn.textContent || '').trim().toLowerCase();
-      if (btn.id === 'ok' || txt.includes('run anyway') || txt.includes('vẫn chạy') || txt.includes('chạy dù sao')) {
-        console.log('[BabelLive] Detected warning dialog, auto-clicking Run Anyway...');
-        updateStatus('Warning acknowledged. Executing notebook cells...', '#38bdf8');
-        btn.click();
+      const id = (btn.id || '').toLowerCase();
+
+      if (
+        id === 'ok' ||
+        txt.includes('run anyway') ||
+        txt.includes('vẫn chạy') ||
+        txt.includes('chạy dù sao')
+      ) {
+        updateStatus('Confirmed notebook execution...', '#f59e0b');
+        simulateClick(btn);
+        break;
+      }
+
+      if (
+        txt.includes('connect to google drive') ||
+        txt.includes('kết nối với google drive') ||
+        txt.includes('permit this notebook')
+      ) {
+        updateStatus('Mounting persistent model cache...', '#f59e0b');
+        simulateClick(btn);
         break;
       }
     }
   }, 400);
-  setTimeout(() => clearInterval(dismissInterval), 30000);
+  setTimeout(() => clearInterval(dialogDismissInterval), 120000);
 
-  // 3. Trigger "Run All" execution
   let runTriggered = false;
   function triggerRunAll() {
     if (runTriggered) return;
 
-    // Method 1: Keyboard shortcut Ctrl+F9 (Command+F9 on macOS)
     const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-    document.dispatchEvent(new KeyboardEvent('keydown', {
+    const evtInit = {
       key: 'F9',
       code: 'F9',
       keyCode: 120,
@@ -83,81 +199,96 @@
       ctrlKey: !isMac,
       metaKey: isMac,
       bubbles: true,
-      cancelable: true
-    }));
+      cancelable: true,
+      composed: true,
+    };
+    window.dispatchEvent(new KeyboardEvent('keydown', evtInit));
+    document.dispatchEvent(new KeyboardEvent('keydown', evtInit));
+    if (document.activeElement) {
+      document.activeElement.dispatchEvent(new KeyboardEvent('keydown', evtInit));
+    }
 
-    // Method 2: Click Runtime menu item directly
     const runtimeBtn = document.querySelector('#runtime-menu-button');
     if (runtimeBtn) {
-      runtimeBtn.click();
+      simulateClick(runtimeBtn);
       setTimeout(() => {
-        const menuItems = document.querySelectorAll('colab-menu-item, div[role="menuitem"], .goog-menuitem');
+        const menuItems = [
+          ...document.querySelectorAll(
+            'colab-menu-item, div[role="menuitem"], .goog-menuitem, md-menu-item'
+          ),
+          ...queryShadowAll(
+            document,
+            'colab-menu-item, div[role="menuitem"], .goog-menuitem, md-menu-item'
+          ),
+        ];
         for (const item of menuItems) {
           const txt = (item.textContent || '').toLowerCase();
           if (txt.includes('run all') || txt.includes('chạy tất cả') || txt.includes('ctrl+f9')) {
-            console.log('[BabelLive] Found Run All menu item, triggering execution...');
-            item.click();
+            simulateClick(item);
             runTriggered = true;
-            updateStatus('Executing cells (Loading models & starting server)...', '#f59e0b');
+            updateStatus('Loading Kotoba-Whisper & Qwen2.5-7B (~1–2 min)...', '#f59e0b');
             break;
           }
         }
         document.body.click();
-      }, 400);
+      }, 350);
     }
   }
 
-  // Check DOM readiness before triggering Run All
-  const checkReadyInterval = setInterval(() => {
-    if (document.querySelector('#runtime-menu-button')) {
-      clearInterval(checkReadyInterval);
-      setTimeout(triggerRunAll, 1200);
+  let attempts = 0;
+  const readyChecker = setInterval(() => {
+    attempts++;
+    if (document.querySelector('#runtime-menu-button') || attempts > 10) {
+      clearInterval(readyChecker);
+      setTimeout(triggerRunAll, 1000);
+      setTimeout(() => {
+        if (!runTriggered) triggerRunAll();
+      }, 4000);
     }
   }, 500);
-  setTimeout(() => clearInterval(checkReadyInterval), 20000);
 
-  // 4. Continuously scan terminal output for WebSocket URL
   let detectedWs = false;
-  const urlRegex = /(wss:\/\/[a-zA-Z0-9\-\._~%]+(?::\d+)?(?:\/[a-zA-Z0-9\-\._~%]*)*\/ws\/live)/i;
-  const ngrokHttpRegex = /(https:\/\/[a-zA-Z0-9\-\._~%]+\.ngrok[a-zA-Z0-9\-\.]*)/i;
-
   const outputScanner = setInterval(() => {
     if (detectedWs) return;
 
-    const pageText = document.body.innerText || '';
-    let match = pageText.match(urlRegex);
+    const allPageText = getDeepText(document.body);
+    const match = allPageText.match(urlRegex);
     let finalWsUrl = match ? match[1] : null;
 
     if (!finalWsUrl) {
-      const httpMatch = pageText.match(ngrokHttpRegex);
-      if (httpMatch && (pageText.includes('BABELLIVE') || pageText.includes('AI BACKEND'))) {
-        const httpUrl = httpMatch[1].replace(/\/+$/, '');
-        finalWsUrl = httpUrl.replace('https://', 'wss://').replace('http://', 'ws://') + '/ws/live';
+      const httpMatch = allPageText.match(ngrokHttpRegex);
+      if (
+        httpMatch &&
+        (allPageText.includes('BABELLIVE') ||
+          allPageText.includes('AI BACKEND') ||
+          allPageText.includes('WebSocket URL'))
+      ) {
+        finalWsUrl =
+          httpMatch[1]
+            .replace(/\/+$/, '')
+            .replace('https://', 'wss://')
+            .replace('http://', 'ws://') + '/ws/live';
       }
     }
 
     if (finalWsUrl) {
       detectedWs = true;
       clearInterval(outputScanner);
-      console.log('[BabelLive] Detected WebSocket endpoint:', finalWsUrl);
+      sessionStorage.removeItem('babellive_autorun');
 
-      updateStatus('Backend active. Switching to YouTube tab...', '#22c55e');
+      updateStatus('Backend online — switching back to YouTube...', '#10b981');
 
-      // Forward detected endpoint to background service worker
       chrome.runtime.sendMessage({
         action: 'BABELLIVE_COLAB_READY',
         wsUrl: finalWsUrl,
-        tabId: originalTabId ? parseInt(originalTabId, 10) : null
+        tabId: originalTabId ? parseInt(originalTabId, 10) : null,
       });
 
-      // Auto-hide banner after 4 seconds
       setTimeout(() => {
         if (banner) banner.style.opacity = '0';
-      }, 4000);
+      }, 3500);
     }
   }, 1500);
 
-  // Scan timeout of 5 minutes
-  setTimeout(() => clearInterval(outputScanner), 300000);
-
+  setTimeout(() => clearInterval(outputScanner), 360000);
 })();

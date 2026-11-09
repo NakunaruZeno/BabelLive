@@ -1,0 +1,2 @@
+# Local CLI Requirements for Modal deployment
+modal>=0.63.0

@@ -27,7 +27,7 @@ Browser Tab (YouTube)
   │   AI Backend (FastAPI / Colab T4 GPU)
   │     ├─► AudioStreamDecoder & RMS Energy VAD
   │     ├─► Kotoba-Whisper v2.0 (Japanese STT)
-  │     └─► Qwen2.5-3B-Instruct (Contextual Translation)
+  │     └─► Qwen2.5-7B-Instruct-GPTQ-Int4 (Contextual Translation)
   │     │
   │     ▼
   │   WebSocket JSON Message (Interim & Final Captions)
@@ -39,7 +39,7 @@ Browser Tab (YouTube)
 1. **Tab Capture Pipeline:** Captures internal tab audio via `chrome.tabCapture` inside a Chrome Manifest V3 offscreen document without muting tab audio.
 2. **Direct PCM Streaming:** Resamples audio to 16kHz Int16 mono PCM and transmits raw chunks via a secure WebSocket connection.
 3. **Speech Recognition (ASR):** Powered by `kotoba-tech/kotoba-whisper-v2.0` (trained on 7M ReazonSpeech samples, ~8.4% CER, 6.3x faster than Whisper large-v3).
-4. **Contextual Translation (LLM):** Powered by `Qwen/Qwen2.5-3B-Instruct`, preserving colloquial dialogue, conversational nuances, and honorific forms (Keigo).
+4. **Contextual Translation (LLM):** Powered by `Qwen/Qwen2.5-7B-Instruct-GPTQ-Int4`, preserving colloquial dialogue, conversational nuances, anime/VTuber pop-culture terms, and honorific forms (Keigo).
 5. **DOM Subtitle Overlay:** Renders cinematic dual-language subtitles with auto-fade, repositioning, and font scaling controls directly inside the YouTube video container.
 
 ---
@@ -61,21 +61,24 @@ Browser Tab (YouTube)
 BabelLive/
 ├── colab/                      # Google Colab GPU backend
 │   ├── BabelLive_Backend.ipynb # Colab notebook (Kotoba-Whisper + Qwen2.5 + WebSocket)
-│   └── README.md               # Backend deployment instructions
+│   └── README.md               # Colab deployment instructions
 │
-├── src/                        # Chrome Extension (Manifest V3)
-│   ├── manifest.json           # Extension configuration and permissions
-│   ├── popup.html / popup.css  # Extension control popup interface
-│   ├── popup.js                # State management and tab communication
-│   ├── content.js              # Video player hook and subtitle overlay
-│   ├── overlay.css             # Subtitle styling and animations
-│   ├── offscreen.html / .js    # Tab audio capture and 16kHz PCM streaming
-│   ├── service-worker.js       # Background message router and session lifecycle
-│   ├── colab-automator.js      # Automated Colab notebook runner
-    └── translation/            # Cloud LLM and local translation router modules
-        ├── cloud-llm.js        # Fallback cloud translation (Groq / Gemini)
-        ├── stream-buffer.js    # Rule-based sentence boundary processor
-        └── translation-router.js
+├── modal_backend/              # Modal Labs Serverless GPU backend
+│   ├── app.py                  # Zero-cold-start ASGI WebSocket backend
+│   ├── requirements.txt        # Local CLI dependency
+│   └── README.md               # Modal cloud deployment guide
+│
+└── src/                        # Chrome Extension (Manifest V3)
+    ├── icons/                  # Extension icons (16, 32, 48, 128)
+    ├── manifest.json           # Extension configuration and permissions
+    ├── popup.html / popup.css  # Minimalist Studio popup interface
+    ├── popup.js                # State management and endpoint controller
+    ├── content.js              # Video player hook and subtitle overlay
+    ├── overlay.css             # Broadcast subtitle presets & minibar styles
+    ├── offscreen.html / .js    # Tab audio capture and 16kHz PCM streaming
+    ├── audio-worklet-processor.js # Off-thread Float32-to-Int16 audio worklet
+    ├── service-worker.js       # Background message router and session lifecycle
+    └── colab-automator.js      # Automated Colab notebook runner
 ```
 
 ---
@@ -109,7 +112,7 @@ BabelLive/
 - **Extension Framework:** Chrome Extensions API (Manifest V3), Web Audio API, HTML5 Canvas / DOM MutationObserver.
 - **Backend Service:** Python 3.10+, FastAPI, Uvicorn, WebSockets, PyNgrok.
 - **Speech Recognition:** Hugging Face Transformers, `kotoba-tech/kotoba-whisper-v2.0`, PyTorch.
-- **Translation:** `Qwen/Qwen2.5-3B-Instruct`, Accelerate.
+- **Translation:** `Qwen/Qwen2.5-7B-Instruct-GPTQ-Int4`, Optimum, Auto-GPTQ, Accelerate.
 
 ---
 

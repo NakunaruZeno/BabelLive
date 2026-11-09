@@ -1,7 +1,7 @@
 /**
- * BabelLive Popup — State Management & UI Logic
- * Syncs all settings to chrome.storage.local and communicates with
- * service-worker / content scripts via chrome.runtime messaging.
+ * BabelLive Popup — Minimalist Studio Controller
+ * Synchronizes user preferences with chrome.storage.local, manages runtime
+ * session state via chrome.storage.session, and probes WebSocket endpoints.
  */
 
 const STORAGE_KEY = 'babellive_settings';
@@ -19,14 +19,15 @@ const DEFAULTS = {
   demoMode: false,
 };
 
-/* ── DOM References ────────────────────────────── */
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => document.querySelectorAll(sel);
 
 const els = {
   masterToggle: $('#masterToggle'),
+  livePill: $('#livePill'),
+  livePillText: $('#livePillText'),
   statusBar: $('#statusBar'),
-  statusDot: $('#statusBar .status-dot'),
+  statusDot: $('#statusDot'),
   statusText: $('#statusText'),
   sourceLang: $('#sourceLang'),
   targetLang: $('#targetLang'),
@@ -35,48 +36,48 @@ const els = {
   fontSizeSlider: $('#fontSizeSlider'),
   fontSizeValue: $('#fontSizeValue'),
   bilingualToggle: $('#bilingualToggle'),
-  colabSettings: $('#colabSettings'),
+  demoToggle: $('#demoToggle'),
+  colabUrl: $('#colabUrl'),
+  testColabBtn: $('#testColabBtn'),
+  colabDrawer: $('#colabDrawer'),
   colabNotebookUrl: $('#colabNotebookUrl'),
   oneClickStartBtn: $('#oneClickStartBtn'),
   oneClickBtnText: $('#oneClickBtnText'),
-  colabUrl: $('#colabUrl'),
-  testColabBtn: $('#testColabBtn'),
   colabStatus: $('#colabStatus'),
   colabStatusText: $('#colabStatusText'),
-  demoToggle: $('#demoToggle'),
 };
 
 let state = { ...DEFAULTS };
+let isYouTubeTab = false;
 
 /* ── Persistence ───────────────────────────────── */
 async function loadState() {
   try {
     const result = await chrome.storage.local.get(STORAGE_KEY);
     if (result[STORAGE_KEY]) {
-      // Do not load enabled from persistent local storage
       const { enabled, ...prefs } = result[STORAGE_KEY];
       state = { ...DEFAULTS, ...prefs, enabled: false };
     }
-    // Read session state for the currently active tab
+
     const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true }).catch(() => []);
     const sessionData = await chrome.storage.session.get(SESSION_KEY).catch(() => ({}));
     const session = sessionData?.[SESSION_KEY];
-    const isRunning = session?.isRunning === true && (session.activeTabId == null || session.activeTabId === activeTab?.id);
+    const isRunning =
+      session?.isRunning === true &&
+      (session.activeTabId == null || session.activeTabId === activeTab?.id);
     state.enabled = Boolean(isRunning);
   } catch (e) {
-    console.warn('[popup] loadState error', e);
+    console.warn('[BabelLive Popup] loadState error:', e);
   }
 }
 
 async function saveState() {
   try {
-    // Never persist enabled: true to local storage
     const { enabled, ...prefs } = state;
     await chrome.storage.local.set({ [STORAGE_KEY]: { ...prefs, enabled: false } });
-    // Notify content scripts and service worker
     broadcastSettings();
   } catch (e) {
-    console.warn('[popup] saveState error', e);
+    console.warn('[BabelLive Popup] saveState error:', e);
   }
 }
 
@@ -85,7 +86,6 @@ function safeSendMessageToTab(tabId, message, callback) {
   if (tabId == null) return;
   chrome.tabs.sendMessage(tabId, message, (response) => {
     if (chrome.runtime.lastError) {
-      // Suppress "Receiving end does not exist" error during reload or unmount
       if (callback) callback(null);
       return;
     }
@@ -97,23 +97,16 @@ async function ensureTabConnected() {
   try {
     const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
     const tab = tabs[0];
-    if (!tab?.id || !tab.url || !/^https?:|^file:/.test(tab.url)) return;
-
-    const isYouTube = tab.url.includes('youtube.com/watch') || tab.url.includes('youtube.com/live');
-    console.log(`[BabelLive-Popup] Checked active tab URL: ${tab.url} | isYouTube: ${isYouTube}`);
-    if (!isYouTube) {
-      els.masterToggle.disabled = true;
-      els.masterToggle.checked = false;
-      els.statusDot.className = 'status-dot idle';
-      els.statusDot.style.background = '#6b7280';
-      els.statusText.textContent = 'Inactive: Please open a YouTube video/stream';
-      els.statusText.title = 'BabelLive only works on YouTube';
+    if (!tab?.id || !tab.url || !/^https?:/.test(tab.url)) {
+      isYouTubeTab = false;
+      updateStatusUI();
       return;
     }
-    
-    // Explicitly enable if on YouTube (in case it was disabled previously)
-    els.masterToggle.disabled = false;
-    els.statusText.title = '';
+
+    isYouTubeTab = tab.url.includes('youtube.com/watch') || tab.url.includes('youtube.com/live');
+    updateStatusUI();
+
+    if (!isYouTubeTab) return;
 
     return new Promise((resolve) => {
       safeSendMessageToTab(tab.id, { type: 'BABELLIVE_PING' }, async (res) => {
@@ -122,7 +115,6 @@ async function ensureTabConnected() {
           resolve();
           return;
         }
-        // Not injected yet, inject content script & styles programmatically
         try {
           await chrome.scripting.executeScript({
             target: { tabId: tab.id, allFrames: false },
@@ -135,16 +127,13 @@ async function ensureTabConnected() {
           setTimeout(() => {
             broadcastSettings();
             resolve();
-          }, 150);
-        } catch (injectErr) {
-          console.warn('[BabelLive popup] Injection fallback failed:', injectErr);
+          }, 120);
+        } catch {
           resolve();
         }
       });
     });
-  } catch (err) {
-    console.warn('[BabelLive popup] ensureTabConnected error:', err);
-  }
+  } catch {}
 }
 
 function broadcastSettings() {
@@ -157,80 +146,136 @@ function broadcastSettings() {
       });
     }
   });
-  chrome.runtime.sendMessage({
-    type: 'BABELLIVE_SETTINGS_UPDATE',
-    settings: state,
-  }, () => {
-    if (chrome.runtime.lastError) { }
-  });
+  chrome.runtime.sendMessage(
+    {
+      type: 'BABELLIVE_SETTINGS_UPDATE',
+      settings: state,
+    },
+    () => {
+      if (chrome.runtime.lastError) {}
+    }
+  );
 }
 
-/* ── UI → State sync ──────────────────────────── */
-function applyStateToUI() {
-  // Master toggle
-  els.masterToggle.checked = state.enabled;
-  updateStatusUI();
+/* ── UI Synchronization ────────────────────────── */
+function updateSliderFill() {
+  const min = Number(els.fontSizeSlider.min) || 14;
+  const max = Number(els.fontSizeSlider.max) || 36;
+  const val = Number(els.fontSizeSlider.value) || 22;
+  const pct = Math.round(((val - min) / (max - min)) * 100);
+  els.fontSizeSlider.style.setProperty('--slider-pct', `${pct}%`);
+}
 
-  // Language
+function updateSwapButtonState() {
+  if (els.swapLangs) {
+    els.swapLangs.disabled = state.sourceLang === 'auto';
+  }
+}
+
+function applyStateToUI() {
+  els.masterToggle.checked = state.enabled;
+
   els.sourceLang.value = state.sourceLang;
   els.targetLang.value = state.targetLang;
+  updateSwapButtonState();
 
-  // Preset
   els.presetBtns.forEach((btn) => {
     btn.classList.toggle('active', btn.dataset.preset === state.subtitlePreset);
   });
 
-  // Font size
   els.fontSizeSlider.value = state.fontSize;
   els.fontSizeValue.textContent = `${state.fontSize}px`;
+  updateSliderFill();
 
-  // Bilingual
   els.bilingualToggle.checked = state.bilingual;
+  els.demoToggle.checked = state.demoMode;
 
-  // Colab
   if (els.colabUrl) els.colabUrl.value = state.colabUrl || '';
   if (els.colabNotebookUrl) els.colabNotebookUrl.value = state.colabNotebookUrl || '';
 
-  // Demo
-  els.demoToggle.checked = state.demoMode;
+  // Auto-open Colab drawer if user has a Colab notebook configured but no direct WS URL
+  if (els.colabDrawer && state.colabNotebookUrl && !state.colabUrl) {
+    els.colabDrawer.open = true;
+  }
+
+  updateStatusUI();
+}
+
+function setBannerState(mode, message) {
+  els.statusDot.className = `status-dot ${mode}`;
+  els.statusText.textContent = message;
+}
+
+function setEndpointStatus(mode, text) {
+  const dot = els.colabStatus?.querySelector('.status-dot');
+  if (dot) dot.className = `status-dot ${mode}`;
+  if (els.colabStatusText) els.colabStatusText.textContent = text;
 }
 
 function updateStatusUI() {
-  const dot = els.statusDot;
-  dot.className = 'status-dot';
+  if (!isYouTubeTab) {
+    els.masterToggle.disabled = true;
+    els.masterToggle.checked = false;
+    els.livePill.dataset.state = 'idle';
+    els.livePillText.textContent = 'STANDBY';
+    setBannerState('idle', 'Open a YouTube video or livestream to start');
+    els.oneClickStartBtn.classList.remove('is-active');
+    els.oneClickBtnText.textContent = 'Connect & Start Subtitles';
+    return;
+  }
+
+  els.masterToggle.disabled = false;
+
   if (state.enabled) {
-    dot.classList.add('connected');
-    els.statusText.textContent = `AI Engine: Connected — Colab Server`;
+    els.livePill.dataset.state = 'live';
+    els.livePillText.textContent = 'LIVE';
+    setBannerState('connected', 'Streaming live audio to AI backend');
+    setEndpointStatus('running', 'Connected');
+    els.oneClickStartBtn.classList.add('is-active');
+    els.oneClickBtnText.textContent = 'Subtitles Active';
   } else {
-    dot.classList.add('idle');
-    els.statusText.textContent = 'Idle — Click toggle to start';
+    els.livePill.dataset.state = 'idle';
+    els.livePillText.textContent = 'IDLE';
+    setBannerState('idle', 'Ready on YouTube — toggle switch to start');
+    els.oneClickStartBtn.classList.remove('is-active');
+    els.oneClickBtnText.textContent = 'Connect & Start Subtitles';
+    if (state.colabUrl) {
+      setEndpointStatus('idle', 'Configured');
+    } else {
+      setEndpointStatus('idle', 'Not configured');
+    }
   }
 }
 
+/* ── Endpoint Formatting & Probing ─────────────── */
 function formatColabUrl(val) {
-  let url = (val || '').trim().replace(/\/+$/, '');
+  let url = (val || '').trim().split('?')[0].replace(/\/+$/, '');
   if (!url) return '';
   if (url.startsWith('http://')) url = url.replace('http://', 'ws://');
   else if (url.startsWith('https://')) url = url.replace('https://', 'wss://');
   else if (!url.startsWith('ws://') && !url.startsWith('wss://')) url = 'wss://' + url;
-  if (!url.endsWith('/ws/live')) url = url + '/ws/live';
+  if (!url.endsWith('/ws/live')) url += '/ws/live';
   return url;
 }
 
-function probeWebSocket(url, timeoutMs = 2000) {
+function probeWebSocket(url, timeoutMs = 2400) {
   return new Promise((resolve) => {
     try {
       const formatted = formatColabUrl(url);
       if (!formatted) return resolve(false);
       const ws = new WebSocket(formatted);
       const timer = setTimeout(() => {
-        try { ws.close(); } catch {}
+        try {
+          ws.close();
+        } catch {}
         resolve(false);
       }, timeoutMs);
 
       ws.onopen = () => {
         clearTimeout(timer);
-        try { ws.close(); } catch {}
+        try {
+          ws.close();
+        } catch {}
         resolve(true);
       };
       ws.onerror = () => {
@@ -243,75 +288,82 @@ function probeWebSocket(url, timeoutMs = 2000) {
   });
 }
 
-/* ── Colab Connection Test ──────────────────── */
 async function testColabConnection() {
-  const url = formatColabUrl(els.colabUrl?.value);
-  if (!url) {
-    if (els.colabStatusText) els.colabStatusText.textContent = 'Please enter a valid WebSocket URL';
-    return;
+  const formatted = formatColabUrl(els.colabUrl?.value);
+  if (!formatted) {
+    setEndpointStatus('error', 'Enter a valid wss:// URL');
+    els.colabUrl?.focus();
+    return false;
   }
 
-  const dot = els.colabStatus?.querySelector('.status-dot');
-  if (els.colabStatusText) els.colabStatusText.textContent = 'Testing connection...';
-  if (dot) dot.className = 'status-dot starting';
+  els.colabUrl.value = formatted;
+  state.colabUrl = formatted;
+  saveState();
 
-  const isLive = await probeWebSocket(url, 2500);
+  setEndpointStatus('starting', 'Probing...');
+  const isLive = await probeWebSocket(formatted, 2500);
   if (isLive) {
-    if (dot) dot.className = 'status-dot running';
-    if (els.colabStatusText) {
-      els.colabStatusText.textContent = 'Connected to WebSocket backend.';
-      els.colabStatusText.style.color = 'var(--text-color)';
-    }
+    setEndpointStatus('running', 'Endpoint online');
+    return true;
   } else {
-    if (dot) dot.className = 'status-dot error';
-    if (els.colabStatusText) els.colabStatusText.textContent = 'Failed to connect to WebSocket endpoint.';
+    setEndpointStatus('error', 'Unreachable');
+    return false;
   }
 }
 
-/* ── Event Listeners ──────────────────────────── */
+/* ── Event Bindings ────────────────────────────── */
 function bindEvents() {
-  // Master toggle (Session-only execution)
   els.masterToggle.addEventListener('change', async () => {
     state.enabled = els.masterToggle.checked;
-    updateStatusUI();
 
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true }).catch(() => []);
     const tabId = tab?.id;
-    const isYouTube = tab?.url?.includes('youtube.com/watch') || tab?.url?.includes('youtube.com/live');
-    
-    // Mask URL for logging
-    const urlMasked = state.colabUrl ? `${state.colabUrl.substring(0, 15)}...` : 'NONE';
-    console.log(`[BabelLive-Popup] Master Toggle Clicked! -> Tab ID: ${tabId} | isYouTube: ${isYouTube} | URL: ${urlMasked}`);
 
     if (state.enabled) {
-      // If WebSocket URL is missing but notebook link is available, trigger automated launch
+      if (!state.colabUrl && !state.colabNotebookUrl) {
+        state.enabled = false;
+        els.masterToggle.checked = false;
+        setEndpointStatus('error', 'Endpoint required');
+        setBannerState('error', 'Enter a WebSocket URL or Colab link below');
+        els.colabUrl?.focus();
+        return;
+      }
+
       if (!state.colabUrl && state.colabNotebookUrl) {
         await handleOneClickStart();
         return;
       }
-      chrome.runtime.sendMessage({
-        action: 'START_LIVE_SESSION',
-        type: 'BABELLIVE_START',
-        tabId,
-        settings: state
-      }, () => { if (chrome.runtime.lastError) { } });
-    } else {
-      await chrome.storage.session.set({
-        [SESSION_KEY]: { isRunning: false, activeTabId: null },
-      }).catch(() => { });
 
-      console.log(`[BabelLive-Popup] Dispatching STOP_LIVE_SESSION to Service Worker for Tab ${tabId}...`);
-      chrome.runtime.sendMessage({
-        action: 'STOP_LIVE_SESSION',
-        type: 'BABELLIVE_STOP',
-        tabId,
-      }, () => { if (chrome.runtime.lastError) { } });
+      updateStatusUI();
+      chrome.runtime.sendMessage(
+        {
+          action: 'START_LIVE_SESSION',
+          type: 'BABELLIVE_START',
+          tabId,
+          settings: state,
+        },
+        () => {
+          if (chrome.runtime.lastError) {}
+        }
+      );
+    } else {
+      updateStatusUI();
+      chrome.runtime.sendMessage(
+        {
+          action: 'STOP_LIVE_SESSION',
+          type: 'BABELLIVE_STOP',
+          tabId,
+        },
+        () => {
+          if (chrome.runtime.lastError) {}
+        }
+      );
     }
   });
 
-  // Language selects
   els.sourceLang.addEventListener('change', () => {
     state.sourceLang = els.sourceLang.value;
+    updateSwapButtonState();
     saveState();
   });
 
@@ -320,22 +372,17 @@ function bindEvents() {
     saveState();
   });
 
-  // Swap languages
   els.swapLangs.addEventListener('click', () => {
-    const src = state.sourceLang;
-    const tgt = state.targetLang;
-    if (src === 'auto') return; // Can't swap auto-detect
-    state.sourceLang = tgt;
-    state.targetLang = src;
+    if (state.sourceLang === 'auto') return;
+    const prevSource = state.sourceLang;
+    state.sourceLang = state.targetLang;
+    state.targetLang = prevSource;
     els.sourceLang.value = state.sourceLang;
     els.targetLang.value = state.targetLang;
-    // Swap animation
-    els.swapLangs.style.transform = 'rotate(180deg) scale(1.05)';
-    setTimeout(() => { els.swapLangs.style.transform = ''; }, 300);
+    updateSwapButtonState();
     saveState();
   });
 
-  // Style presets
   els.presetBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
       state.subtitlePreset = btn.dataset.preset;
@@ -344,22 +391,18 @@ function bindEvents() {
     });
   });
 
-  // Font size slider
   els.fontSizeSlider.addEventListener('input', () => {
     state.fontSize = parseInt(els.fontSizeSlider.value, 10);
     els.fontSizeValue.textContent = `${state.fontSize}px`;
+    updateSliderFill();
     saveState();
   });
 
-  // Bilingual toggle
   els.bilingualToggle.addEventListener('change', () => {
     state.bilingual = els.bilingualToggle.checked;
     saveState();
   });
 
-
-
-  // Demo mode toggle
   els.demoToggle.addEventListener('change', () => {
     state.demoMode = els.demoToggle.checked;
     saveState();
@@ -368,67 +411,66 @@ function bindEvents() {
     }
   });
 
-  // Launch backend and initiate live subtitles
   async function handleOneClickStart() {
     state.colabNotebookUrl = (els.colabNotebookUrl?.value || '').trim();
     state.colabUrl = formatColabUrl(els.colabUrl?.value);
+    if (els.colabUrl && state.colabUrl) els.colabUrl.value = state.colabUrl;
     saveState();
 
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true }).catch(() => []);
     const tabId = tab?.id;
-    const dot = els.colabStatus?.querySelector('.status-dot');
-    const btnText = els.oneClickBtnText;
 
-    // 1. If WebSocket URL is present, verify backend availability
+    // 1. If WebSocket URL is present, verify and start session
     if (state.colabUrl) {
-      if (btnText) btnText.textContent = 'Testing server connection...';
-      if (els.colabStatusText) els.colabStatusText.textContent = 'Verifying WebSocket endpoint...';
-      if (dot) dot.className = 'status-dot starting';
+      els.oneClickBtnText.textContent = 'Connecting...';
+      setEndpointStatus('starting', 'Connecting...');
 
-      const isLive = await probeWebSocket(state.colabUrl, 1800);
+      const isLive = await probeWebSocket(state.colabUrl, 2200);
       if (isLive) {
-        if (dot) dot.className = 'status-dot running';
-        if (els.colabStatusText) {
-          els.colabStatusText.textContent = 'Connected to AI backend.';
-          els.colabStatusText.style.color = 'var(--text-color)';
+        if (!isYouTubeTab) {
+          setEndpointStatus('running', 'Endpoint online');
+          setBannerState('idle', 'Endpoint verified — open a YouTube video to start');
+          els.oneClickBtnText.textContent = 'Endpoint Ready';
+          return;
         }
-        if (btnText) btnText.textContent = 'Subtitles Active';
+
         state.enabled = true;
         els.masterToggle.checked = true;
         updateStatusUI();
-
-        await chrome.storage.session.set({
-          [SESSION_KEY]: { isRunning: true, activeTabId: tabId },
-        }).catch(() => {});
 
         chrome.runtime.sendMessage({
           action: 'START_LIVE_SESSION',
           type: 'BABELLIVE_START',
           tabId,
-          settings: state
+          settings: state,
         });
+        return;
+      }
+
+      if (!state.colabNotebookUrl) {
+        setEndpointStatus('error', 'Offline');
+        setBannerState('error', 'Could not reach WebSocket endpoint');
+        els.oneClickBtnText.textContent = 'Retry Connection';
         return;
       }
     }
 
-    // 2. If endpoint is not active yet, launch notebook tab with autorun parameter
+    // 2. Launch Colab Notebook with autorun parameters
     if (state.colabNotebookUrl) {
-      if (btnText) btnText.textContent = 'Launching Colab environment...';
-      if (els.colabStatusText) {
-        els.colabStatusText.textContent = 'Opening Colab notebook...';
-        els.colabStatusText.style.color = '#f59e0b';
-      }
-      if (dot) dot.className = 'status-dot starting';
+      els.oneClickBtnText.textContent = 'Launching Colab...';
+      setEndpointStatus('starting', 'Starting Colab...');
+      setBannerState('starting', 'Opening Google Colab auto-runner...');
 
-      let url = state.colabNotebookUrl;
-      const separator = url.includes('?') ? '&' : '?';
-      url = url + separator + 'babellive_autorun=true&source_tab=' + tabId;
-      chrome.tabs.create({ url: url, active: true });
+      const separator = state.colabNotebookUrl.includes('?') ? '&' : '?';
+      const targetUrl = `${state.colabNotebookUrl}${separator}babellive_autorun=true&source_tab=${tabId || ''}`;
+      chrome.tabs.create({ url: targetUrl, active: true });
       return;
     }
 
-    // 3. Fallback when neither URL is configured
-    alert('Please enter your Google Colab Notebook URL or a WebSocket endpoint to proceed.');
+    // 3. Inline validation feedback (no alert dialog)
+    setEndpointStatus('error', 'Missing URL');
+    setBannerState('error', 'Provide a WebSocket URL or Colab Notebook link');
+    els.colabUrl?.focus();
   }
 
   els.testColabBtn?.addEventListener('click', testColabConnection);
@@ -438,17 +480,8 @@ function bindEvents() {
     if (els.colabUrl.value !== state.colabUrl) els.colabUrl.value = state.colabUrl;
     saveState();
   });
-  els.colabUrl?.addEventListener('blur', () => {
-    state.colabUrl = formatColabUrl(els.colabUrl.value);
-    if (els.colabUrl.value !== state.colabUrl) els.colabUrl.value = state.colabUrl;
-    saveState();
-  });
 
   els.colabNotebookUrl?.addEventListener('change', () => {
-    state.colabNotebookUrl = (els.colabNotebookUrl.value || '').trim();
-    saveState();
-  });
-  els.colabNotebookUrl?.addEventListener('blur', () => {
     state.colabNotebookUrl = (els.colabNotebookUrl.value || '').trim();
     saveState();
   });
@@ -456,16 +489,17 @@ function bindEvents() {
   els.oneClickStartBtn?.addEventListener('click', handleOneClickStart);
 }
 
-/* ── Tab & Session Watchers ───────────────────── */
-function setupTabWatchers() {
-  // Listen for session storage changes
+/* ── Runtime & Session Watchers ────────────────── */
+function setupWatchers() {
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area === 'session' && changes[SESSION_KEY]) {
       const newSession = changes[SESSION_KEY].newValue;
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         if (chrome.runtime.lastError) return;
         const activeId = tabs[0]?.id;
-        const isRunning = newSession?.isRunning === true && (newSession.activeTabId == null || newSession.activeTabId === activeId);
+        const isRunning =
+          newSession?.isRunning === true &&
+          (newSession.activeTabId == null || newSession.activeTabId === activeId);
         state.enabled = Boolean(isRunning);
         els.masterToggle.checked = state.enabled;
         updateStatusUI();
@@ -473,47 +507,34 @@ function setupTabWatchers() {
     }
   });
 
-  // Listen for runtime messages (e.g. STT errors, Colab ready)
   chrome.runtime.onMessage.addListener((message) => {
-    if (message.type === 'BABELLIVE_COLAB_STATUS_UPDATE' || message.action === 'BABELLIVE_COLAB_READY') {
+    if (
+      message.type === 'BABELLIVE_COLAB_STATUS_UPDATE' ||
+      message.action === 'BABELLIVE_COLAB_READY'
+    ) {
       if (message.colabUrl) {
         state.colabUrl = message.colabUrl;
         if (els.colabUrl) els.colabUrl.value = message.colabUrl;
       }
       state.enabled = true;
       if (els.masterToggle) els.masterToggle.checked = true;
-      if (els.oneClickBtnText) els.oneClickBtnText.textContent = 'Subtitles Active';
-      if (els.colabStatusText) {
-        els.colabStatusText.textContent = 'Connected to AI backend.';
-        els.colabStatusText.style.color = 'var(--text-color)';
-      }
-      const dot = els.colabStatus?.querySelector('.status-dot');
-      if (dot) dot.className = 'status-dot running';
       updateStatusUI();
     }
 
     if (message.type === 'BABELLIVE_CAPTURE_ERROR') {
       state.enabled = false;
       els.masterToggle.checked = false;
-      if (els.oneClickBtnText) els.oneClickBtnText.textContent = 'Launch & Start Subtitles';
-      els.statusDot.className = 'status-dot idle';
-      els.statusDot.style.background = '#ef4444'; // Red error dot
-      els.statusDot.style.boxShadow = '0 0 8px rgba(239, 68, 68, 0.5)';
-      els.statusText.textContent = `Error: ${message.error}`;
-      // Also update session to stop
-      chrome.storage.session.set({
-        [SESSION_KEY]: { isRunning: false, activeTabId: null },
-      }).catch(() => { });
+      updateStatusUI();
+      setEndpointStatus('error', 'Connection error');
+      setBannerState('error', message.error || 'Audio capture failed');
     }
   });
 }
 
-/* ── Init ─────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', async () => {
-  console.log('[BabelLive-Popup] DOM loaded, initializing popup...');
   await loadState();
+  await ensureTabConnected();
   applyStateToUI();
   bindEvents();
-  setupTabWatchers();
-  ensureTabConnected();
+  setupWatchers();
 });

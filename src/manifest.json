@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "BabelLive",
-  "description": "Real-time AI live translation with dual-language subtitle overlay on HTML5 videos.",
-  "version": "1.0.0",
+  "description": "Real-time AI live translation with dual-language subtitle overlay for YouTube streams and videos.",
+  "version": "1.1.0",
   "action": {
     "default_icon": {
       "16": "icons/icon16.png",
@@ -10,7 +10,7 @@
       "48": "icons/icon48.png",
       "128": "icons/icon128.png"
     },
-    "default_title": "BabelLive — AI Live Translation",
+    "default_title": "BabelLive — Real-Time AI Subtitles",
     "default_popup": "popup.html"
   },
   "icons": {
@@ -28,19 +28,16 @@
     "scripting",
     "storage",
     "tabCapture",
-    "offscreen",
-    "sidePanel"
+    "offscreen"
   ],
   "host_permissions": [
     "*://*.youtube.com/*",
-    "*://translate.googleapis.com/*",
-    "*://api.groq.com/*",
-    "*://generativelanguage.googleapis.com/*",
-    "*://openrouter.ai/*",
     "*://*.ngrok-free.app/*",
     "*://*.ngrok-free.dev/*",
     "*://*.ngrok.io/*",
-    "*://colab.research.google.com/*"
+    "*://*.modal.run/*",
+    "*://colab.research.google.com/*",
+    "*://*.googleusercontent.com/*"
   ],
   "content_scripts": [
     {
@@ -54,11 +51,12 @@
     },
     {
       "matches": [
-        "*://colab.research.google.com/*"
+        "*://colab.research.google.com/*",
+        "*://*.googleusercontent.com/*"
       ],
       "js": ["colab-automator.js"],
       "run_at": "document_idle",
-      "all_frames": false
+      "all_frames": true
     }
   ],
   "content_security_policy": {
@@ -69,8 +67,7 @@
       "resources": [
         "icons/*",
         "overlay.css",
-        "audio-worklet-processor.js",
-        "translation/*"
+        "audio-worklet-processor.js"
       ],
       "matches": [
         "*://*.youtube.com/*"

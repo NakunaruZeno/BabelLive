@@ -9,208 +9,187 @@
 </head>
 
 <body>
-  <div class="popup-container">
-    <!-- Header -->
-    <header class="popup-header">
-      <div class="logo-group">
-        <div class="logo-icon">
-          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-            <circle cx="14" cy="14" r="13" stroke="url(#logoGrad)" stroke-width="2" />
-            <path d="M8 18 L14 8 L20 18" stroke="url(#logoGrad)" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round" fill="none" />
-            <circle cx="14" cy="20" r="1.5" fill="#06b6d4" />
-            <defs>
-              <linearGradient id="logoGrad" x1="0" y1="0" x2="28" y2="28">
-                <stop offset="0%" stop-color="#8b5cf6" />
-                <stop offset="100%" stop-color="#06b6d4" />
-              </linearGradient>
-            </defs>
+  <main class="popup-shell">
+    <!-- Top Header -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+            <rect x="2" y="3" width="16" height="14" rx="3.5" stroke="currentColor" stroke-width="1.6" />
+            <path d="M5.5 11.5h3.5M11 11.5h3.5M5.5 14h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
           </svg>
         </div>
-        <h1 class="logo-text">BabelLive</h1>
-        <span class="live-badge">
-          <span class="live-dot"></span>
-          LIVE
-        </span>
+        <div class="brand-copy">
+          <span class="brand-name">BabelLive</span>
+          <span class="live-pill" id="livePill" data-state="idle">
+            <span class="live-pill-dot"></span>
+            <span id="livePillText">IDLE</span>
+          </span>
+        </div>
       </div>
-      <label class="master-toggle" id="masterToggleLabel">
-        <input type="checkbox" id="masterToggle">
-        <span class="toggle-slider"></span>
+
+      <label class="switch switch-lg" for="masterToggle" title="Toggle live subtitles">
+        <input type="checkbox" id="masterToggle" aria-label="Toggle live subtitles">
+        <span class="switch-track"></span>
       </label>
     </header>
 
-    <!-- Status Bar -->
-    <div class="status-bar" id="statusBar">
-      <div class="status-dot idle"></div>
-      <span class="status-text" id="statusText">Idle — Click toggle to start</span>
+    <!-- Contextual Status Bar -->
+    <div class="telemetry-bar" id="statusBar" role="status" aria-live="polite">
+      <span class="status-dot idle" id="statusDot"></span>
+      <span class="status-text" id="statusText">Ready — toggle switch to start</span>
     </div>
 
-    <!-- Language Router -->
-    <section class="section">
-      <h2 class="section-title">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path d="M2 3h5M4.5 3v7M2 6h5M7 10l3-7 3 7M8.5 8h3" stroke="currentColor" stroke-width="1.2"
-            stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-        Language
-      </h2>
-      <div class="language-router">
-        <div class="lang-select-wrapper">
-          <label class="lang-label">Source</label>
-          <select class="lang-select" id="sourceLang">
-            <option value="auto">Auto-detect</option>
-            <option value="ja" selected>Japanese</option>
-            <option value="en">English</option>
-            <option value="zh">Chinese</option>
-            <option value="ko">Korean</option>
-            <option value="fr">French</option>
-            <option value="de">German</option>
-            <option value="es">Spanish</option>
-            <option value="ru">Russian</option>
-            <option value="th">Thai</option>
-          </select>
+    <div class="content-stack">
+      <!-- Language Pair -->
+      <section class="panel" aria-labelledby="label-lang">
+        <div class="panel-header">
+          <span class="panel-title" id="label-lang">Translation Pair</span>
         </div>
-        <button class="swap-btn" id="swapLangs" title="Swap languages">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path d="M5 7h10M12 4l3 3-3 3M15 13H5M8 16l-3-3 3-3" stroke="currentColor" stroke-width="1.5"
-              stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-        </button>
-        <div class="lang-select-wrapper">
-          <label class="lang-label">Target</label>
-          <select class="lang-select" id="targetLang">
-            <option value="vi" selected>Vietnamese</option>
-            <option value="en">English</option>
-            <option value="ja">Japanese</option>
-            <option value="zh">Chinese</option>
-            <option value="ko">Korean</option>
-            <option value="fr">French</option>
-            <option value="de">German</option>
-            <option value="es">Spanish</option>
-            <option value="ru">Russian</option>
-            <option value="th">Thai</option>
-          </select>
-        </div>
-      </div>
-    </section>
+        <div class="lang-bar">
+          <div class="lang-field">
+            <label class="field-caption" for="sourceLang">From</label>
+            <select class="select-control" id="sourceLang">
+              <option value="auto">Auto-detect</option>
+              <option value="ja" selected>Japanese</option>
+              <option value="en">English</option>
+              <option value="zh">Chinese</option>
+              <option value="ko">Korean</option>
+              <option value="fr">French</option>
+              <option value="de">German</option>
+              <option value="es">Spanish</option>
+              <option value="ru">Russian</option>
+              <option value="th">Thai</option>
+            </select>
+          </div>
 
-    <!-- Subtitle Styling -->
-    <section class="section">
-      <h2 class="section-title">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <rect x="1" y="3" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.2" />
-          <path d="M4 9h3M9 9h3M4 11h8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
-        </svg>
-        Subtitle Style
-      </h2>
-      <div class="style-presets">
-        <button class="preset-btn active" data-preset="anime" id="presetAnime">
-          <span class="preset-preview anime-preview">字</span>
-          <span class="preset-name">Anime</span>
-        </button>
-        <button class="preset-btn" data-preset="cinema" id="presetCinema">
-          <span class="preset-preview cinema-preview">Ab</span>
-          <span class="preset-name">Cinema</span>
-        </button>
-        <button class="preset-btn" data-preset="minimal" id="presetMinimal">
-          <span class="preset-preview minimal-preview">Aa</span>
-          <span class="preset-name">Minimal</span>
-        </button>
-      </div>
+          <button type="button" class="icon-btn swap-btn" id="swapLangs" title="Swap languages" aria-label="Swap source and target languages">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+              <path d="M3.5 5.5h9M10 3l2.5 2.5L10 8M12.5 10.5h-9M6 13l-2.5-2.5L6 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
 
-      <!-- Font Size Slider -->
-      <div class="slider-group">
-        <label class="slider-label">
-          Font Size
-          <span class="slider-value" id="fontSizeValue">22px</span>
-        </label>
-        <input type="range" class="styled-slider" id="fontSizeSlider" min="14" max="36" value="22" step="1">
-      </div>
-
-      <!-- Bilingual Toggle -->
-      <div class="option-row">
-        <span class="option-label">Show Original (Bilingual)</span>
-        <label class="mini-toggle">
-          <input type="checkbox" id="bilingualToggle" checked>
-          <span class="mini-toggle-slider"></span>
-        </label>
-      </div>
-    </section>
-
-    <!-- Colab Server Settings -->
-    <section class="section">
-      <h2 class="section-title">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path d="M8 1v4M4.5 2.5l1.4 1.4M11.5 2.5l-1.4 1.4M2 8h3M11 8h3M4.5 13.5l1.4-1.4M11.5 13.5l-1.4-1.4M8 11v4"
-            stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
-          <circle cx="8" cy="8" r="2.5" stroke="currentColor" stroke-width="1.2" />
-        </svg>
-        AI Backend Connection (Colab)
-      </h2>
-      
-      <div class="engine-settings" id="colabSettings">
-        <div class="api-key-group" style="margin-bottom: 10px;">
-          <label class="api-key-label">1. Colab Notebook URL (Automated Run)</label>
-          <div class="colab-url-row">
-            <input type="url" class="colab-url-input" id="colabNotebookUrl"
-                   placeholder="https://colab.research.google.com/drive/..."
-                   spellcheck="false">
+          <div class="lang-field">
+            <label class="field-caption" for="targetLang">To</label>
+            <select class="select-control" id="targetLang">
+              <option value="vi" selected>Vietnamese</option>
+              <option value="en">English</option>
+              <option value="ja">Japanese</option>
+              <option value="zh">Chinese</option>
+              <option value="ko">Korean</option>
+              <option value="fr">French</option>
+              <option value="de">German</option>
+              <option value="es">Spanish</option>
+              <option value="ru">Russian</option>
+              <option value="th">Thai</option>
+            </select>
           </div>
         </div>
-        
-        <div class="api-key-group" style="margin-bottom: 10px;">
-          <label class="api-key-label">2. Colab WebSocket URL (Auto-detected or Manual)</label>
-          <div class="colab-url-row">
-            <input type="url" class="colab-url-input" id="colabUrl"
-                   placeholder="wss://your-domain.ngrok-free.app/ws/live"
-                   spellcheck="false">
-            <button class="test-btn" id="testColabBtn" title="Test connection">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <path d="M2 7l3 3 7-7" stroke="currentColor" stroke-width="1.5"
-                      stroke-linecap="round" stroke-linejoin="round"/>
+      </section>
+
+      <!-- Appearance & Typography -->
+      <section class="panel" aria-labelledby="label-style">
+        <div class="panel-header">
+          <span class="panel-title" id="label-style">Subtitle Appearance</span>
+        </div>
+
+        <div class="segmented-presets" role="radiogroup" aria-label="Subtitle preset">
+          <button type="button" class="preset-btn active" data-preset="anime" id="presetAnime">
+            <span class="preset-sample sample-anime">あ</span>
+            <span class="preset-label">Anime</span>
+          </button>
+          <button type="button" class="preset-btn" data-preset="cinema" id="presetCinema">
+            <span class="preset-sample sample-cinema">CC</span>
+            <span class="preset-label">Cinema</span>
+          </button>
+          <button type="button" class="preset-btn" data-preset="minimal" id="presetMinimal">
+            <span class="preset-sample sample-minimal">Aa</span>
+            <span class="preset-label">Minimal</span>
+          </button>
+        </div>
+
+        <div class="control-row slider-block">
+          <div class="slider-meta">
+            <label class="row-label" for="fontSizeSlider">Caption Scale</label>
+            <span class="mono-value" id="fontSizeValue">22px</span>
+          </div>
+          <input type="range" class="range-slider" id="fontSizeSlider" min="14" max="36" value="22" step="1">
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="control-row">
+          <label class="row-label" for="bilingualToggle">Bilingual Display <span class="row-sub">Original + translated</span></label>
+          <label class="switch" for="bilingualToggle">
+            <input type="checkbox" id="bilingualToggle" checked>
+            <span class="switch-track"></span>
+          </label>
+        </div>
+
+        <div class="control-row">
+          <label class="row-label" for="demoToggle">Preview Overlay <span class="row-sub">Sample captions</span></label>
+          <label class="switch" for="demoToggle">
+            <input type="checkbox" id="demoToggle">
+            <span class="switch-track"></span>
+          </label>
+        </div>
+      </section>
+
+      <!-- Backend Stream Endpoint -->
+      <section class="panel" aria-labelledby="label-backend">
+        <div class="panel-header">
+          <span class="panel-title" id="label-backend">Inference Endpoint</span>
+          <div class="colab-status" id="colabStatus">
+            <span class="status-dot idle"></span>
+            <span id="colabStatusText">Disconnected</span>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label class="field-caption" for="colabUrl">WebSocket URL (Modal or Colab)</label>
+          <div class="endpoint-row">
+            <input type="url" class="mono-input" id="colabUrl"
+                   placeholder="wss://your-endpoint.modal.run/ws/live"
+                   spellcheck="false" autocomplete="off">
+            <button type="button" class="icon-btn test-btn" id="testColabBtn" title="Verify WebSocket connection" aria-label="Verify WebSocket connection">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                <path d="M13.5 4.5L6.5 11.5L2.5 7.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
               </svg>
             </button>
           </div>
         </div>
 
-        <button class="launch-all-btn" id="oneClickStartBtn" title="Launch Colab environment and start live subtitles">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M8.5 1.5L2 9.5h5.5l-1 5 6.5-8H7.5l1-5z" fill="currentColor"/>
+        <details class="colab-drawer" id="colabDrawer">
+          <summary class="drawer-trigger">
+            <span>Google Colab Auto-Launcher</span>
+            <svg class="drawer-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </summary>
+          <div class="drawer-body">
+            <label class="field-caption" for="colabNotebookUrl">Colab Drive Notebook Link</label>
+            <input type="url" class="mono-input" id="colabNotebookUrl"
+                   placeholder="https://colab.research.google.com/drive/..."
+                   spellcheck="false" autocomplete="off">
+          </div>
+        </details>
+
+        <button type="button" class="primary-btn" id="oneClickStartBtn">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+            <path d="M5 3.5l7.5 4.5-7.5 4.5V3.5z" fill="currentColor" />
           </svg>
-          <span id="oneClickBtnText">Launch & Start Subtitles</span>
+          <span id="oneClickBtnText">Connect &amp; Start Subtitles</span>
         </button>
-
-        <div class="colab-status" id="colabStatus">
-          <span class="status-dot idle"></span>
-          <span id="colabStatusText">Not connected</span>
-        </div>
-        <div class="colab-hint">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <circle cx="7" cy="7" r="6" stroke="#94a3b8" stroke-width="1.2"/>
-            <path d="M7 4v3M7 9v.5" stroke="#94a3b8" stroke-width="1.2" stroke-linecap="round"/>
-          </svg>
-          <span>Configure your Colab notebook or enter a WebSocket endpoint to stream real-time subtitles.</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- Demo Mode -->
-    <section class="section section-compact">
-      <div class="option-row">
-        <span class="option-label">Demo Mode <span class="hint">(mock subtitles)</span></span>
-        <label class="mini-toggle">
-          <input type="checkbox" id="demoToggle">
-          <span class="mini-toggle-slider"></span>
-        </label>
-      </div>
-    </section>
+      </section>
+    </div>
 
     <!-- Footer -->
     <footer class="popup-footer">
-      <span class="version">v1.0.0</span>
-      <span class="credit">BabelLive — AI Translation</span>
+      <span class="footer-brand">BabelLive Studio</span>
+      <span class="footer-version">v1.1.0</span>
     </footer>
-  </div>
+  </main>
+
   <script src="popup.js"></script>
 </body>
 

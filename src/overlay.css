@@ -1,24 +1,24 @@
 /* ============================================================
-   BabelLive — Video Overlay Subtitle Styles
-   Injected by content.js into the active page.
-   Anime-inspired typography with 3 preset modes.
+   BabelLive — Video Subtitle Overlay Styles
+   Cinema-grade typography with 3 broadcast presets (Anime, Cinema, Minimal)
+   and a sleek obsidian floating control pill.
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Inter:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&family=Noto+Sans+JP:wght@500;700&display=swap');
 
-/* --- Overlay Container --- */
 .babellive-overlay {
   position: absolute;
-  bottom: 12%;
-  left: 0;
-  width: 100%;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
+  max-width: 86%;
   display: flex;
   flex-direction: column;
   align-items: center;
   pointer-events: none !important;
   z-index: 2147483647 !important;
-  transition: bottom 0.3s ease;
-  font-family: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -26,183 +26,208 @@
   display: none !important;
 }
 
-/* --- Subtitle Stack (draggable container) --- */
+/* --- Draggable Subtitle Stack --- */
 .babellive-subtitle-stack {
   pointer-events: auto;
-  max-width: 85%;
-  min-width: 200px;
+  min-width: 180px;
   cursor: grab;
   user-select: none;
   position: relative;
-  transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease;
   display: flex;
   flex-direction: column;
-  gap: 8px; /* space between stacked subtitles */
   align-items: center;
+  padding-top: 4px;
+}
+
+.babellive-subtitle-stack.is-pinned {
+  cursor: default;
 }
 
 .babellive-subtitle-stack.empty {
   display: none !important;
 }
 
-.babellive-subtitle-stack:active { cursor: grabbing; }
-.babellive-subtitle-stack.dragging {
-  box-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
-  transform: scale(1.01);
-  border-radius: 8px;
+.babellive-subtitle-stack:active:not(.is-pinned) {
+  cursor: grabbing;
 }
 
-/* --- Subtitle Block --- */
+.babellive-subtitle-stack.dragging {
+  opacity: 0.92;
+}
+
+/* --- Subtitle Blocks Container --- */
+.babellive-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+
+/* --- Individual Subtitle Block --- */
 .babellive-subtitle-block {
-  padding: 6px 18px 8px;
+  padding: 5px 16px 7px;
   border-radius: 8px;
   text-align: center;
-  transition: opacity 0.3s ease;
   width: fit-content;
+  max-width: 100%;
+  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .babellive-subtitle-block.interim-predicting .babellive-translated,
 .babellive-subtitle-block.interim-predicting .babellive-original {
-  opacity: 0.85;
-  color: #d1d5db; /* A slightly faded color for interim */
+  opacity: 0.78;
 }
 
-/* Hide YouTube native caption container when BabelLive is active */
+/* Suppress YouTube native captions while BabelLive is active */
 .babellive-hide-native-cc .ytp-caption-window-container {
   opacity: 0 !important;
   pointer-events: none !important;
 }
 
-
-/* --- Original (top row) --- */
+/* --- Original Speech (Top Row) --- */
 .babellive-original {
-  font-size: 14px;
-  color: #e2e8f0;
-  opacity: 0.85;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #e4e4e7;
+  opacity: 0.88;
   margin-bottom: 2px;
-  line-height: 1.5;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
-  transition: opacity 0.3s ease, font-size 0.2s ease;
+  line-height: 1.45;
+  letter-spacing: 0.01em;
 }
 
 .babellive-original.hidden {
   display: none;
 }
 
-/* --- Translated (bottom row) --- */
+/* --- Translated Caption (Bottom Row) --- */
 .babellive-translated {
   font-size: 22px;
   font-weight: 700;
-  line-height: 1.4;
-  transition: opacity 0.3s ease, font-size 0.2s ease;
+  line-height: 1.38;
+  letter-spacing: -0.01em;
+  word-break: break-word;
 }
 
-/* --- Fade animations --- */
-@keyframes subtitleFadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
+/* --- Smooth Motion --- */
+@keyframes babelliveFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-@keyframes subtitleFadeOut {
-  from { opacity: 1; transform: translateY(0); }
-  to   { opacity: 0; transform: translateY(-4px); }
+@keyframes babelliveFadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
 }
 
 .babellive-fade-in {
-  animation: subtitleFadeIn 0.3s ease forwards;
+  animation: babelliveFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .babellive-fade-out {
-  animation: subtitleFadeOut 0.25s ease forwards;
+  animation: babelliveFadeOut 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* ============================================================
-   PRESET: Anime Standard
-   Bold yellow font, 2px solid black stroke, subtle drop-shadow
+   PRESET 1: Anime Broadcast
+   Warm broadcast yellow with crisp black stroke & optical shadow
    ============================================================ */
 .babellive-preset-anime .babellive-translated {
   color: #fde047;
-  -webkit-text-stroke: 2px #000;
-  text-shadow:
-    0 0 4px rgba(0, 0, 0, 0.9),
-    0 2px 6px rgba(0, 0, 0, 0.5),
-    0 0 20px rgba(253, 224, 71, 0.15);
+  -webkit-text-stroke: 2.2px #09090b;
   paint-order: stroke fill;
-  font-weight: 700;
+  text-shadow:
+    0 1px 4px rgba(0, 0, 0, 0.9),
+    0 2px 10px rgba(0, 0, 0, 0.65);
 }
 
 .babellive-preset-anime .babellive-original {
-  color: #e2e8f0;
-  -webkit-text-stroke: 1px rgba(0, 0, 0, 0.8);
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+  color: #f4f4f5;
+  -webkit-text-stroke: 1.4px rgba(9, 9, 11, 0.9);
   paint-order: stroke fill;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
 }
 
 /* ============================================================
-   PRESET: Cinema Crisp
-   Pure white bold font, translucent dark box background
+   PRESET 2: Cinema Studio
+   Obsidian frosted backdrop pill with high-contrast ivory text
    ============================================================ */
 .babellive-preset-cinema .babellive-subtitle-block {
-  background: rgba(0, 0, 0, 0.72);
-  backdrop-filter: blur(4px);
-  border-radius: 6px;
-  padding: 8px 24px 10px;
+  background: rgba(9, 9, 11, 0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 7px 20px 9px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
 }
 
 .babellive-preset-cinema .babellive-translated {
-  color: #ffffff;
-  font-weight: 700;
-  text-shadow: none;
+  color: #fafafa;
+  font-weight: 600;
   -webkit-text-stroke: 0;
+  text-shadow: none;
 }
 
 .babellive-preset-cinema .babellive-original {
-  color: rgba(255, 255, 255, 0.7);
+  color: #a1a1aa;
   -webkit-text-stroke: 0;
   text-shadow: none;
 }
 
 /* ============================================================
-   PRESET: Minimalist
-   Pure white text with high-contrast outline
+   PRESET 3: Minimal Clean
+   Pure white typography with precision contour shadow
    ============================================================ */
 .babellive-preset-minimal .babellive-translated {
   color: #ffffff;
-  -webkit-text-stroke: 1.5px rgba(0, 0, 0, 0.85);
-  text-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.7),
-    0 0 8px rgba(0, 0, 0, 0.4);
-  paint-order: stroke fill;
   font-weight: 600;
+  -webkit-text-stroke: 1.6px rgba(9, 9, 11, 0.92);
+  paint-order: stroke fill;
+  text-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.8),
+    0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 .babellive-preset-minimal .babellive-original {
-  color: rgba(255, 255, 255, 0.8);
-  -webkit-text-stroke: 1px rgba(0, 0, 0, 0.7);
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  color: rgba(255, 255, 255, 0.86);
+  -webkit-text-stroke: 1.1px rgba(9, 9, 11, 0.85);
   paint-order: stroke fill;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.75);
 }
 
 /* ============================================================
-   Floating Mini-bar (hover controls)
+   Floating Minibar (Obsidian Studio Pill)
    ============================================================ */
 .babellive-minibar {
   position: absolute;
-  top: -32px;
+  top: -36px;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) translateY(4px);
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 8px;
-  background: rgba(15, 23, 42, 0.85);
+  gap: 2px;
+  padding: 3px 6px;
+  background: rgba(9, 9, 11, 0.9);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(148, 163, 184, 0.15);
-  border-radius: 20px;
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  transform: translateX(-50%) translateY(4px);
+  transition: opacity 0.18s ease, transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .babellive-subtitle-stack:hover .babellive-minibar {
@@ -211,44 +236,52 @@
   transform: translateX(-50%) translateY(0);
 }
 
+.babellive-minibar-sep {
+  width: 1px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 0 2px;
+}
+
 .babellive-minibar-btn {
   width: 24px;
   height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: none;
+  background: transparent;
   border: none;
-  color: #94a3b8;
+  color: #a1a1aa;
   cursor: pointer;
   border-radius: 50%;
-  transition: background 0.15s ease, color 0.15s ease;
   padding: 0;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .babellive-minibar-btn:hover {
-  background: rgba(139, 92, 246, 0.2);
-  color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fafafa;
+}
+
+.babellive-minibar-btn.active {
+  color: #fafafa;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.babellive-minibar-btn.copied {
+  color: #10b981;
 }
 
 .babellive-minibar-btn svg {
-  width: 14px;
-  height: 14px;
+  width: 13px;
+  height: 13px;
 }
 
-/* --- Resize Handle Visual Feedback --- */
-.babellive-subtitle-stack::after {
-  content: '';
-  position: absolute;
-  bottom: -4px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 40px;
-  height: 3px;
-  background: rgba(139, 92, 246, 0.3);
-  border-radius: 2px;
-  opacity: 0;
-  transition: opacity 0.2s ease;
+@media (prefers-reduced-motion: reduce) {
+  .babellive-fade-in,
+  .babellive-fade-out,
+  .babellive-minibar {
+    animation: none !important;
+    transition: none !important;
+  }
 }
-
-.babellive-subtitle-stack:hover::after { opacity: 1; }

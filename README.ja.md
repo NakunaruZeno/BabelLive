@@ -27,7 +27,7 @@ BabelLiveは、ライブストリーミング処理に最適化された疎結�
   │   AIバックエンド (FastAPI / Colab T4 GPU)
   │     ├─► AudioStreamDecoder & RMSエネルギーVAD
   │     ├─► Kotoba-Whisper v2.0 (日本語音声認識)
-  │     └─► Qwen2.5-3B-Instruct (文脈考慮翻訳)
+  │     └─► Qwen2.5-7B-Instruct-GPTQ-Int4 (文脈考慮翻訳)
   │     │
   │     ▼
   │   WebSocket JSONメッセージ (予測中間字幕 & 確定字幕)
@@ -39,7 +39,7 @@ BabelLiveは、ライブストリーミング処理に最適化された疎結�
 1. **タブ音声キャプチャ:** Chrome Manifest V3のOffscreen Document内で`chrome.tabCapture`を使用し、ユーザーのリスニング音声を遮断することなくタブ音声を内部取得します。
 2. **直接PCMストリーミング:** 音声を16kHz Int16モノラルPCMに変換し、WebSocket接続を通じて生の音声チャンクを直接送信します。
 3. **高精度音声認識 (ASR):** 日本語に特化した`kotoba-tech/kotoba-whisper-v2.0`（ReazonSpeech 700万件の音声で学習、CER約8.4%、元祖Whisper large-v3比6.3倍高速）を採用。
-4. **文脈考慮型翻訳 (LLM):** `Qwen/Qwen2.5-3B-Instruct`を使用し、口語表現、敬語、配信特有のニュアンスを自然に翻訳します。
+4. **文脈考慮型翻訳 (LLM):** `Qwen/Qwen2.5-7B-Instruct-GPTQ-Int4`を使用し、口語表現、敬語、配信・VTuber特有のニュアンスを自然に翻訳します。
 5. **DOM字幕オーバーレイ:** アニメスタイル・シネマスタイルの字幕コンテナをYouTubeプレーヤー内に直接描画し、ドラッグ移動、フォントサイズ変更、自動フェードアウトに対応します。
 
 ---
@@ -61,21 +61,24 @@ BabelLiveは、ライブストリーミング処理に最適化された疎結�
 BabelLive/
 ├── colab/                      # Google Colab GPUバックエンド
 │   ├── BabelLive_Backend.ipynb # 公式ノートブック (Kotoba-Whisper + Qwen2.5 + WebSocket)
-│   └── README.md               # バックエンド環境構築ガイド
+│   └── README.md               # Colab環境構築ガイド
 │
-├── src/                        # Chrome拡張機能 (Manifest V3)
-│   ├── manifest.json           # 拡張機能構成ファイルおよび権限設定
-│   ├── popup.html / popup.css  # ポップアップ管理UI
-│   ├── popup.js                # 状態管理およびメッセージング
-│   ├── content.js              # 動画プレーヤーフックおよび字幕オーバーレイ
-│   ├── overlay.css             # 字幕スタイルおよびアニメーション定義
-│   ├── offscreen.html / .js    # タブ音声取得および16kHz PCM送信
-│   ├── service-worker.js       # バックグラウンドメッセージルーター
-│   ├── colab-automator.js      # Colab自動操作スクリプト
-    └── translation/            # 翻訳ルーターおよびフォールバックモジュール
-        ├── cloud-llm.js        # クラウドLLM翻訳アダプタ (Groq / Gemini)
-        ├── stream-buffer.js    # 文境界判定プロセッサ
-        └── translation-router.js
+├── modal_backend/              # Modal Labs サーバーレスGPUバックエンド
+│   ├── app.py                  # 高速起動ASGI WebSocketサーバー
+│   ├── requirements.txt        # CLIデプロイ用依存パッケージ
+│   └── README.md               # Modalクラウド構築ガイド
+│
+└── src/                        # Chrome拡張機能 (Manifest V3)
+    ├── icons/                  # アイコンアセット (16, 32, 48, 128)
+    ├── manifest.json           # 拡張機能構成ファイルおよび権限設定
+    ├── popup.html / popup.css  # Minimalist Studio ポップアップUI
+    ├── popup.js                # 状態管理およびエンドポイント制御
+    ├── content.js              # 動画プレーヤーフックおよび字幕オーバーレイ
+    ├── overlay.css             # 字幕プリセットおよびミニバースタイル
+    ├── offscreen.html / .js    # タブ音声取得および16kHz PCM送信
+    ├── audio-worklet-processor.js # AudioWorkletベース低遅延PCM変換
+    ├── service-worker.js       # バックグラウンドメッセージルーター
+    └── colab-automator.js      # Colab自動操作スクリプト
 ```
 
 ---
@@ -109,7 +112,7 @@ BabelLive/
 - **拡張機能:** Chrome Extensions API (Manifest V3), Web Audio API, DOM MutationObserver.
 - **バックエンド:** Python 3.10+, FastAPI, Uvicorn, WebSockets, PyNgrok.
 - **音声認識:** Hugging Face Transformers, `kotoba-tech/kotoba-whisper-v2.0`, PyTorch.
-- **機械翻訳:** `Qwen/Qwen2.5-3B-Instruct`, Accelerate.
+- **機械翻訳:** `Qwen/Qwen2.5-7B-Instruct-GPTQ-Int4`, Optimum, Auto-GPTQ, Accelerate.
 
 ---
 

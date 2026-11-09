@@ -27,7 +27,7 @@ Thẻ trình duyệt (YouTube)
   │   Backend AI (FastAPI / Colab T4 GPU)
   │     ├─► AudioStreamDecoder & Bộ lọc năng lượng RMS VAD
   │     ├─► Kotoba-Whisper v2.0 (Nhận dạng tiếng Nhật)
-  │     └─► Qwen2.5-3B-Instruct (Dịch ngữ cảnh)
+  │     └─► Qwen2.5-7B-Instruct-GPTQ-Int4 (Dịch ngữ cảnh)
   │     │
   │     ▼
   │   Thông điệp JSON WebSocket (Phụ đề dự đoán & phụ đề hoàn tất)
@@ -39,7 +39,7 @@ Thẻ trình duyệt (YouTube)
 1. **Thu âm thẻ trình duyệt:** Sử dụng `chrome.tabCapture` trong môi trường offscreen document (Manifest V3) mà không làm ngắt âm thanh nghe của người dùng.
 2. **Truyền luồng PCM trực tiếp:** Chuyển đổi tần số lấy mẫu về 16kHz Int16 đơn kênh và truyền trực tiếp qua kết nối WebSocket an toàn.
 3. **Nhận dạng giọng nói (ASR):** Sử dụng mô hình `kotoba-tech/kotoba-whisper-v2.0` (huấn luyện trên 7 triệu mẫu âm thanh ReazonSpeech, CER ~8.4%, nhanh gấp 6.3 lần so với bản Whisper large-v3 gốc).
-4. **Dịch thuật ngữ cảnh (LLM):** Sử dụng `Qwen/Qwen2.5-3B-Instruct`, bảo toàn văn phong hội thoại tự nhiên, sắc thái biểu cảm và các thể kính ngữ (Keigo).
+4. **Dịch thuật ngữ cảnh (LLM):** Sử dụng `Qwen/Qwen2.5-7B-Instruct-GPTQ-Int4`, bảo toàn văn phong hội thoại tự nhiên, sắc thái biểu cảm, thuật ngữ VTuber/anime và các thể kính ngữ (Keigo).
 5. **Hiển thị phụ đề trên DOM:** Khung hiển thị phụ đề phong cách anime/cinema cho phép kéo thả vị trí, điều chỉnh kích cỡ chữ và tự động mờ dần khi kết thúc lời nói.
 
 ---
@@ -61,21 +61,24 @@ Thẻ trình duyệt (YouTube)
 BabelLive/
 ├── colab/                      # Backend chạy trên Google Colab GPU
 │   ├── BabelLive_Backend.ipynb # Notebook chính (Kotoba-Whisper + Qwen2.5 + WebSocket)
-│   └── README.md               # Hướng dẫn triển khai backend
+│   └── README.md               # Hướng dẫn triển khai Colab
 │
-├── src/                        # Tiện ích mở rộng Chrome (Manifest V3)
-│   ├── manifest.json           # Cấu hình quyền hạn và tài nguyên tiện ích
-│   ├── popup.html / popup.css  # Giao diện điều khiển popup
-│   ├── popup.js                # Quản lý trạng thái và giao tiếp thẻ
-│   ├── content.js              # Móc nối trình phát video và hiển thị phụ đề
-│   ├── overlay.css             # Định kiểu và hiệu ứng hiển thị phụ đề
-│   ├── offscreen.html / .js    # Thu âm thanh thẻ và truyền luồng PCM 16kHz
-│   ├── service-worker.js       # Bộ định tuyến thông điệp nền và quản lý vòng đời phiên
-│   ├── colab-automator.js      # Tự động hóa quá trình chạy Colab
-    └── translation/            # Các module định tuyến và dịch thuật dự phòng
-        ├── cloud-llm.js        # Dịch thuật qua Cloud LLM (Groq / Gemini)
-        ├── stream-buffer.js    # Bộ xử lý ranh giới câu theo ngữ pháp
-        └── translation-router.js
+├── modal_backend/              # Backend Serverless GPU trên Modal Labs
+│   ├── app.py                  # Máy chủ ASGI WebSocket khởi động tức thì
+│   ├── requirements.txt        # Thư viện CLI triển khai
+│   └── README.md               # Hướng dẫn triển khai Modal Cloud
+│
+└── src/                        # Tiện ích mở rộng Chrome (Manifest V3)
+    ├── icons/                  # Biểu tượng tiện ích (16, 32, 48, 128)
+    ├── manifest.json           # Cấu hình quyền hạn và tài nguyên tiện ích
+    ├── popup.html / popup.css  # Giao diện điều khiển Minimalist Studio
+    ├── popup.js                # Quản lý trạng thái và kiểm tra kết nối
+    ├── content.js              # Móc nối trình phát video và hiển thị phụ đề
+    ├── overlay.css             # Định kiểu phụ đề (Anime, Cinema, Minimal)
+    ├── offscreen.html / .js    # Thu âm thanh thẻ và truyền luồng PCM 16kHz
+    ├── audio-worklet-processor.js # Xử lý âm thanh đa luồng AudioWorklet
+    ├── service-worker.js       # Bộ định tuyến thông điệp nền và quản lý vòng đời phiên
+    └── colab-automator.js      # Tự động hóa quá trình chạy Colab
 ```
 
 ---
@@ -109,7 +112,7 @@ BabelLive/
 - **Tiện ích mở rộng:** Chrome Extensions API (Manifest V3), Web Audio API, DOM MutationObserver.
 - **Dịch vụ Backend:** Python 3.10+, FastAPI, Uvicorn, WebSockets, PyNgrok.
 - **Nhận dạng tiếng nói:** Hugging Face Transformers, `kotoba-tech/kotoba-whisper-v2.0`, PyTorch.
-- **Dịch thuật:** `Qwen/Qwen2.5-3B-Instruct`, Accelerate.
+- **Dịch thuật:** `Qwen/Qwen2.5-7B-Instruct-GPTQ-Int4`, Optimum, Auto-GPTQ, Accelerate.
 
 ---
 

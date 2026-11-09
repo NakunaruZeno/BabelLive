@@ -8,7 +8,7 @@ build/
 *.tar.gz
 *.rar
 
-# Environment & Credentials (STRICTLY IGNORED)
+# Environment & Credentials
 .env
 .env.*
 *.key
@@ -16,16 +16,11 @@ build/
 credentials.json
 secrets.json
 
-# Development & Research Folders
-ref/
-PIC/
-agent/
+# Agent & Local Research Folders
 .agents/
-BabelLive/
-Ma_nguon_cua_yt/
-docs/
-scripts/
-tests/
+.claude/
+.cursor/
+.gemini/
 
 # OS Artifacts
 .DS_Store

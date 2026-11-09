@@ -1,25 +1,33 @@
 /**
  * BabelLive — Offscreen Document
- * Handles tab audio capture using getUserMedia + MediaRecorder.
- * Audio blobs are streamed continuously to the Colab WebSocket backend.
- * Receives JSON subtitles (interim/final) from WebSocket and broadcasts to content script.
+ * Captures tab audio via getUserMedia, preserves local speaker playback via monitor loopback,
+ * converts audio to 16kHz mono Int16 PCM using AudioWorklet (with ScriptProcessor fallback),
+ * and streams over WebSocket with backpressure protection and exponential-backoff reconnect.
  */
 
 const MSG = {
   startCapture: 'BABELLIVE_START_CAPTURE',
   stopCapture: 'BABELLIVE_STOP_CAPTURE',
+  settingsUpdate: 'BABELLIVE_SETTINGS_UPDATE',
   captureReady: 'BABELLIVE_CAPTURE_READY',
   captureError: 'BABELLIVE_CAPTURE_ERROR',
   captureEnded: 'BABELLIVE_CAPTURE_ENDED',
+  subtitleBroadcast: 'BABELLIVE_SUBTITLE_BROADCAST',
 };
 
-const STORAGE_KEY = 'babellive_settings';
-let sessionConfig = { sourceLang: 'ja', targetLang: 'vi', colabUrl: '' };
+const MAX_RECONNECT_ATTEMPTS = 5;
+const MAX_WS_BUFFERED_BYTES = 65536; // 64 KB backpressure cap (~2s of 16kHz Int16 PCM)
+
+let sessionConfig = {
+  sourceLang: 'ja',
+  targetLang: 'vi',
+  colabUrl: '',
+};
 
 const sessions = new Map();
 
 function sendToSW(message) {
-  chrome.runtime.sendMessage(message).catch(() => { });
+  chrome.runtime.sendMessage(message).catch(() => {});
 }
 
 function createSession(tabId) {
@@ -32,10 +40,11 @@ function createSession(tabId) {
     monitorSource: null,
     pcmAudioCtx: null,
     pcmSource: null,
-    pcmProcessor: null,
+    pcmNode: null,
     mediaStream: null,
-    recorder: null,
     ws: null,
+    reconnectAttempts: 0,
+    reconnectTimer: null,
   };
 }
 
@@ -51,45 +60,60 @@ function getOrCreateSession(tabId) {
 function enqueueForTab(tabId, task) {
   const session = getOrCreateSession(tabId);
   const next = session.opChain.then(task, task);
-  session.opChain = next.catch(() => { });
+  session.opChain = next.catch(() => {});
   return next;
 }
 
 function disconnectNode(node) {
-  try { node?.disconnect(); } catch { }
+  try {
+    if (node?.port) node.port.onmessage = null;
+    node?.disconnect();
+  } catch {}
 }
 
 async function closeAudioContext(ctx) {
   if (ctx && ctx.state !== 'closed') {
-    try { await ctx.close(); } catch { }
+    try {
+      await ctx.close();
+    } catch {}
   }
 }
 
 async function cleanupSession(session) {
   session.state = 'stopping';
 
+  if (session.reconnectTimer) {
+    clearTimeout(session.reconnectTimer);
+    session.reconnectTimer = null;
+  }
+
   disconnectNode(session.monitorGain);
   disconnectNode(session.monitorSource);
-  disconnectNode(session.pcmProcessor);
+  disconnectNode(session.pcmNode);
   disconnectNode(session.pcmSource);
-  session.mediaStream?.getTracks().forEach((track) => track.stop());
 
-  if (session.recorder && session.recorder.state !== 'inactive') {
-    try { session.recorder.stop(); } catch { }
-  }
-  session.recorder = null;
+  session.mediaStream?.getTracks().forEach((track) => {
+    try {
+      track.stop();
+    } catch {}
+  });
 
   await closeAudioContext(session.monitorAudioCtx);
   await closeAudioContext(session.pcmAudioCtx);
 
   if (session.ws) {
-    session.ws.close();
+    try {
+      session.ws.onclose = null;
+      session.ws.onerror = null;
+      session.ws.onmessage = null;
+      session.ws.close();
+    } catch {}
     session.ws = null;
   }
 
   session.monitorGain = null;
   session.monitorSource = null;
-  session.pcmProcessor = null;
+  session.pcmNode = null;
   session.pcmSource = null;
   session.pcmAudioCtx = null;
   session.mediaStream = null;
@@ -98,149 +122,244 @@ async function cleanupSession(session) {
   sessions.delete(session.tabId);
 }
 
-function formatColabUrl(val) {
-  let u = (val || '').trim();
+function buildWebSocketUrl(rawUrl, sourceLang, targetLang) {
+  let u = (rawUrl || '').trim();
   if (!u) return '';
   if (u.startsWith('http://')) u = u.replace('http://', 'ws://');
   else if (u.startsWith('https://')) u = u.replace('https://', 'wss://');
   else if (!u.startsWith('ws://') && !u.startsWith('wss://')) u = 'wss://' + u;
-  if (!u.includes('/ws/live')) {
-    u = u.replace(/\/+$/, '') + '/ws/live';
+
+  // Strip existing query string before normalizing path
+  const [basePart, existingQuery] = u.split('?');
+  let normalizedBase = basePart.replace(/\/+$/, '');
+  if (!normalizedBase.endsWith('/ws/live')) {
+    normalizedBase += '/ws/live';
   }
-  return u;
+
+  const params = new URLSearchParams(existingQuery || '');
+  if (sourceLang) params.set('source_lang', sourceLang);
+  if (targetLang) params.set('target_lang', targetLang);
+
+  return `${normalizedBase}?${params.toString()}`;
 }
 
-function setupWebSocket(session) {
-  const rawUrl = sessionConfig.colabUrl;
-  const url = formatColabUrl(rawUrl);
+function sendConfigToWs(ws) {
+  if (!ws || ws.readyState !== WebSocket.OPEN) return;
+  try {
+    ws.send(
+      JSON.stringify({
+        type: 'config',
+        source_lang: sessionConfig.sourceLang,
+        target_lang: sessionConfig.targetLang,
+      })
+    );
+  } catch {}
+}
+
+function connectWebSocket(session) {
+  const url = buildWebSocketUrl(
+    sessionConfig.colabUrl,
+    sessionConfig.sourceLang,
+    sessionConfig.targetLang
+  );
+
   if (!url) {
-    sendToSW({ type: MSG.captureError, tabId: session.tabId, error: 'No WebSocket URL configured.' });
+    sendToSW({
+      type: MSG.captureError,
+      tabId: session.tabId,
+      error: 'Missing WebSocket endpoint URL.',
+    });
     return;
   }
 
-  console.log(`[BabelLive-Offscreen] Connecting to WebSocket: ${url}`);
+  if (session.ws) {
+    try {
+      session.ws.onclose = null;
+      session.ws.close();
+    } catch {}
+  }
+
   const ws = new WebSocket(url);
+  ws.binaryType = 'arraybuffer';
   session.ws = ws;
 
   ws.onopen = () => {
-    console.log(`[BabelLive-Offscreen] WebSocket connected for tab ${session.tabId}`);
+    session.reconnectAttempts = 0;
+    sendConfigToWs(ws);
+    sendToSW({ type: MSG.captureReady, tabId: session.tabId });
   };
 
   ws.onmessage = (event) => {
     try {
       const data = JSON.parse(event.data);
-      console.log(`[BabelLive-Offscreen] WS message received:`, data);
-      
-      const isInterim = data.type === 'interim';
-      
-      chrome.runtime.sendMessage({
-        type: 'BABELLIVE_SUBTITLE_BROADCAST',
+      if (data.type === 'pong' || data.type === 'ack') return;
+
+      const isInterim = data.type === 'interim' || Boolean(data.is_interim);
+      sendToSW({
+        type: MSG.subtitleBroadcast,
         tabId: session.tabId,
         original: data.original || '',
         translated: data.translated || '',
-        isInterim: isInterim,
+        isInterim,
       });
-    } catch (e) {
-      console.warn(`[BabelLive-Offscreen] Failed to parse WS message:`, e);
-    }
+    } catch {}
   };
 
-  ws.onerror = (err) => {
-    console.error(`[BabelLive-Offscreen] WebSocket error:`, err);
+  ws.onerror = () => {
+    // Handled in onclose to support retry logic
   };
 
   ws.onclose = () => {
-    console.log(`[BabelLive-Offscreen] WebSocket closed for tab ${session.tabId}`);
-    // Basic auto-reconnect if session is still running
-    if (session.state === 'running') {
-      console.log(`[BabelLive-Offscreen] Reconnecting WebSocket...`);
-      setTimeout(() => {
-        if (session.state === 'running') setupWebSocket(session);
-      }, 2000);
+    if (session.state !== 'running') return;
+
+    if (session.reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+      session.reconnectAttempts += 1;
+      const delayMs = Math.min(1500 * Math.pow(1.6, session.reconnectAttempts - 1), 8000);
+      session.reconnectTimer = setTimeout(() => {
+        if (session.state === 'running') {
+          connectWebSocket(session);
+        }
+      }, delayMs);
+    } else {
+      cleanupSession(session).finally(() => {
+        sendToSW({
+          type: MSG.captureError,
+          tabId: session.tabId,
+          error: 'Connection to AI backend lost.',
+        });
+      });
     }
   };
 }
 
-async function startCapture(streamId, tabId) {
-  const session = getOrCreateSession(tabId);
+function sendPcmBuffer(session, arrayBuffer) {
+  const ws = session.ws;
+  if (!ws || ws.readyState !== WebSocket.OPEN) return;
+  // Drop frame if network socket buffer is backed up to prevent latency drift
+  if (ws.bufferedAmount > MAX_WS_BUFFERED_BYTES) return;
+  try {
+    ws.send(arrayBuffer);
+  } catch {}
+}
 
-  if (session.state === 'running') {
+async function setupPcmPipeline(session) {
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  session.pcmAudioCtx = new AudioCtx({ sampleRate: 16000 });
+  session.pcmSource = session.pcmAudioCtx.createMediaStreamSource(session.mediaStream);
+
+  // Prefer AudioWorkletNode for off-main-thread, low-latency 128ms chunks
+  if (session.pcmAudioCtx.audioWorklet) {
+    try {
+      const workletUrl = chrome.runtime.getURL('audio-worklet-processor.js');
+      await session.pcmAudioCtx.audioWorklet.addModule(workletUrl);
+      const workletNode = new AudioWorkletNode(session.pcmAudioCtx, 'audio-capture-processor', {
+        processorOptions: { frameSize: 2048 },
+      });
+
+      workletNode.port.onmessage = (event) => {
+        if (sessions.get(session.tabId) !== session) return;
+        if (event.data instanceof ArrayBuffer) {
+          sendPcmBuffer(session, event.data);
+        }
+      };
+
+      session.pcmNode = workletNode;
+      session.pcmSource.connect(workletNode);
+      return;
+    } catch (workletErr) {
+      console.warn('[BabelLive Offscreen] AudioWorklet fallback to ScriptProcessor:', workletErr);
+    }
+  }
+
+  // Fallback: ScriptProcessorNode (2048 samples = 128ms @ 16kHz)
+  const processor = session.pcmAudioCtx.createScriptProcessor(2048, 1, 1);
+  processor.onaudioprocess = (e) => {
+    if (sessions.get(session.tabId) !== session) return;
+    if (!session.ws || session.ws.readyState !== WebSocket.OPEN) return;
+
+    const input = e.inputBuffer.getChannelData(0);
+    const pcm16 = new Int16Array(input.length);
+    for (let i = 0; i < input.length; i++) {
+      const s = Math.max(-1, Math.min(1, input[i]));
+      pcm16[i] = s < 0 ? (s * 0x8000) | 0 : (s * 0x7FFF) | 0;
+    }
+    sendPcmBuffer(session, pcm16.buffer);
+  };
+
+  session.pcmNode = processor;
+  session.pcmSource.connect(processor);
+  processor.connect(session.pcmAudioCtx.destination);
+}
+
+async function startCapture(streamId, tabId) {
+  const existing = getOrCreateSession(tabId);
+  if (existing.state === 'running') {
     sendToSW({ type: MSG.captureReady, tabId });
     return;
   }
 
-  if (session.mediaStream || session.monitorAudioCtx) {
-    await cleanupSession(session);
-    sessions.set(tabId, createSession(tabId));
+  if (existing.mediaStream || existing.monitorAudioCtx) {
+    await cleanupSession(existing);
   }
 
   const current = getOrCreateSession(tabId);
   current.state = 'starting';
-  console.log(`[BabelLive-Offscreen] Audio stream initialization begins for tab ${tabId}`);
 
   try {
-    // 1. Connect WebSocket
-    setupWebSocket(current);
-
-    // 2. Setup Audio
+    // 1. Capture Tab Audio Stream
     current.mediaStream = await navigator.mediaDevices.getUserMedia({
-      audio: { mandatory: { chromeMediaSource: 'tab', chromeMediaSourceId: streamId } },
+      audio: {
+        mandatory: {
+          chromeMediaSource: 'tab',
+          chromeMediaSourceId: streamId,
+        },
+      },
       video: false,
     });
 
-    // Monitor: keep tab audio audible while capturing
+    // Listen for tab audio track ending (e.g. tab closed or capture revoked)
+    const audioTrack = current.mediaStream.getAudioTracks()[0];
+    if (audioTrack) {
+      audioTrack.addEventListener('ended', () => {
+        if (sessions.has(tabId)) {
+          stopCapture(tabId);
+        }
+      });
+    }
+
+    // 2. Monitor Loopback: keep tab audio audible to the user
     current.monitorAudioCtx = new AudioContext();
     current.monitorSource = current.monitorAudioCtx.createMediaStreamSource(current.mediaStream);
     current.monitorGain = current.monitorAudioCtx.createGain();
-    current.monitorGain.gain.value = 1;
+    current.monitorGain.gain.value = 1.0;
     current.monitorSource.connect(current.monitorGain);
     current.monitorGain.connect(current.monitorAudioCtx.destination);
-    
-    console.log(`[BabelLive-Offscreen] Monitor loopback connected for tab ${tabId}`);
 
-    // Setup Direct 16kHz PCM streaming for zero-latency, lossless audio to STT
-    current.pcmAudioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
-    current.pcmSource = current.pcmAudioCtx.createMediaStreamSource(current.mediaStream);
-    // Buffer size 4096 samples = 256ms of audio at 16kHz (8192 bytes Int16)
-    current.pcmProcessor = current.pcmAudioCtx.createScriptProcessor(4096, 1, 1);
+    // 3. Setup 16kHz Int16 PCM pipeline
+    await setupPcmPipeline(current);
 
-    current.pcmProcessor.onaudioprocess = (e) => {
-      const active = sessions.get(tabId);
-      if (active !== current) return;
-      if (!current.ws || current.ws.readyState !== WebSocket.OPEN) return;
-
-      const input = e.inputBuffer.getChannelData(0);
-      const pcm16 = new Int16Array(input.length);
-      for (let i = 0; i < input.length; i++) {
-        const s = Math.max(-1, Math.min(1, input[i]));
-        pcm16[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
-      }
-      current.ws.send(pcm16.buffer);
-    };
-
-    current.pcmSource.connect(current.pcmProcessor);
-    current.pcmProcessor.connect(current.pcmAudioCtx.destination);
-    console.log(`[BabelLive-Offscreen] Direct 16kHz Int16 PCM streaming active (4096 samples/chunk)`);
-
+    // 4. Connect to AI WebSocket Backend
     current.state = 'running';
-    sendToSW({ type: MSG.captureReady, tabId });
+    connectWebSocket(current);
   } catch (err) {
-    try { await cleanupSession(current); } catch { }
-    sendToSW({ type: MSG.captureError, tabId, error: err.message });
+    await cleanupSession(current);
+    sendToSW({
+      type: MSG.captureError,
+      tabId,
+      error: err?.message || 'Failed to initialize tab audio capture.',
+    });
   }
 }
 
 async function stopCapture(tabId) {
   const session = sessions.get(tabId);
-  if (!session) {
-    sendToSW({ type: MSG.captureEnded, tabId });
-    return;
+  if (session) {
+    await cleanupSession(session);
   }
-  await cleanupSession(session);
   sendToSW({ type: MSG.captureEnded, tabId });
 }
 
-chrome.runtime.onMessage.addListener((message) => {
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message?.type === MSG.startCapture && message.tabId != null) {
     if (message.settings) {
       sessionConfig.sourceLang = message.settings.sourceLang || 'ja';
@@ -248,7 +367,35 @@ chrome.runtime.onMessage.addListener((message) => {
       sessionConfig.colabUrl = message.settings.colabUrl || '';
     }
     enqueueForTab(message.tabId, () => startCapture(message.streamId, message.tabId));
-  } else if (message?.type === MSG.stopCapture && message.tabId != null) {
-    enqueueForTab(message.tabId, () => stopCapture(message.tabId));
+    sendResponse({ accepted: true });
+    return false;
   }
+
+  if (message?.type === MSG.stopCapture && message.tabId != null) {
+    enqueueForTab(message.tabId, () => stopCapture(message.tabId));
+    sendResponse({ accepted: true });
+    return false;
+  }
+
+  if (message?.type === MSG.settingsUpdate && message.settings) {
+    const prevSource = sessionConfig.sourceLang;
+    const prevTarget = sessionConfig.targetLang;
+    sessionConfig.sourceLang = message.settings.sourceLang || sessionConfig.sourceLang;
+    sessionConfig.targetLang = message.settings.targetLang || sessionConfig.targetLang;
+    if (message.settings.colabUrl !== undefined) {
+      sessionConfig.colabUrl = message.settings.colabUrl;
+    }
+
+    if (prevSource !== sessionConfig.sourceLang || prevTarget !== sessionConfig.targetLang) {
+      sessions.forEach((session) => {
+        if (session.state === 'running' && session.ws) {
+          sendConfigToWs(session.ws);
+        }
+      });
+    }
+    sendResponse({ ok: true });
+    return false;
+  }
+
+  return false;
 });

@@ -8,7 +8,7 @@ This directory contains the official Jupyter Notebook (`BabelLive_Backend.ipynb`
 
 The backend pipeline leverages:
 - **Kotoba-Whisper v2.0 (`kotoba-tech/kotoba-whisper-v2.0`):** Specialized Japanese speech recognition model trained on 7M ReazonSpeech audio samples (~8.4% CER, 6.3x faster than original Whisper large-v3).
-- **Qwen2.5-3B-Instruct (`Qwen/Qwen2.5-3B-Instruct`):** Context-aware causal language model fine-tuned for high-fidelity dialogue and spoken subtitle translation.
+- **Qwen2.5-7B-Instruct (`Qwen/Qwen2.5-7B-Instruct` in 4-bit NF4):** High-performance 4-bit quantized language model fine-tuned for high-fidelity dialogue, pop-culture/VTuber/anime contexts, and spoken subtitle translation.
 - **FastAPI & WebSocket (`/ws/live`):** Streams uncompressed 16kHz Int16 PCM audio directly from the Chrome extension offscreen worker for minimal end-to-end latency.
 - **Voice Activity Detection & Hallucination Suppression:** Energy-based RMS audio filtering combined with token deduplication to avoid repetitive caption loops on silent or noisy live streams.
 - **Persistent Storage:** Caches pip wheels, PyTorch assets, and Hugging Face weights to Google Drive (`/content/drive/MyDrive/BabelLive_Cache/`) to eliminate re-downloading overhead on subsequent runs.
@@ -63,7 +63,7 @@ The backend pipeline leverages:
       wss://your-tunnel.ngrok-free.dev/ws/live
    HTTP Endpoint: https://your-tunnel.ngrok-free.dev
    STT Model: Kotoba-Whisper v2.0 (kotoba-tech/kotoba-whisper-v2.0)
-   Translation Model: Qwen/Qwen2.5-3B-Instruct
+   Translation Model: Qwen/Qwen2.5-7B-Instruct (4-bit NF4)
    ============================================================
    ```
 4. Copy the `wss://...` URL, paste it into **Colab WebSocket URL** in the BabelLive popup, and toggle the master switch.
