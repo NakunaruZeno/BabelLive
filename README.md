@@ -18,16 +18,16 @@ Browser Tab (YouTube)
   ├─► chrome.tabCapture (Audio Stream)
   │     │
   │     ▼
-  │   Offscreen Document (AudioContext / ScriptProcessor)
-  │     │ (Direct 16kHz Int16 PCM Chunks)
+  │   Offscreen Document (AudioContext / AudioWorklet 16kHz PCM)
+  │     │ (Direct 16kHz Int16 PCM Chunks — 128ms frames)
   │     ▼
   │   WebSocket Channel (wss://)
   │     │
   │     ▼
-  │   AI Backend (FastAPI / Colab T4 GPU)
-  │     ├─► AudioStreamDecoder & RMS Energy VAD
-  │     ├─► Kotoba-Whisper v2.0 (Japanese STT)
-  │     └─► Qwen2.5-7B-Instruct-GPTQ-Int4 (Contextual Translation)
+  │   AI Backend (FastAPI / Modal Serverless T4 or Google Colab T4)
+  │     ├─► Socket Frame Coalescing & RMS Energy VAD
+  │     ├─► Kotoba-Whisper v2.0 (Speech Recognition)
+  │     └─► Qwen2.5-7B-Instruct 4-bit NF4 (Contextual Translation)
   │     │
   │     ▼
   │   WebSocket JSON Message (Interim & Final Captions)
@@ -37,10 +37,10 @@ Browser Tab (YouTube)
 ```
 
 1. **Tab Capture Pipeline:** Captures internal tab audio via `chrome.tabCapture` inside a Chrome Manifest V3 offscreen document without muting tab audio.
-2. **Direct PCM Streaming:** Resamples audio to 16kHz Int16 mono PCM and transmits raw chunks via a secure WebSocket connection.
+2. **Off-Thread AudioWorklet PCM Streaming:** Resamples audio to 16kHz Int16 mono PCM in 128ms frames via `AudioWorkletProcessor` and transmits raw chunks with WebSocket backpressure protection.
 3. **Speech Recognition (ASR):** Powered by `kotoba-tech/kotoba-whisper-v2.0` (trained on 7M ReazonSpeech samples, ~8.4% CER, 6.3x faster than Whisper large-v3).
-4. **Contextual Translation (LLM):** Powered by `Qwen/Qwen2.5-7B-Instruct-GPTQ-Int4`, preserving colloquial dialogue, conversational nuances, anime/VTuber pop-culture terms, and honorific forms (Keigo).
-5. **DOM Subtitle Overlay:** Renders cinematic dual-language subtitles with auto-fade, repositioning, and font scaling controls directly inside the YouTube video container.
+4. **Contextual Translation (LLM):** Powered by `Qwen/Qwen2.5-7B-Instruct` (4-bit NF4 via BitsAndBytes) with rolling dialogue context, preserving colloquial expressions, VTuber/anime terminology, and proper names.
+5. **DOM Subtitle Overlay:** Renders broadcast-grade dual-language subtitles (`Anime`, `Cinema`, `Minimal`) with position locking, clamped percentage dragging, and keyboard shortcuts (`Alt+B`) directly inside the YouTube video player.
 
 ---
 
@@ -109,10 +109,10 @@ BabelLive/
 
 ## Technology Stack
 
-- **Extension Framework:** Chrome Extensions API (Manifest V3), Web Audio API, HTML5 Canvas / DOM MutationObserver.
-- **Backend Service:** Python 3.10+, FastAPI, Uvicorn, WebSockets, PyNgrok.
+- **Extension Framework:** Chrome Extensions API (Manifest V3), Web Audio API (`AudioWorkletNode`), DOM `MutationObserver`.
+- **Backend Service:** Python 3.10+, FastAPI, Uvicorn, WebSockets, Modal Labs Serverless GPU / PyNgrok.
 - **Speech Recognition:** Hugging Face Transformers, `kotoba-tech/kotoba-whisper-v2.0`, PyTorch.
-- **Translation:** `Qwen/Qwen2.5-7B-Instruct-GPTQ-Int4`, Optimum, Auto-GPTQ, Accelerate.
+- **Translation:** `Qwen/Qwen2.5-7B-Instruct` (4-bit NF4), BitsAndBytes, Accelerate.
 
 ---
 

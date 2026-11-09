@@ -18,16 +18,16 @@ Thẻ trình duyệt (YouTube)
   ├─► chrome.tabCapture (Luồng âm thanh)
   │     │
   │     ▼
-  │   Offscreen Document (AudioContext / ScriptProcessor)
-  │     │ (Dữ liệu PCM 16kHz Int16 trực tiếp)
+  │   Offscreen Document (AudioContext / AudioWorklet 16kHz PCM)
+  │     │ (Dữ liệu PCM 16kHz Int16 trực tiếp — khung 128ms)
   │     ▼
   │   Kênh WebSocket (wss://)
   │     │
   │     ▼
-  │   Backend AI (FastAPI / Colab T4 GPU)
-  │     ├─► AudioStreamDecoder & Bộ lọc năng lượng RMS VAD
-  │     ├─► Kotoba-Whisper v2.0 (Nhận dạng tiếng Nhật)
-  │     └─► Qwen2.5-7B-Instruct-GPTQ-Int4 (Dịch ngữ cảnh)
+  │   Backend AI (FastAPI / Modal Serverless T4 hoặc Colab T4 GPU)
+  │     ├─► Gom gói WebSocket & Bộ lọc năng lượng RMS VAD
+  │     ├─► Kotoba-Whisper v2.0 (Nhận dạng tiếng nói)
+  │     └─► Qwen2.5-7B-Instruct 4-bit NF4 (Dịch ngữ cảnh)
   │     │
   │     ▼
   │   Thông điệp JSON WebSocket (Phụ đề dự đoán & phụ đề hoàn tất)
@@ -37,10 +37,10 @@ Thẻ trình duyệt (YouTube)
 ```
 
 1. **Thu âm thẻ trình duyệt:** Sử dụng `chrome.tabCapture` trong môi trường offscreen document (Manifest V3) mà không làm ngắt âm thanh nghe của người dùng.
-2. **Truyền luồng PCM trực tiếp:** Chuyển đổi tần số lấy mẫu về 16kHz Int16 đơn kênh và truyền trực tiếp qua kết nối WebSocket an toàn.
+2. **Truyền luồng PCM qua AudioWorklet:** Chuyển đổi tần số lấy mẫu về 16kHz Int16 đơn kênh theo khung 128ms trên luồng âm thanh riêng biệt và truyền qua WebSocket có kiểm soát nghẽn mạng.
 3. **Nhận dạng giọng nói (ASR):** Sử dụng mô hình `kotoba-tech/kotoba-whisper-v2.0` (huấn luyện trên 7 triệu mẫu âm thanh ReazonSpeech, CER ~8.4%, nhanh gấp 6.3 lần so với bản Whisper large-v3 gốc).
-4. **Dịch thuật ngữ cảnh (LLM):** Sử dụng `Qwen/Qwen2.5-7B-Instruct-GPTQ-Int4`, bảo toàn văn phong hội thoại tự nhiên, sắc thái biểu cảm, thuật ngữ VTuber/anime và các thể kính ngữ (Keigo).
-5. **Hiển thị phụ đề trên DOM:** Khung hiển thị phụ đề phong cách anime/cinema cho phép kéo thả vị trí, điều chỉnh kích cỡ chữ và tự động mờ dần khi kết thúc lời nói.
+4. **Dịch thuật ngữ cảnh (LLM):** Sử dụng `Qwen/Qwen2.5-7B-Instruct` (4-bit NF4 qua BitsAndBytes) kết hợp bộ nhớ ngữ cảnh hội thoại liền trước, bảo toàn văn phong tự nhiên và thuật ngữ VTuber/anime.
+5. **Hiển thị phụ đề trên DOM:** Khung hiển thị phụ đề (`Anime`, `Cinema`, `Minimal`) hỗ trợ khóa vị trí, kéo thả theo tỷ lệ khung hình, phím tắt `Alt+B` bật/tắt song ngữ ngay trong chế độ toàn màn hình.
 
 ---
 
@@ -109,10 +109,10 @@ BabelLive/
 
 ## Công Nghệ Sử Dụng
 
-- **Tiện ích mở rộng:** Chrome Extensions API (Manifest V3), Web Audio API, DOM MutationObserver.
-- **Dịch vụ Backend:** Python 3.10+, FastAPI, Uvicorn, WebSockets, PyNgrok.
+- **Tiện ích mở rộng:** Chrome Extensions API (Manifest V3), Web Audio API (`AudioWorkletNode`), DOM `MutationObserver`.
+- **Dịch vụ Backend:** Python 3.10+, FastAPI, Uvicorn, WebSockets, Modal Labs Serverless GPU / PyNgrok.
 - **Nhận dạng tiếng nói:** Hugging Face Transformers, `kotoba-tech/kotoba-whisper-v2.0`, PyTorch.
-- **Dịch thuật:** `Qwen/Qwen2.5-7B-Instruct-GPTQ-Int4`, Optimum, Auto-GPTQ, Accelerate.
+- **Dịch thuật:** `Qwen/Qwen2.5-7B-Instruct` (4-bit NF4), BitsAndBytes, Accelerate.
 
 ---
 

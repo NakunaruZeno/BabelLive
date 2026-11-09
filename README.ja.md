@@ -109,10 +109,10 @@ BabelLive/
 
 ## 使用技術
 
-- **拡張機能:** Chrome Extensions API (Manifest V3), Web Audio API, DOM MutationObserver.
-- **バックエンド:** Python 3.10+, FastAPI, Uvicorn, WebSockets, PyNgrok.
+- **拡張機能:** Chrome Extensions API (Manifest V3), Web Audio API (`AudioWorkletNode`), DOM `MutationObserver`.
+- **バックエンド:** Python 3.10+, FastAPI, Uvicorn, WebSockets, Modal Labs Serverless GPU / PyNgrok.
 - **音声認識:** Hugging Face Transformers, `kotoba-tech/kotoba-whisper-v2.0`, PyTorch.
-- **機械翻訳:** `Qwen/Qwen2.5-7B-Instruct-GPTQ-Int4`, Optimum, Auto-GPTQ, Accelerate.
+- **機械翻訳:** `Qwen/Qwen2.5-7B-Instruct` (4-bit NF4), BitsAndBytes, Accelerate.
 
 ---
 

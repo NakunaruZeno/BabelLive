@@ -33,6 +33,9 @@ const els = {
   targetLang: $('#targetLang'),
   swapLangs: $('#swapLangs'),
   presetBtns: $$('.preset-btn'),
+  captionPreviewStage: $('#captionPreviewStage'),
+  captionPreviewOrig: $('#captionPreviewOrig'),
+  captionPreviewTrans: $('#captionPreviewTrans'),
   fontSizeSlider: $('#fontSizeSlider'),
   fontSizeValue: $('#fontSizeValue'),
   bilingualToggle: $('#bilingualToggle'),
@@ -166,6 +169,20 @@ function updateSliderFill() {
   els.fontSizeSlider.style.setProperty('--slider-pct', `${pct}%`);
 }
 
+function updateLivePreview() {
+  if (els.captionPreviewStage) {
+    els.captionPreviewStage.dataset.preset = state.subtitlePreset;
+  }
+  if (els.captionPreviewOrig) {
+    els.captionPreviewOrig.classList.toggle('hidden', !state.bilingual);
+  }
+  if (els.captionPreviewTrans) {
+    // Scale preview proportionally between 11.5px and 20px so it fits inside the compact stage
+    const scaledPx = Math.round((11.5 + ((state.fontSize - 14) / 22) * 8.5) * 10) / 10;
+    els.captionPreviewTrans.style.fontSize = `${scaledPx}px`;
+  }
+}
+
 function updateSwapButtonState() {
   if (els.swapLangs) {
     els.swapLangs.disabled = state.sourceLang === 'auto';
@@ -189,6 +206,7 @@ function applyStateToUI() {
 
   els.bilingualToggle.checked = state.bilingual;
   els.demoToggle.checked = state.demoMode;
+  updateLivePreview();
 
   if (els.colabUrl) els.colabUrl.value = state.colabUrl || '';
   if (els.colabNotebookUrl) els.colabNotebookUrl.value = state.colabNotebookUrl || '';
@@ -387,6 +405,7 @@ function bindEvents() {
     btn.addEventListener('click', () => {
       state.subtitlePreset = btn.dataset.preset;
       els.presetBtns.forEach((b) => b.classList.toggle('active', b === btn));
+      updateLivePreview();
       saveState();
     });
   });
@@ -395,11 +414,13 @@ function bindEvents() {
     state.fontSize = parseInt(els.fontSizeSlider.value, 10);
     els.fontSizeValue.textContent = `${state.fontSize}px`;
     updateSliderFill();
+    updateLivePreview();
     saveState();
   });
 
   els.bilingualToggle.addEventListener('change', () => {
     state.bilingual = els.bilingualToggle.checked;
+    updateLivePreview();
     saveState();
   });
 
