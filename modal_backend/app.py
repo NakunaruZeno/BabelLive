@@ -32,10 +32,27 @@ LANG_MAP = {
 }
 
 HALLUCINATIONS = {
-    "ごめん", "ごめんね", "ごめんなさい", "はい", "うん",
-    "ご視聴ありがとうございました", "チャンネル登録お願いします",
-    "ありがとうございました", "お疲れ様でした"
+    "ごめん", "ごめんね", "ごめんなさい", "はい", "うん", "ええ",
+    "ご視聴ありがとうございました", "ご視聴ありがとうございました。",
+    "チャンネル登録お願いします", "チャンネル登録よろしくお願いします",
+    "ありがとうございました", "お疲れ様でした", "おやすみなさい",
+    "字幕", "スタッフ", "拍手", "音楽",
 }
+
+
+def is_hallucination(text: str, rms: float) -> bool:
+    """Filters out common Whisper silence/BGM hallucinations and repetitive token loops."""
+    cleaned = text.strip().strip("。、！？.!?, ")
+    if not cleaned:
+        return True
+    if rms < 0.016 and cleaned in HALLUCINATIONS:
+        return True
+    if any(phrase in cleaned for phrase in ("ご視聴ありがとう", "チャンネル登録", "字幕制作", "Amara.org")):
+        return True
+    # Detect pathological character/phrase repetition (e.g. "あーあーあーあー")
+    if len(cleaned) >= 8 and len(set(cleaned)) <= 2:
+        return True
+    return False
 
 # ─────────────────────────────────────────────────────────────────────────────
 # 2. Image Build Definition & Model Pre-caching (Zero Cold-Start Download)
@@ -206,9 +223,10 @@ class BabelLiveService:
         source_text: str,
         is_final: bool = False,
         source_lang: str = "ja",
-        target_lang: str = "vi"
+        target_lang: str = "vi",
+        prev_context: str = "",
     ) -> str:
-        """Runs Qwen2.5-7B contextual subtitle translation."""
+        """Runs Qwen2.5-7B contextual subtitle translation with rolling dialogue context."""
         import torch
 
         if not source_text.strip():
@@ -216,6 +234,7 @@ class BabelLiveService:
 
         src_name = LANG_MAP.get(source_lang, source_lang)
         tgt_name = LANG_MAP.get(target_lang, target_lang)
+        context_hint = f"\nPrevious line for context only (do NOT re-translate): {prev_context}" if prev_context else ""
 
         if is_final:
             if source_lang == "ja" and target_lang == "vi":
@@ -228,6 +247,7 @@ class BabelLiveService:
                     "4. NEVER output Chinese characters (Hanzi) or foreign symbols in the Vietnamese output.\n"
                     "5. Accurately interpret colloquial Japanese contractions, particles, and spoken homophones.\n"
                     "6. Return ONLY the direct Vietnamese translation. Do NOT include notes, explanations, or quotes."
+                    f"{context_hint}"
                 )
             else:
                 sys_prompt = (
@@ -235,6 +255,7 @@ class BabelLiveService:
                     f"1. Translate spoken {src_name} naturally and idiomatically into colloquial {tgt_name}.\n"
                     f"2. Keep proper names, streamer tags, and brand names intact without translating them literally.\n"
                     f"3. Return ONLY the clean {tgt_name} translation without notes, quotes, or explanations."
+                    f"{context_hint}"
                 )
             user_prompt = source_text
         else:
@@ -313,9 +334,11 @@ class BabelLiveService:
             decoder = AudioStreamDecoder()
             accumulated_audio = np.array([], dtype=np.float32)
             last_word_count = 0
+            last_asr_time = 0.0
             last_translation_time = time.time()
             last_interim_text = ""
             last_final_text = ""
+            prev_context = ""
 
             try:
                 while True:
@@ -338,10 +361,31 @@ class BabelLiveService:
                         continue
 
                     chunk_audio = decoder.decode(message)
-                    if len(chunk_audio) == 0:
-                        continue
+                    if len(chunk_audio) > 0:
+                        accumulated_audio = np.concatenate((accumulated_audio, chunk_audio))
 
-                    accumulated_audio = np.concatenate((accumulated_audio, chunk_audio))
+                    # Coalesce any additional queued audio frames to prevent socket lag buildup
+                    while True:
+                        try:
+                            extra = await asyncio.wait_for(websocket.receive(), timeout=0.002)
+                            if extra.get("type") == "websocket.disconnect":
+                                raise WebSocketDisconnect()
+                            if "text" in extra and extra["text"]:
+                                try:
+                                    cfg = json.loads(extra["text"])
+                                    if cfg.get("type") == "config":
+                                        source_lang = cfg.get("source_lang", source_lang) or source_lang
+                                        target_lang = cfg.get("target_lang", target_lang) or target_lang
+                                except Exception:
+                                    pass
+                                continue
+                            extra_bytes = extra.get("bytes")
+                            if extra_bytes:
+                                extra_pcm = decoder.decode(extra_bytes)
+                                if len(extra_pcm) > 0:
+                                    accumulated_audio = np.concatenate((accumulated_audio, extra_pcm))
+                        except asyncio.TimeoutError:
+                            break
 
                     # Audio window maintenance
                     if len(accumulated_audio) > 16000 * 8:
@@ -352,12 +396,18 @@ class BabelLiveService:
                         continue
 
                     # Voice Activity Detection (RMS energy threshold)
-                    rms = np.sqrt(np.mean(accumulated_audio**2))
+                    rms = float(np.sqrt(np.mean(accumulated_audio**2)))
                     if rms < 0.007:
                         if len(accumulated_audio) > 16000 * 2.5:
                             accumulated_audio = np.array([], dtype=np.float32)
                             decoder.reset_stream()
                         continue
+
+                    # Throttle ASR cadence (~420ms minimum interval) to avoid redundant GPU passes
+                    now = time.time()
+                    if now - last_asr_time < 0.42 and len(accumulated_audio) < 16000 * 4.2:
+                        continue
+                    last_asr_time = now
 
                     # Execute ASR in worker thread to prevent event-loop starvation
                     current_text = await asyncio.to_thread(
@@ -369,8 +419,8 @@ class BabelLiveService:
                             accumulated_audio = accumulated_audio[-16000 * 2:]
                         continue
 
-                    # Hallucination suppression during low-energy noise
-                    if rms < 0.015 and current_text in HALLUCINATIONS:
+                    # Hallucination suppression during low-energy noise or BGM
+                    if is_hallucination(current_text, rms):
                         continue
 
                     now = time.time()
@@ -387,8 +437,14 @@ class BabelLiveService:
                         last_interim_text = ""
 
                         translation = await asyncio.to_thread(
-                            self.predict_translation, current_text, True, source_lang, target_lang
+                            self.predict_translation,
+                            current_text,
+                            True,
+                            source_lang,
+                            target_lang,
+                            prev_context,
                         )
+                        prev_context = f"{current_text} -> {translation}"
 
                         await websocket.send_json({
                             "type": "final",
@@ -398,7 +454,7 @@ class BabelLiveService:
                             "target_lang": target_lang
                         })
 
-                        keep_len = int(16000 * 0.3)
+                        keep_len = int(16000 * 0.25)
                         accumulated_audio = (
                             accumulated_audio[-keep_len:]
                             if len(accumulated_audio) > keep_len
@@ -410,11 +466,15 @@ class BabelLiveService:
                     else:
                         # Interim preview (streaming real-time preview)
                         if current_text != last_interim_text and (
-                            (now - last_translation_time > 0.6) or (len(current_text) >= last_word_count + 3)
+                            (now - last_translation_time > 0.65) or (len(current_text) >= last_word_count + 3)
                         ):
                             last_interim_text = current_text
                             translation = await asyncio.to_thread(
-                                self.predict_translation, current_text, False, source_lang, target_lang
+                                self.predict_translation,
+                                current_text,
+                                False,
+                                source_lang,
+                                target_lang,
                             )
 
                             await websocket.send_json({

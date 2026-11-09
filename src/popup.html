@@ -14,9 +14,33 @@
     <header class="topbar">
       <div class="brand">
         <div class="brand-mark" aria-hidden="true">
-          <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-            <rect x="2" y="3" width="16" height="14" rx="3.5" stroke="currentColor" stroke-width="1.6" />
-            <path d="M5.5 11.5h3.5M11 11.5h3.5M5.5 14h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+          <svg width="24" height="24" viewBox="0 0 128 128" fill="none">
+            <defs>
+              <mask id="popupLowerCutout">
+                <rect width="128" height="128" fill="white" />
+                <path
+                  d="M25 17C25 12.0294 29.0294 8 34 8H71.5C88.3447 8 102 21.6553 102 38.5C102 55.3447 88.3447 69 71.5 69H39L13 78L25 53V17Z"
+                  fill="black"
+                  stroke="black"
+                  stroke-width="5"
+                  stroke-linejoin="round"
+                />
+              </mask>
+            </defs>
+            <path
+              mask="url(#popupLowerCutout)"
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M25 66C25 61.0294 29.0294 57 34 57H79.5C94.1355 57 106 68.8645 106 83.5C106 90.4712 103.306 96.8135 98.902 101.539L110 113L78.75 111H34C29.0294 111 25 106.971 25 102V66ZM38 70V98H79.5C87.5081 98 94 91.5081 94 83.5C94 75.4919 87.5081 70 79.5 70H38Z"
+              fill="#A1A1AA"
+            />
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M25 26C25 21.0294 29.0294 17 34 17H71.5C86.1355 17 98 28.8645 98 43.5C98 58.1355 86.1355 70 71.5 70H38.75L16 75L25 53.75V26ZM38 30V57H71.5C79.5081 57 86 50.5081 86 43.5C86 36.4919 79.5081 30 71.5 30H38Z"
+              fill="#FAFAFA"
+            />
+            <circle cx="62" cy="43.5" r="7" fill="#10B981" />
           </svg>
         </div>
         <div class="brand-copy">

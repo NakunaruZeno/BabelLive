@@ -119,8 +119,12 @@
     const blocksContainer = document.createElement('div');
     blocksContainer.className = 'babellive-blocks';
 
+    const statusToast = document.createElement('div');
+    statusToast.className = 'babellive-status-toast hidden';
+
     stack.appendChild(minibar);
     stack.appendChild(blocksContainer);
+    overlay.appendChild(statusToast);
     overlay.appendChild(stack);
     container.appendChild(overlay);
 
@@ -132,6 +136,8 @@
       stack,
       minibar,
       blocksContainer,
+      statusToast,
+      toastTimer: null,
       activeBlock: null,
       lastFinalText: null,
       lastFinalOriginal: null,
@@ -139,6 +145,23 @@
     };
     overlays.set(key, data);
     return data;
+  }
+
+  function showOverlayToast(text, mode = 'info', durationMs = 2600) {
+    getActiveVideos().forEach((v) => {
+      const data = createOverlay(v);
+      const { overlay, statusToast } = data;
+      if (!statusToast) return;
+      overlay.classList.remove('hidden');
+      statusToast.textContent = text;
+      statusToast.dataset.mode = mode;
+      statusToast.classList.remove('hidden');
+
+      if (data.toastTimer) clearTimeout(data.toastTimer);
+      data.toastTimer = setTimeout(() => {
+        statusToast.classList.add('hidden');
+      }, durationMs);
+    });
   }
 
   /* ── Clamped Drag & Drop ───────────────────── */
@@ -472,6 +495,26 @@
     scanForVideos();
   });
 
+  // Keyboard shortcut: Alt+B toggles bilingual mode when overlay is active
+  document.addEventListener('keydown', (e) => {
+    if (!isRunning && !settings.demoMode) return;
+    if (e.altKey && !e.ctrlKey && !e.metaKey && e.code === 'KeyB') {
+      const activeTag = document.activeElement?.tagName;
+      if (activeTag === 'INPUT' || activeTag === 'TEXTAREA' || document.activeElement?.isContentEditable) {
+        return;
+      }
+      e.preventDefault();
+      settings.bilingual = !settings.bilingual;
+      applyFontSizeAndBilingual();
+      saveSettingsToStorage();
+      showOverlayToast(
+        settings.bilingual ? 'BabelLive · Bilingual ON' : 'BabelLive · Translation Only',
+        'info',
+        1600
+      );
+    }
+  });
+
   window.addEventListener('yt-navigate-finish', () => {
     setTimeout(() => {
       observeFlexy();
@@ -520,9 +563,26 @@
         }
         scanForVideos();
         applySettings();
+        showOverlayToast('BabelLive · Connecting to AI stream...', 'starting', 3500);
         sendResponse({ ok: true, isRunning: true });
         return false;
 
+      case 'BABELLIVE_CAPTURE_READY':
+        isRunning = true;
+        settings.enabled = true;
+        applySettings();
+        showOverlayToast('BabelLive · Live subtitles active', 'live', 2400);
+        sendResponse({ ok: true });
+        return false;
+
+      case 'BABELLIVE_CAPTURE_ERROR':
+        isRunning = false;
+        settings.enabled = false;
+        showOverlayToast(`BabelLive · ${message.error || 'Connection error'}`, 'error', 4000);
+        sendResponse({ ok: true });
+        return false;
+
+      case 'BABELLIVE_CAPTURE_ENDED':
       case 'STOP_LIVE_SESSION':
       case 'BABELLIVE_STOP':
         isRunning = false;

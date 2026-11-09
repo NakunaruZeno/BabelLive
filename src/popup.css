@@ -79,14 +79,13 @@ body {
 }
 
 .brand-mark {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-default);
-  border-radius: 7px;
+  background: transparent;
+  border: none;
   color: var(--text-primary);
 }
 

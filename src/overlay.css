@@ -63,6 +63,51 @@
   align-items: center;
 }
 
+/* --- Subtle On-Video Status Toast --- */
+.babellive-status-toast {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  margin-bottom: 6px;
+  background: rgba(9, 9, 11, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  color: #e4e4e7;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+  animation: babelliveFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.babellive-status-toast.hidden {
+  display: none !important;
+}
+
+.babellive-status-toast::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #a1a1aa;
+}
+
+.babellive-status-toast[data-mode="starting"]::before {
+  background: #f59e0b;
+}
+
+.babellive-status-toast[data-mode="live"]::before {
+  background: #10b981;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+}
+
+.babellive-status-toast[data-mode="error"]::before {
+  background: #ef4444;
+}
+
 /* --- Individual Subtitle Block --- */
 .babellive-subtitle-block {
   padding: 5px 16px 7px;
