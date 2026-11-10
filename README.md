@@ -1,6 +1,6 @@
 # BabelLive
 
-[English](README.md) | [Tiếng Việt](README.vi.md) | [日本語](README.ja.md)
+[English](README.md) | [Tiếng Việt](docs/README.vi.md) | [日本語](docs/README.ja.md)
 
 Real-time bilingual AI subtitling extension for YouTube livestreams and videos.
 
@@ -59,26 +59,42 @@ Browser Tab (YouTube)
 
 ```text
 BabelLive/
-├── colab/                      # Google Colab GPU backend
-│   ├── BabelLive_Backend.ipynb # Colab notebook (Kotoba-Whisper + Qwen2.5 + WebSocket)
-│   └── README.md               # Colab deployment instructions
+├── backend/                       # AI Streaming Backends
+│   ├── colab/                     # Google Colab GPU environment
+│   │   ├── BabelLive_Backend.ipynb# Kotoba-Whisper + Qwen2.5 + WebSocket notebook
+│   │   └── README.md              # Free Colab T4 setup guide
+│   └── modal/                     # Modal Labs Serverless GPU environment
+│       ├── app.py                 # ASGI WebSocket backend on T4/A10G
+│       ├── requirements.txt       # Modal CLI dependencies
+│       └── README.md              # Cloud deployment guide
 │
-├── modal_backend/              # Modal Labs Serverless GPU backend
-│   ├── app.py                  # Zero-cold-start ASGI WebSocket backend
-│   ├── requirements.txt        # Local CLI dependency
-│   └── README.md               # Modal cloud deployment guide
+├── docs/                          # Multilingual Documentation & Guides
+│   ├── README.vi.md               # Hướng dẫn tiếng Việt
+│   └── README.ja.md               # 日本語ドキュメント
 │
-└── src/                        # Chrome Extension (Manifest V3)
-    ├── icons/                  # Extension icons (16, 32, 48, 128)
-    ├── manifest.json           # Extension configuration and permissions
-    ├── popup.html / popup.css  # Minimalist Studio popup interface
-    ├── popup.js                # State management and endpoint controller
-    ├── content.js              # Video player hook and subtitle overlay
-    ├── overlay.css             # Broadcast subtitle presets & minibar styles
-    ├── offscreen.html / .js    # Tab audio capture and 16kHz PCM streaming
-    ├── audio-worklet-processor.js # Off-thread Float32-to-Int16 audio worklet
-    ├── service-worker.js       # Background message router and session lifecycle
-    └── colab-automator.js      # Automated Colab notebook runner
+├── src/                           # Chrome Extension (Manifest V3)
+│   ├── background/
+│   │   └── service-worker.js      # Session lifecycle & message routing
+│   ├── content/
+│   │   ├── content.js             # Player hook, subtitle overlay, keyboard shortcuts
+│   │   ├── overlay.css            # Broadcast subtitle styling presets (Anime, Cinema, Minimal)
+│   │   └── colab-automator.js     # One-click Colab auto-launcher script
+│   ├── popup/
+│   │   ├── popup.html             # Minimalist Studio popup interface
+│   │   ├── popup.css              # Dark theme styling, hairline borders
+│   │   └── popup.js               # Reactive UI controller & settings manager
+│   ├── offscreen/
+│   │   ├── offscreen.html         # Offscreen audio capture host
+│   │   ├── offscreen.js           # AudioContext, monitor loopback & WebSocket sender
+│   │   └── audio-worklet-processor.js # 128ms zero-copy Int16 PCM AudioWorklet
+│   ├── icons/                     # Transparent SVG & PNG icons
+│   │   ├── icon.svg
+│   │   └── icon*.png
+│   └── manifest.json              # Extension manifest V3 descriptor
+│
+├── .gitignore                     # Git ignore rules
+├── LICENSE                        # MIT License
+└── README.md                      # Primary English documentation
 ```
 
 ---
@@ -97,7 +113,7 @@ BabelLive/
 
 ### 2. Launch the AI Backend (Google Colab)
 
-1. Open [Google Colab](https://colab.research.google.com/) and upload `colab/BabelLive_Backend.ipynb`.
+1. Open [Google Colab](https://colab.research.google.com/) and upload `backend/colab/BabelLive_Backend.ipynb`.
 2. Save a copy to your Google Drive via **File** -> **Save a copy in Drive**.
 3. Set runtime hardware to **T4 GPU** under **Runtime** -> **Change runtime type**.
 4. Configure your `NGROK_AUTHTOKEN` in the Colab **Secrets** tab (Key icon) with notebook access enabled.

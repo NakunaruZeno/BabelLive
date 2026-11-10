@@ -26,7 +26,7 @@ const MSG = {
 
 const STORAGE_KEY = 'babellive_settings';
 const SESSION_KEY = 'babellive_session';
-const OFFSCREEN_URL = 'offscreen.html';
+const OFFSCREEN_URL = 'offscreen/offscreen.html';
 
 const CaptureState = {
   idle: 'idle',
@@ -157,7 +157,7 @@ async function injectContentScript(tabId) {
   try {
     await chrome.scripting.executeScript({
       target: { tabId, allFrames: false },
-      files: ['content.js'],
+      files: ['content/content.js'],
     });
   } catch {}
 }

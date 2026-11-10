@@ -11,7 +11,7 @@
       "128": "icons/icon128.png"
     },
     "default_title": "BabelLive — Real-Time AI Subtitles",
-    "default_popup": "popup.html"
+    "default_popup": "popup/popup.html"
   },
   "icons": {
     "16": "icons/icon16.png",
@@ -20,7 +20,7 @@
     "128": "icons/icon128.png"
   },
   "background": {
-    "service_worker": "service-worker.js",
+    "service_worker": "background/service-worker.js",
     "type": "module"
   },
   "permissions": [
@@ -44,8 +44,8 @@
       "matches": [
         "*://*.youtube.com/*"
       ],
-      "js": ["content.js"],
-      "css": ["overlay.css"],
+      "js": ["content/content.js"],
+      "css": ["content/overlay.css"],
       "run_at": "document_idle",
       "all_frames": false
     },
@@ -54,7 +54,7 @@
         "*://colab.research.google.com/*",
         "*://*.googleusercontent.com/*"
       ],
-      "js": ["colab-automator.js"],
+      "js": ["content/colab-automator.js"],
       "run_at": "document_idle",
       "all_frames": true
     }
@@ -66,8 +66,8 @@
     {
       "resources": [
         "icons/*",
-        "overlay.css",
-        "audio-worklet-processor.js"
+        "content/overlay.css",
+        "offscreen/audio-worklet-processor.js"
       ],
       "matches": [
         "*://*.youtube.com/*"

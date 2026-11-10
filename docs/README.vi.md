@@ -1,6 +1,6 @@
 # BabelLive
 
-[English](README.md) | [Tiếng Việt](README.vi.md) | [日本語](README.ja.md)
+[English](../README.md) | [Tiếng Việt](README.vi.md) | [日本語](README.ja.md)
 
 Tiện ích mở rộng tạo phụ đề song ngữ AI theo thời gian thực cho video và luồng phát trực tiếp trên YouTube.
 
@@ -59,26 +59,42 @@ Thẻ trình duyệt (YouTube)
 
 ```text
 BabelLive/
-├── colab/                      # Backend chạy trên Google Colab GPU
-│   ├── BabelLive_Backend.ipynb # Notebook chính (Kotoba-Whisper + Qwen2.5 + WebSocket)
-│   └── README.md               # Hướng dẫn triển khai Colab
+├── backend/                       # Các giải pháp AI Backend
+│   ├── colab/                     # Môi trường chạy trên Google Colab GPU
+│   │   ├── BabelLive_Backend.ipynb# Notebook (Kotoba-Whisper + Qwen2.5 + WebSocket)
+│   │   └── README.md              # Hướng dẫn chi tiết chạy Colab T4 miễn phí
+│   └── modal/                     # Môi trường Serverless GPU trên Modal Labs
+│       ├── app.py                 # Máy chủ ASGI WebSocket khởi động tức thì
+│       ├── requirements.txt       # Thư viện triển khai Modal CLI
+│       └── README.md              # Hướng dẫn triển khai Modal Cloud
 │
-├── modal_backend/              # Backend Serverless GPU trên Modal Labs
-│   ├── app.py                  # Máy chủ ASGI WebSocket khởi động tức thì
-│   ├── requirements.txt        # Thư viện CLI triển khai
-│   └── README.md               # Hướng dẫn triển khai Modal Cloud
+├── docs/                          # Tài liệu đa ngôn ngữ
+│   ├── README.vi.md               # Bản dịch tiếng Việt
+│   └── README.ja.md               # Bản dịch tiếng Nhật
 │
-└── src/                        # Tiện ích mở rộng Chrome (Manifest V3)
-    ├── icons/                  # Biểu tượng tiện ích (16, 32, 48, 128)
-    ├── manifest.json           # Cấu hình quyền hạn và tài nguyên tiện ích
-    ├── popup.html / popup.css  # Giao diện điều khiển Minimalist Studio
-    ├── popup.js                # Quản lý trạng thái và kiểm tra kết nối
-    ├── content.js              # Móc nối trình phát video và hiển thị phụ đề
-    ├── overlay.css             # Định kiểu phụ đề (Anime, Cinema, Minimal)
-    ├── offscreen.html / .js    # Thu âm thanh thẻ và truyền luồng PCM 16kHz
-    ├── audio-worklet-processor.js # Xử lý âm thanh đa luồng AudioWorklet
-    ├── service-worker.js       # Bộ định tuyến thông điệp nền và quản lý vòng đời phiên
-    └── colab-automator.js      # Tự động hóa quá trình chạy Colab
+├── src/                           # Tiện ích mở rộng Chrome (Manifest V3)
+│   ├── background/
+│   │   └── service-worker.js      # Định tuyến thông điệp và quản lý vòng đời phiên
+│   ├── content/
+│   │   ├── content.js             # Móc nối trình phát video, hiển thị phụ đề & phím tắt
+│   │   ├── overlay.css            # Định kiểu phụ đề (Anime, Cinema, Minimal)
+│   │   └── colab-automator.js     # Script tự động kích hoạt Colab 1 chạm
+│   ├── popup/
+│   │   ├── popup.html             # Giao diện điều khiển Minimalist Studio
+│   │   ├── popup.css              # Giao diện tối hiện đại, viền hairline tinh tế
+│   │   └── popup.js               # Quản lý cấu hình & kết nối WebSocket
+│   ├── offscreen/
+│   │   ├── offscreen.html         # Trang thu âm nền offscreen
+│   │   ├── offscreen.js           # AudioContext, loopback tai nghe & gửi luồng WebSocket
+│   │   └── audio-worklet-processor.js # Thu nhận PCM 16kHz Int16 độ trễ 128ms
+│   ├── icons/                     # Bộ icon SVG & PNG trong suốt
+│   │   ├── icon.svg
+│   │   └── icon*.png
+│   └── manifest.json              # Bản khai Manifest V3 của tiện ích
+│
+├── .gitignore                     # Cấu hình bỏ qua tệp nhị phân & rác
+├── LICENSE                        # Giấy phép mã nguồn mở MIT
+└── README.md                      # Tài liệu tiếng Anh chính của dự án
 ```
 
 ---
@@ -97,7 +113,7 @@ BabelLive/
 
 ### 2. Khởi động AI Backend trên Google Colab
 
-1. Truy cập [Google Colab](https://colab.research.google.com/) và tải lên tệp `colab/BabelLive_Backend.ipynb`.
+1. Truy cập [Google Colab](https://colab.research.google.com/) và tải lên tệp `backend/colab/BabelLive_Backend.ipynb`.
 2. Lưu bản sao vào Drive cá nhân qua **Tệp** -> **Lưu bản sao trong Drive**.
 3. Chọn loại phần cứng **T4 GPU** trong menu **Thời gian chạy** -> **Thay đổi loại thời gian chạy**.
 4. Cấu hình khóa bí mật `NGROK_AUTHTOKEN` trong mục **Secrets** (biểu tượng Chìa khóa) và bật quyền truy cập cho notebook.

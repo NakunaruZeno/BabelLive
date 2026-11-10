@@ -19,7 +19,7 @@ The backend pipeline leverages:
 
 ### Step 1: Upload Notebook to Google Colab
 1. Navigate to [Google Colab](https://colab.research.google.com/).
-2. Select **Upload** and choose `colab/BabelLive_Backend.ipynb`.
+2. Select **Upload** and choose `backend/colab/BabelLive_Backend.ipynb`.
 3. In the top menu, select **File** -> **Save a copy in Drive**. This produces a permanent notebook URL formatted as:
    `https://colab.research.google.com/drive/1a2b3c4d5e...`
    Copy this link if you want to utilize the extension's automated one-click launcher.

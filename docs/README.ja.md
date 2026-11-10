@@ -1,6 +1,6 @@
 # BabelLive
 
-[English](README.md) | [Tiếng Việt](README.vi.md) | [日本語](README.ja.md)
+[English](../README.md) | [Tiếng Việt](README.vi.md) | [日本語](README.ja.md)
 
 YouTubeライブ配信および動画向けリアルタイムAIバイリンガル字幕拡張機能。
 
@@ -59,26 +59,42 @@ BabelLiveは、ライブストリーミング処理に最適化された疎結�
 
 ```text
 BabelLive/
-├── colab/                      # Google Colab GPUバックエンド
-│   ├── BabelLive_Backend.ipynb # 公式ノートブック (Kotoba-Whisper + Qwen2.5 + WebSocket)
-│   └── README.md               # Colab環境構築ガイド
+├── backend/                       # AIストリーミングバックエンド
+│   ├── colab/                     # Google Colab GPU環境
+│   │   ├── BabelLive_Backend.ipynb# 公式ノートブック (Kotoba-Whisper + Qwen2.5 + WebSocket)
+│   │   └── README.md              # 無料Colab T4環境構築ガイド
+│   └── modal/                     # Modal Labs サーバーレスGPU環境
+│       ├── app.py                 # 高速起動ASGI WebSocketサーバー
+│       ├── requirements.txt       # CLIデプロイ用依存パッケージ
+│       └── README.md              # Modalクラウド構築ガイド
 │
-├── modal_backend/              # Modal Labs サーバーレスGPUバックエンド
-│   ├── app.py                  # 高速起動ASGI WebSocketサーバー
-│   ├── requirements.txt        # CLIデプロイ用依存パッケージ
-│   └── README.md               # Modalクラウド構築ガイド
+├── docs/                          # 多言語ドキュメント
+│   ├── README.vi.md               # ベトナム語ドキュメント
+│   └── README.ja.md               # 日本語ドキュメント
 │
-└── src/                        # Chrome拡張機能 (Manifest V3)
-    ├── icons/                  # アイコンアセット (16, 32, 48, 128)
-    ├── manifest.json           # 拡張機能構成ファイルおよび権限設定
-    ├── popup.html / popup.css  # Minimalist Studio ポップアップUI
-    ├── popup.js                # 状態管理およびエンドポイント制御
-    ├── content.js              # 動画プレーヤーフックおよび字幕オーバーレイ
-    ├── overlay.css             # 字幕プリセットおよびミニバースタイル
-    ├── offscreen.html / .js    # タブ音声取得および16kHz PCM送信
-    ├── audio-worklet-processor.js # AudioWorkletベース低遅延PCM変換
-    ├── service-worker.js       # バックグラウンドメッセージルーター
-    └── colab-automator.js      # Colab自動操作スクリプト
+├── src/                           # Chrome拡張機能 (Manifest V3)
+│   ├── background/
+│   │   └── service-worker.js      # バックグラウンドメッセージルーターおよび状態管理
+│   ├── content/
+│   │   ├── content.js             # 動画プレーヤーフック、字幕オーバーレイ、ショートカット
+│   │   ├── overlay.css            # 字幕スタイルプリセット (Anime, Cinema, Minimal)
+│   │   └── colab-automator.js     # ワンクリックColab自動操作スクリプト
+│   ├── popup/
+│   │   ├── popup.html             # Minimalist Studio ポップアップUI
+│   │   ├── popup.css              # ダークテーマ、ヘアライン境界線スタイル
+│   │   └── popup.js               # ポップアップUI制御および設定管理
+│   ├── offscreen/
+│   │   ├── offscreen.html         # 音声キャプチャホスト
+│   │   ├── offscreen.js           # AudioContext、モニターループバック、WebSocket送信
+│   │   └── audio-worklet-processor.js # 128ms低遅延 Int16 PCM AudioWorklet
+│   ├── icons/                     # 透過SVGおよびPNGアイコン
+│   │   ├── icon.svg
+│   │   └── icon*.png
+│   └── manifest.json              # 拡張機能マニフェスト Manifest V3
+│
+├── .gitignore                     # Git無視設定
+├── LICENSE                        # MITライセンス
+└── README.md                      # メイン英語ドキュメント
 ```
 
 ---
@@ -97,7 +113,7 @@ BabelLive/
 
 ### 2. Google Colabバックエンドの起動
 
-1. [Google Colab](https://colab.research.google.com/) を開き、`colab/BabelLive_Backend.ipynb` をアップロードします。
+1. [Google Colab](https://colab.research.google.com/) を開き、`backend/colab/BabelLive_Backend.ipynb` をアップロードします。
 2. メニューの **ファイル** -> **ドライブにコピーを保存** を選択します。
 3. **ランタイム** -> **ランタイムのタイプを変更** で **T4 GPU** を選択して保存します。
 4. 左サイドバーの **シークレット**（鍵アイコン）で `NGROK_AUTHTOKEN` を追加し、ノートブックからのアクセスを許可します。

@@ -250,7 +250,7 @@ async function setupPcmPipeline(session) {
   // Prefer AudioWorkletNode for off-main-thread, low-latency 128ms chunks
   if (session.pcmAudioCtx.audioWorklet) {
     try {
-      const workletUrl = chrome.runtime.getURL('audio-worklet-processor.js');
+      const workletUrl = chrome.runtime.getURL('offscreen/audio-worklet-processor.js');
       await session.pcmAudioCtx.audioWorklet.addModule(workletUrl);
       const workletNode = new AudioWorkletNode(session.pcmAudioCtx, 'audio-capture-processor', {
         processorOptions: { frameSize: 2048 },

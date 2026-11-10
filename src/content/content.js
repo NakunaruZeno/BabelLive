@@ -9,7 +9,7 @@
   if (window.__babellive_content_injected) return;
   window.__babellive_content_injected = true;
 
-  const OVERLAY_CSS_URL = chrome.runtime.getURL('overlay.css');
+  const OVERLAY_CSS_URL = chrome.runtime.getURL('content/overlay.css');
   const STORAGE_KEY = 'babellive_settings';
 
   const DEFAULTS = {

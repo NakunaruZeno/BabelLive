@@ -121,11 +121,11 @@ async function ensureTabConnected() {
         try {
           await chrome.scripting.executeScript({
             target: { tabId: tab.id, allFrames: false },
-            files: ['content.js'],
+            files: ['content/content.js'],
           });
           await chrome.scripting.insertCSS({
             target: { tabId: tab.id, allFrames: false },
-            files: ['overlay.css'],
+            files: ['content/overlay.css'],
           });
           setTimeout(() => {
             broadcastSettings();

@@ -42,7 +42,7 @@ This will automatically open your default web browser. Log in with your **GitHub
 From your project root directory (`BabelLive`), run:
 
 ```powershell
-modal deploy modal_backend/app.py
+modal deploy backend/modal/app.py
 ```
 
 #### What happens during deployment:
@@ -76,7 +76,7 @@ modal deploy modal_backend/app.py
 If you want to test changes live with interactive log streaming:
 
 ```powershell
-modal serve modal_backend/app.py
+modal serve backend/modal/app.py
 ```
 
 `modal serve` creates an ephemeral development URL with hot-reloading. Press `Ctrl + C` when finished.
